@@ -1,0 +1,42 @@
+# module: wmoop.transport  (second file of the Transport module; see transport.wml.yaml)
+#
+# The cross-domain facet [INV-3]. `Driver` is a ROLE PLAYED BY a `Person`, carrying its own
+# meta (licence number, categories, expiry). It is attached by composition, never by
+# `Driver : Person`. A person can gain/lose it over time and hold other roles at once.
+
+roles:
+  - id: wmoop.transport/Driver
+    name: Driver
+    definition: The role of a licensed person who operates a road vehicle.
+    played_by: wmoop.nature/Person          # S3 — the natural type that can hold this role
+    context:   wmoop.transport              # the domain where the role is meaningful
+    cardinality_per_player: "0..1"          # a Person holds at most one Driver role
+    capabilities: [ wmoop.transport/IDrive ] # behaviour unlocked while the role is active
+    properties:
+      - { id: wmoop.transport/Driver#licenceNumber,     name: licenceNumber, type: string, cardinality: "1" }
+      - id: wmoop.transport/Driver#licenceCategories
+        name: licenceCategories
+        type: wmoop.transport/LicenceCategory
+        cardinality: "1..*"                 # at least one category
+      - { id: wmoop.transport/Driver#licenceExpiry, name: licenceExpiry, type: date, cardinality: "0..1" }
+    relations:
+      - id: wmoop.transport/Driver#operates
+        name: operates
+        target: wmoop.transport/RoadVehicle
+        cardinality: "0..*"
+        inverse: wmoop.transport/RoadVehicle#operatedBy   # R6 [INV-5]
+
+  - id: wmoop.transport/Owner
+    name: Owner
+    definition: The role of an entity that owns a vehicle. Held alongside Driver, independently.
+    played_by: wmoop.nature/Person
+    context:   wmoop.transport
+    cardinality_per_player: "0..*"          # a person may own several vehicles over time
+    properties:
+      - { id: wmoop.transport/Owner#ownedSince, name: ownedSince, type: date, cardinality: "0..1" }
+    relations:
+      - id: wmoop.transport/Owner#owns
+        name: owns
+        target: wmoop.transport/Vehicle
+        cardinality: "1..*"
+        inverse: wmoop.transport/Vehicle#ownedBy
