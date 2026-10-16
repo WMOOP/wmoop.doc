@@ -1,0 +1,27 @@
+# WMOOP code owners — review routing.
+# GitHub requests review from the owner(s) of any path a pull request touches.
+# Replace the placeholder teams/handles with real ones once the org is set up.
+#
+# Syntax: <path pattern>   <@owner> [<@owner> ...]
+
+# Default owner for everything not matched below.
+*                       @WMOOP/maintainers
+
+# The meta-model and the canonical schema format are the most load-bearing parts:
+# changes here need core-maintainer review (see the RFC process in GOVERNANCE.md).
+/docs/02-meta-model.md      @WMOOP/core-maintainers
+/docs/03-architecture.md    @WMOOP/core-maintainers
+/PATTERNS.md                @WMOOP/core-maintainers
+
+# Governance, ethics and policy documents.
+/GOVERNANCE.md          @WMOOP/core-maintainers
+/ETHICS.md              @WMOOP/core-maintainers
+/CODE_OF_CONDUCT.md     @WMOOP/core-maintainers
+/SECURITY.md            @WMOOP/core-maintainers
+
+# Domain models are owned by their domain stewards (the "Adopt a Domain" program).
+# Add one line per domain as stewards are assigned, e.g.:
+# /model/nature/        @WMOOP/steward-nature
+# /model/transport/     @WMOOP/steward-transport
+# /model/geography/     @WMOOP/steward-geography
+/model/                 @WMOOP/maintainers

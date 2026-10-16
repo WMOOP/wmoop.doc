@@ -1,0 +1,46 @@
+module:
+  id: wmoop.nature
+  version: 0.5.0
+  title: Nature
+  depends_on:
+    - { module: wmoop.core, version: "^1.0.0" }
+
+datatypes:
+  - id: wmoop.nature/LegCount
+    name: LegCount
+    base: integer
+    constraints: { minimum: 0 }
+
+concepts:
+  - id: wmoop.nature/Animal
+    name: Animal
+    kind: abstract
+    definition: A multicellular eukaryotic organism of the kingdom Animalia.
+    provenance:
+      - { source: "NCBI Taxonomy", ref: "taxid 33208 (Metazoa)" }
+    properties:
+      - { id: wmoop.nature/Animal#legCount, name: legCount, type: wmoop.nature/LegCount, cardinality: "0..1" }
+
+  - id: wmoop.nature/Human
+    name: Human
+    kind: abstract
+    extends: wmoop.nature/Animal
+    definition: >
+      A member of the species Homo sapiens. The intermediate biological ranks
+      (Chordate, Mammal, Primate, …) are carried as `classified_as` facts rather than
+      as inheritance levels, so the code hierarchy stays shallow [INV-3].
+    provenance:
+      - { source: "NCBI Taxonomy", ref: "taxid 9606 (Homo sapiens)" }
+    classified_as:
+      - { scheme: "NCBI Taxonomy", value: "Chordata / Mammalia / Primates / Hominidae" }
+
+  - id: wmoop.nature/Person
+    name: Person
+    kind: concrete
+    extends: wmoop.nature/Human
+    definition: An individual human being.
+    provenance:
+      - { source: "Original WMOOP definition", note: "Legal/social person is a separate role, not biology." }
+    properties:
+      - { id: wmoop.nature/Person#fullName,    name: fullName,    type: string, cardinality: "1" }
+      - { id: wmoop.nature/Person#dateOfBirth, name: dateOfBirth, type: date,   cardinality: "0..1" }

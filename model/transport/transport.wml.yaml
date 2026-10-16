@@ -1,0 +1,105 @@
+module:
+  id: wmoop.transport
+  version: 0.3.0
+  title: Transport
+  depends_on:
+    - { module: wmoop.core,   version: "^1.0.0" }   # L0 upper ontology
+    - { module: wmoop.nature, version: "^0.5.0" }   # for Person (cross-domain) [INV-5]
+    - { module: wmoop.geography, version: "^0.2.0" } # for Place (drive destinations)
+
+datatypes:
+  - id: wmoop.transport/WheelCount
+    name: WheelCount
+    base: integer
+    constraints: { minimum: 0 }
+
+enumerations:
+  - id: wmoop.transport/LicenceCategory
+    name: LicenceCategory
+    definition: EU driving-licence categories.
+    provenance:
+      - { source: "Directive 2006/126/EC of the European Parliament", ref: "Annex, Art. 4" }
+    values:
+      - { id: AM, definition: "Mopeds, light quadricycles (<=45 km/h)" }
+      - { id: A1, definition: "Light motorcycles up to 125 cm3 / 11 kW" }
+      - { id: A2, definition: "Motorcycles up to 35 kW" }
+      - { id: A,  definition: "All motorcycles and motor tricycles" }
+      - { id: B,  definition: "Cars up to 3500 kg" }
+
+interfaces:
+  - id: wmoop.transport/IDrive
+    name: IDrive
+    definition: Contract for operating a road vehicle.
+    operations:
+      - { name: startEngine, returns: boolean }
+      - name: driveTo
+        params: [ { name: destination, type: wmoop.geography/Place } ]
+        returns: void
+
+concepts:
+  - id: wmoop.transport/Vehicle
+    name: Vehicle
+    kind: abstract                               # R1 — cannot be instantiated
+    definition: A man-made means of transport for moving people or goods.
+    provenance:
+      - { source: "ISO 3833:1977 Road vehicles — Types — Terms and definitions",
+          note: "Scope narrowed to transport artifacts." }
+    properties:
+      - id: wmoop.transport/Vehicle#wheelCount
+        name: wheelCount
+        type: wmoop.transport/WheelCount
+        cardinality: "1"            # exactly one
+        required: true
+        definition: Number of road wheels in contact with the ground.
+      - id: wmoop.transport/Vehicle#maxSpeed
+        name: maxSpeed
+        type: wmoop.core/Speed      # a Quantity, dimension = speed
+        unit: km/h                  # R5 — units are first-class [INV-4]
+        cardinality: "0..1"
+    invariants:
+      - id: wheels-nonneg
+        expr: "self.wheelCount >= 0"
+        message: "A vehicle cannot have a negative wheel count."
+
+  - id: wmoop.transport/RoadVehicle
+    name: RoadVehicle
+    kind: abstract
+    extends: wmoop.transport/Vehicle             # R2 — single, shallow is-a (depth 2)
+    definition: A vehicle designed to travel on public roads.
+    properties:
+      - id: wmoop.transport/RoadVehicle#roadLegal
+        name: roadLegal
+        type: boolean
+        cardinality: "1"
+        default: true
+
+  - id: wmoop.transport/Motorcycle
+    name: Motorcycle
+    kind: concrete
+    extends: wmoop.transport/RoadVehicle         # depth 3
+    implements: [ wmoop.transport/IDrive ]
+    definition: A two- or three-wheeled motor road vehicle.
+    property_overrides:
+      - property: wmoop.transport/Vehicle#wheelCount
+        constraints: { enum: [2, 3] }            # S2 — narrows parent's domain, LSP-safe
+    properties:
+      - id: wmoop.transport/Motorcycle#engineDisplacement
+        name: engineDisplacement
+        type: wmoop.core/Volume
+        unit: cm3
+        cardinality: "1"
+
+  - id: wmoop.transport/Moped
+    name: Moped
+    kind: concrete
+    extends: wmoop.transport/Motorcycle          # depth 4 (<= 6, OK)
+    definition: >
+      A low-powered motorcycle whose engine displacement and top speed are
+      limited by law (EU category L1e-B).
+    provenance:
+      - { source: "Regulation (EU) No 168/2013", ref: "Annex I, category L1e-B" }
+    property_overrides:
+      - { property: wmoop.transport/Motorcycle#engineDisplacement,
+          constraints: { maximum: 50 } }          # cm3  — narrows
+      - { property: wmoop.transport/Vehicle#maxSpeed,
+          constraints: { maximum: 45 } }          # km/h — narrows

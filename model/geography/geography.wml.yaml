@@ -1,0 +1,63 @@
+module:
+  id: wmoop.geography
+  version: 0.2.0
+  title: Geography
+  depends_on:
+    - { module: wmoop.core, version: "^1.0.0" }
+
+datatypes:
+  - id: wmoop.geography/Population
+    name: Population
+    base: integer
+    constraints: { minimum: 0 }
+
+concepts:
+  - id: wmoop.geography/Place
+    name: Place
+    kind: abstract
+    definition: A location in space that can be referred to and contained within another.
+
+  - id: wmoop.geography/AdministrativeArea
+    name: AdministrativeArea
+    kind: abstract
+    extends: wmoop.geography/Place
+    definition: >
+      A government-defined area that may contain smaller administrative areas. Containment
+      is a `part_of` relation (mereology), NOT inheritance: a city is not a *kind of* county.
+    properties:
+      - id: wmoop.geography/AdministrativeArea#residentPopulation
+        name: residentPopulation
+        type: wmoop.geography/Population
+        cardinality: "0..1"
+        definition: People resident directly in this area, excluding its sub-areas.
+    relations:
+      - id: wmoop.geography/AdministrativeArea#partOf
+        name: partOf
+        rel: part_of                                  # mereology — NOT subclass_of
+        target: wmoop.geography/AdministrativeArea
+        cardinality: "0..1"
+        inverse: wmoop.geography/AdministrativeArea#contains
+
+  # Country / County / City ARE kinds of AdministrativeArea (a genuine, shallow is-a):
+  #   subclass_of  — "a City is a kind of administrative area"            (inheritance)
+  # but their CONTAINMENT is the part_of relation above:
+  #   City  part_of  County  part_of  Country                            (composition)
+  - id: wmoop.geography/Country
+    name: Country
+    kind: concrete
+    extends: wmoop.geography/AdministrativeArea
+    definition: A nation state or distinct territory.
+    provenance:
+      - { source: "ISO 3166-1", note: "Coding only; contested status is handled per ETHICS.md with provenance." }
+
+  - id: wmoop.geography/County
+    name: County
+    kind: concrete
+    extends: wmoop.geography/AdministrativeArea
+    definition: A first-level administrative subdivision of a country (exact meaning varies by country).
+
+  - id: wmoop.geography/City
+    name: City
+    kind: concrete
+    extends: wmoop.geography/AdministrativeArea
+    definition: A populated urban settlement; a leaf administrative area with no sub-areas.
