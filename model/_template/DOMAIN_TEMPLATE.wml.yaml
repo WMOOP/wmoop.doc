@@ -1,0 +1,137 @@
+# ===========================================================================
+# WML DOMAIN TEMPLATE  —  copy me to model/<id>/<id>.wml.yaml and fill in.
+#
+# This is the real `*.wml.yaml` shape that the seeded modules use
+# (model/transport/*, model/nature/*, model/geography/*, model/education/*).
+# It is the authoritative, copy-paste starting point for a NEW L1 domain.
+#
+# Workflow:
+#   1. Read docs/02-meta-model.md (how to classify each thing) and
+#      docs/03-architecture.md (the WML spec), then follow the
+#      .claude/skills/wml-contribute loop.
+#   2. Fill a <= 5-node first PR; delete every section you do not use.
+#   3. Register the domain in model/taxonomy.yaml and regenerate the two
+#      diagrams in docs/06-domain-taxonomy.md.
+#   4. Self-check against CONTRIBUTING.md §8 (Definition of Done).
+#
+# RULES THE VALIDATOR ENFORCES (see docs/02-meta-model.md §8, docs/03 S1-S6):
+#   * Every concept/role/enumeration/datatype AND every property carries its own
+#     `definition` and `provenance`. No bare numbers — quantities carry a `unit`.
+#   * Inheritance (`extends`) is single, shallow (depth <= 6), rigid, Liskov-safe.
+#   * Agentive/contextual facets (Driver, Student, Teacher, Owner, Employee) are
+#     `roles` by composition — NEVER `extends Person`.
+#   * Part-whole is a `relation` with `rel: part_of` + an `inverse` — never is-a.
+#   * `depends_on` must stay ACYCLIC; every id/reference must resolve.
+#   * IDs are `wmoop.<domain>/<Concept>` and `wmoop.<domain>/<Concept>#<member>`.
+# ===========================================================================
+
+module:
+  id: wmoop.<id>                               # e.g. wmoop.music
+  version: 0.1.0                               # SemVer; new concepts/roles = MINOR bump
+  title: <Human Title>
+  depends_on:
+    - { module: wmoop.core, version: "^1.0.0" }   # almost always; add others you reference
+    # - { module: wmoop.nature, version: "^0.6.0" }   # e.g. to attach a role to Person
+
+# --- Value types: primitive refinements (optional) -------------------------
+datatypes:
+  - id: wmoop.<id>/<Name>
+    name: <Name>
+    base: integer                              # integer | decimal | string | boolean | date | ...
+    definition: <one concise sentence>.
+    constraints: { minimum: 0 }                # optional
+
+# --- Closed value sets (optional) ------------------------------------------
+enumerations:
+  - id: wmoop.<id>/<EnumName>
+    name: <EnumName>
+    definition: <what this set of values represents>.
+    provenance:
+      - { source: "<standard + clause / dataset + URL>", kind: sourced }
+    values:
+      - { id: VALUE_ONE, definition: "<meaning>." }
+      - { id: VALUE_TWO, definition: "<meaning>." }
+
+# --- Behaviour contracts (optional) ----------------------------------------
+interfaces:
+  - id: wmoop.<id>/I<Capability>
+    name: I<Capability>
+    definition: <the capability this contract represents>.
+    operations:
+      - { name: <doSomething>, returns: boolean }
+
+# --- Classes: Kinds / Subkinds (the is-a backbone) -------------------------
+concepts:
+  - id: wmoop.<id>/<Concept>
+    name: <Concept>
+    kind: abstract                             # abstract (cannot be instantiated) | concrete
+    definition: <your OWN-WORDS definition — never pasted source prose>.
+    provenance:
+      - { source: "<authoritative, resolvable source>", kind: sourced }   # or kind: definitional for a modelling choice
+    properties:
+      - id: wmoop.<id>/<Concept>#<prop>
+        name: <prop>
+        type: string                           # primitive, a datatype id, an enum id, or wmoop.core/<Quantity>
+        # unit: m2                              # REQUIRED when type is a quantity (no bare numbers)
+        cardinality: "0..1"                    # 0..1 | 1 | 0..* | 1..*
+        definition: <what this property is>.
+        provenance:
+          - { source: "Original WMOOP definition", kind: definitional }
+    # invariants:
+    #   - { id: <name>, expr: "self.<prop> >= 0", message: "<why>." }
+
+  - id: wmoop.<id>/<SubConcept>
+    name: <SubConcept>
+    kind: concrete
+    extends: wmoop.<id>/<Concept>              # shallow, rigid, Liskov-safe is-a ONLY
+    definition: <...>.
+    provenance:
+      - { source: "<source>", kind: sourced }
+    # property_overrides:                       # may only NARROW a parent property (S2)
+    #   - { property: wmoop.<id>/<Concept>#<prop>, constraints: { maximum: 50 } }
+    # relations (incl. part-whole) live INSIDE the concept:
+    relations:
+      - id: wmoop.<id>/<SubConcept>#partOf
+        name: partOf
+        rel: part_of                           # mereology, NOT subclass_of (omit `rel` for a plain association)
+        target: wmoop.<id>/<Concept>
+        cardinality: "0..1"
+        inverse: wmoop.<id>/<Concept>#contains
+
+# --- Roles: contextual facets attached by composition ----------------------
+# An agentive noun is almost always a role, never a subclass. See transport/roles.wml.yaml.
+roles:
+  - id: wmoop.<id>/<Role>
+    name: <Role>
+    definition: The role of <who> doing <what> in <which context>.
+    provenance:
+      - { source: "<source>", kind: sourced }
+    played_by: wmoop.nature/Person             # the natural Kind that may hold this role
+    context:   wmoop.<id>
+    cardinality_per_player: "0..1"             # how many of this role one player may hold
+    # capabilities: [ wmoop.<id>/I<Capability> ]
+    properties:
+      - id: wmoop.<id>/<Role>#<prop>
+        name: <prop>
+        type: string
+        cardinality: "0..1"
+        definition: <role-specific datum that would pollute the base concept>.
+        provenance:
+          - { source: "<source>", kind: sourced }
+    relations:
+      - id: wmoop.<id>/<Role>#<verb>
+        name: <verb>
+        target: wmoop.<id>/<Concept>
+        cardinality: "0..*"
+        inverse: wmoop.<id>/<Concept>#<inverseVerb>
+
+# --- L2 reference individuals (optional) ------------------------------------
+# e.g. the 8 planets of Planet; the curriculum subjects of CurriculumSubject.
+individuals:
+  - id: wmoop.<id>/<Instance>
+    name: <Instance>
+    instance_of: wmoop.<id>/<Concept>
+    definition: <what this specific individual is>.
+    # values: { <prop>: <value> }
+    provenance:
+      - { source: "<source for this FACT>", kind: sourced }

@@ -1,9 +1,11 @@
 module:
   id: wmoop.nature
-  version: 0.5.0
+  version: 0.6.0                              # 0.5.0 -> 0.6.0: added the anatomy file (Organ, OrganSystem, part_of Animal) — MINOR
   title: Nature
   depends_on:
     - { module: wmoop.core, version: "^1.0.0" }
+  # This module spans several files: nature.wml.yaml (Animal -> Human -> Person)
+  # and anatomy.wml.yaml (AnatomicalStructure -> Organ; OrganSystem; part_of Animal).
 
 datatypes:
   - id: wmoop.nature/LegCount

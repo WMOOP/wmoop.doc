@@ -1,0 +1,97 @@
+# module: wmoop.education  (second file of the Education module; see education.wml.yaml)
+#
+# The cross-domain facets [INV-3]. Student, Teacher and FormTutor are ROLES PLAYED BY a
+# Person, attached by composition — never `Student : Person` / `Teacher : Person`. A Person
+# can gain/lose them over time and hold several at once. In particular a single Person can
+# hold BOTH the Teacher role AND the FormTutor ("diriginte") role simultaneously — the
+# multi-role composition the project is built around (cf. a Person who is Driver + Owner).
+
+roles:
+  - id: wmoop.education/Student
+    name: Student
+    definition: The role of a person enrolled at an educational institution to follow a programme of study.
+    provenance:
+      - { source: "UNESCO-UIS, International Standard Classification of Education (ISCED 2011), UIS/2012/INS/10 REV",
+          kind: sourced, note: "Enrolment is a contextual, time-bounded relation — modelled as a role, not a kind of Person." }
+    played_by: wmoop.nature/Person            # S3 — the natural type that holds the role
+    context:   wmoop.education
+    cardinality_per_player: "0..*"            # a person may be a student at several institutions over time
+    properties:
+      - id: wmoop.education/Student#enrolmentId
+        name: enrolmentId
+        type: string
+        cardinality: "0..1"
+        definition: The identifier the institution assigns to the enrolled student.
+        provenance:
+          - { source: "Original WMOOP definition", kind: definitional }
+      - id: wmoop.education/Student#studyYear
+        name: studyYear
+        type: integer
+        cardinality: "0..1"
+        definition: The year/grade the student is currently enrolled in.
+        provenance:
+          - { source: "Original WMOOP definition", kind: definitional }
+    relations:
+      - id: wmoop.education/Student#enrolledAt
+        name: enrolledAt
+        target: wmoop.education/EducationalInstitution
+        cardinality: "1..*"
+        inverse: wmoop.education/EducationalInstitution#enrols   # R6 [INV-5]
+      - id: wmoop.education/Student#memberOfClass
+        name: memberOfClass
+        target: wmoop.education/StudentClass
+        cardinality: "0..1"
+        inverse: wmoop.education/StudentClass#members
+      - id: wmoop.education/Student#marks
+        name: marks
+        target: wmoop.education/Mark
+        cardinality: "0..*"                   # the grades the student has been awarded
+        inverse: wmoop.education/Mark#awardedTo
+
+  - id: wmoop.education/Teacher
+    name: Teacher
+    definition: The role of a person who instructs students in one or more curriculum subjects.
+    provenance:
+      - { source: "ILO International Standard Classification of Occupations (ISCO-08), Major group 2 'Professionals', Sub-major 23 'Teaching professionals'",
+          kind: sourced, note: "An occupation/role of a Person, not a kind of Person." }
+    played_by: wmoop.nature/Person
+    context:   wmoop.education
+    cardinality_per_player: "0..*"
+    properties:
+      - id: wmoop.education/Teacher#staffId
+        name: staffId
+        type: string
+        cardinality: "0..1"
+        definition: The identifier the institution assigns to the teacher.
+        provenance:
+          - { source: "Original WMOOP definition", kind: definitional }
+    relations:
+      - id: wmoop.education/Teacher#teaches
+        name: teaches
+        target: wmoop.education/CurriculumSubject
+        cardinality: "1..*"                   # a teacher teaches at least one subject
+        inverse: wmoop.education/CurriculumSubject#taughtBy
+      - id: wmoop.education/Teacher#teachesAt
+        name: teachesAt
+        target: wmoop.education/EducationalInstitution
+        cardinality: "1..*"
+        inverse: wmoop.education/EducationalInstitution#teachingStaff
+
+  - id: wmoop.education/FormTutor
+    name: FormTutor
+    definition: >
+      The role of a teacher additionally responsible for the pastoral oversight and
+      administration of one specific class/form. Known in Romanian as "diriginte"
+      (English: form tutor / homeroom teacher).
+    provenance:
+      - { source: "Original WMOOP definition", kind: definitional,
+          note: "A role held IN ADDITION TO the Teacher role by the same Person; co-held, not a subclass of Teacher (roles are never in `extends`, S3). Alt labels: ro 'diriginte', en 'homeroom teacher'." }
+    played_by: wmoop.nature/Person
+    context:   wmoop.education
+    cardinality_per_player: "0..1"            # a person tutors at most one class at a time
+    relations:
+      - id: wmoop.education/FormTutor#tutors
+        name: tutors
+        target: wmoop.education/StudentClass
+        cardinality: "1"
+        inverse: wmoop.education/StudentClass#tutoredBy   # R6 [INV-5]

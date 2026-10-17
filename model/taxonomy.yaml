@@ -16,7 +16,7 @@
 #   candidate — proposed in the taxonomy doc; needs a steward + sourcing before
 #               it is added (Risk: scope explosion → opt-in, maintainer-gated)
 
-registry_version: 0.1.0
+registry_version: 0.2.0
 updated: 2026-10-17
 
 # ---------------------------------------------------------------------------
@@ -112,7 +112,7 @@ domains:
     steward: ~
     depends_on: [core]
     subdomains: [nature.taxonomy, nature.animals, nature.plants, nature.fungi, nature.microbes, nature.anatomy, nature.genetics, nature.people]
-    note: "Life sciences / biology. Holds Animal -> Human -> Person today. genetics (cells/DNA) is roadmap 'depth on demand'."
+    note: "Life sciences / biology. Holds Animal -> Human -> Person, plus nature.anatomy (AnatomicalStructure -> Organ; OrganSystem; Organ part_of Animal). genetics (cells/DNA) is roadmap 'depth on demand'."
   - id: earth
     module: wmoop.earth
     cluster: natural
@@ -143,11 +143,19 @@ domains:
   - id: org
     module: wmoop.org
     cluster: society
-    status: candidate
+    status: seeded
     steward: ~
     depends_on: [core, nature]
     subdomains: [org.structure, org.employment]
-    note: "Already referenced by the meta-model as wm:org.employment:Employee (a role played by a Person)."
+    note: "Organization (social endurant) + the Employee role on Person (the role the meta-model references as wm:org.employment:Employee). Base for wmoop.education."
+  - id: education
+    module: wmoop.education
+    cluster: society
+    status: seeded
+    steward: ~
+    depends_on: [core, nature, org, architecture]
+    subdomains: [education.institutions, education.roles, education.curriculum, education.assessment]
+    note: "The worked 'school' example. School is-a Organization (NOT a Building; the building is a separate SchoolBuilding is-a architecture/Building). Student/Teacher/FormTutor (RO 'diriginte') are roles on Person; CurriculumSubject is abstract with L2 subjects; Mark reifies a grade (value + scale + subject)."
   - id: economy
     module: wmoop.economy
     cluster: society
@@ -221,10 +229,11 @@ domains:
   - id: architecture
     module: wmoop.architecture
     cluster: technology
-    status: candidate
+    status: seeded
     steward: ~
-    depends_on: [core, geography]
+    depends_on: [core]
     subdomains: [architecture.buildings, architecture.structures]
+    note: "Building + Room (Room part_of Building). The physical plant that wmoop.education's Classroom/Laboratory specialise and a School is housed in."
   - id: food
     module: wmoop.food
     cluster: technology
