@@ -48,8 +48,8 @@ binding — must carry, in a place and form reasonable for the medium:
 ## Full text
 
 - Apache-2.0: see [`LICENSE`](LICENSE).
-- CC-BY-4.0: <https://creativecommons.org/licenses/by/4.0/legalcode>. A copy will be added to the
-  repository as `LICENSE-CC-BY-4.0.txt`.
+- CC-BY-4.0: see [`LICENSE-CC-BY-4.0.txt`](LICENSE-CC-BY-4.0.txt) for the full legal text, or
+  <https://creativecommons.org/licenses/by/4.0/legalcode>.
 
 ## Third-party data
 
