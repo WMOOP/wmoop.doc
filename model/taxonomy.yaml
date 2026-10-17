@@ -1,0 +1,259 @@
+# WMOOP domain registry — the single source of truth for the L1 domain map.
+#
+# This file is NOT a WML domain module. It is the catalog of domains: which
+# clusters they belong to, their status, their steward, and their declared
+# cross-domain dependencies. The two diagrams in
+# `../docs/06-domain-taxonomy.md` are GENERATED from this file, so the picture
+# is never hand-drawn and never drifts (see that doc, "Keeping the map current").
+#
+# To add or move a domain, edit this file and regenerate the diagrams. CI should
+# fail if the committed diagrams do not match what this file produces — the same
+# "generated, conformance-tested" discipline as the rest of WMOOP (Invariant 1).
+#
+# status:
+#   seeded    — a module exists under model/ today
+#   planned   — named in the README/whitepaper seed taxonomy or roadmap (v1)
+#   candidate — proposed in the taxonomy doc; needs a steward + sourcing before
+#               it is added (Risk: scope explosion → opt-in, maintainer-gated)
+
+registry_version: 0.1.0
+updated: 2026-10-17
+
+# ---------------------------------------------------------------------------
+# Clusters are ORGANISATIONAL groupings only (they are not modules and have no
+# code generated from them). They give the domain map its top level.
+# ---------------------------------------------------------------------------
+clusters:
+  - id: foundation
+    label: "Foundation"
+    blurb: "The grammar's runtime: quantities, units, provenance, identity."
+  - id: formal
+    label: "Formal & Abstract"
+    blurb: "Structures outside space-time (mostly L0 category C, Abstract)."
+  - id: natural
+    label: "Physical & Natural World"
+    blurb: "Matter, energy, life, planets (endurants, perdurants, qualities)."
+  - id: place
+    label: "Geography & Place"
+    blurb: "Where things are; containment and adjacency (relations)."
+  - id: society
+    label: "Society & Institutions"
+    blurb: "People-as-roles, organisations, law, economy (roles + relations)."
+  - id: culture
+    label: "Culture & The Arts"
+    blurb: "Music, language, belief, thought (abstract + perdurant + endurant)."
+  - id: technology
+    label: "Technology & Artifacts"
+    blurb: "Human-made things and how they are used (endurants + roles)."
+  - id: health
+    label: "Health & Medicine"
+    blurb: "The human body, conditions and care (endurants + perdurants)."
+
+# ---------------------------------------------------------------------------
+# Domains are the L1 modules (`wmoop.<id>`). `depends_on` must stay ACYCLIC
+# (Invariant 5). Solid edges below are real (from a seeded module's header);
+# candidate edges are the links a domain WILL declare once it is authored.
+# ---------------------------------------------------------------------------
+domains:
+  # --- Foundation -----------------------------------------------------------
+  - id: core
+    module: wmoop.core
+    cluster: foundation
+    status: planned
+    steward: ~
+    depends_on: []
+    subdomains: [core.quantities, core.units, core.dimensions, core.provenance, core.identity]
+    note: "Realises L0 (Quantity, Unit, Dimension, Provenance, wmid/QName, base datatypes). Referenced by every module as wmoop.core; the module file is pending."
+
+  # --- Formal & Abstract ----------------------------------------------------
+  - id: math
+    module: wmoop.math
+    cluster: formal
+    status: planned
+    steward: ~
+    depends_on: [core]
+    subdomains: [math.number, math.algebra, math.geometry, math.analysis, math.logic, math.probability, math.settheory]
+    note: "geometry is called out as a seed sub-domain in the README."
+  - id: computing
+    module: wmoop.computing
+    cluster: formal
+    status: candidate
+    steward: ~
+    depends_on: [core, math]
+    subdomains: [computing.datastructures, computing.algorithms, computing.information]
+  - id: language
+    module: wmoop.language
+    cluster: formal
+    status: candidate
+    steward: ~
+    depends_on: [core]
+    subdomains: [language.phonology, language.morphology, language.syntax, language.semantics, language.writingsystems]
+
+  # --- Physical & Natural World --------------------------------------------
+  - id: physics
+    module: wmoop.physics
+    cluster: natural
+    status: candidate
+    steward: ~
+    depends_on: [core, math]
+    subdomains: [physics.mechanics, physics.electromagnetism, physics.thermodynamics, physics.particles, physics.quantum]
+  - id: chemistry
+    module: wmoop.chemistry
+    cluster: natural
+    status: candidate
+    steward: ~
+    depends_on: [core, physics]
+    subdomains: [chemistry.elements, chemistry.compounds, chemistry.reactions]
+    note: "chemistry.reactions are perdurants (events), not objects."
+  - id: nature
+    module: wmoop.nature
+    cluster: natural
+    status: seeded
+    steward: ~
+    depends_on: [core]
+    subdomains: [nature.taxonomy, nature.animals, nature.plants, nature.fungi, nature.microbes, nature.anatomy, nature.genetics, nature.people]
+    note: "Life sciences / biology. Holds Animal -> Human -> Person today. genetics (cells/DNA) is roadmap 'depth on demand'."
+  - id: earth
+    module: wmoop.earth
+    cluster: natural
+    status: candidate
+    steward: ~
+    depends_on: [core]
+    subdomains: [earth.landforms, earth.geology, earth.hydrology, earth.atmosphere, earth.climate]
+  - id: space
+    module: wmoop.space
+    cluster: natural
+    status: planned
+    steward: ~
+    depends_on: [core]
+    subdomains: [space.solarsystem, space.stars, space.galaxies, space.cosmology]
+    note: "The 8 planets are L2 reference instances of space.solarsystem."
+
+  # --- Geography & Place ----------------------------------------------------
+  - id: geography
+    module: wmoop.geography
+    cluster: place
+    status: seeded
+    steward: ~
+    depends_on: [core]
+    subdomains: [geography.admin, geography.physical, geography.human, geography.coordinates]
+    note: "admin (Country/County/City, Jurisdiction) exists today. physical overlaps earth.landforms via a declared link, not duplication."
+
+  # --- Society & Institutions ----------------------------------------------
+  - id: org
+    module: wmoop.org
+    cluster: society
+    status: candidate
+    steward: ~
+    depends_on: [core, nature]
+    subdomains: [org.structure, org.employment]
+    note: "Already referenced by the meta-model as wm:org.employment:Employee (a role played by a Person)."
+  - id: economy
+    module: wmoop.economy
+    cluster: society
+    status: candidate
+    steward: ~
+    depends_on: [core, org]
+    subdomains: [economy.money, economy.markets, economy.products]
+  - id: law
+    module: wmoop.law
+    cluster: society
+    status: candidate
+    steward: ~
+    depends_on: [core, geography]
+    subdomains: [law.jurisdiction, law.rights, law.licences]
+    note: "Jurisdiction is already referenced as the issuing authority of a driving licence."
+  - id: politics
+    module: wmoop.politics
+    cluster: society
+    status: candidate
+    steward: ~
+    depends_on: [core, geography]
+    subdomains: [politics.state, politics.governance]
+
+  # --- Culture & The Arts ---------------------------------------------------
+  - id: music
+    module: wmoop.music
+    cluster: culture
+    status: planned
+    steward: ~
+    depends_on: [core, math]
+    subdomains: [music.theory, music.instruments, music.performance]
+    note: "The showcase of all three ontological categories: theory (Abstract), instruments (Endurant), performance (Perdurant)."
+  - id: visualarts
+    module: wmoop.visualarts
+    cluster: culture
+    status: candidate
+    steward: ~
+    depends_on: [core]
+    subdomains: [visualarts.works, visualarts.techniques]
+  - id: literature
+    module: wmoop.literature
+    cluster: culture
+    status: candidate
+    steward: ~
+    depends_on: [core, language]
+    subdomains: [literature.works, literature.forms]
+  - id: philosophy
+    module: wmoop.philosophy
+    cluster: culture
+    status: candidate
+    steward: ~
+    depends_on: [core]
+    subdomains: [philosophy.branches, philosophy.concepts]
+  - id: religion
+    module: wmoop.religion
+    cluster: culture
+    status: candidate
+    steward: ~
+    depends_on: [core]
+    subdomains: [religion.traditions, religion.mythology]
+
+  # --- Technology & Artifacts ----------------------------------------------
+  - id: transport
+    module: wmoop.transport
+    cluster: technology
+    status: seeded
+    steward: ~
+    depends_on: [core, nature, geography]
+    subdomains: [transport.vehicles, transport.driving, transport.ownership]
+    note: "Vehicle -> RoadVehicle -> Motorcycle -> Moped (shallow is-a) + the Driver role (cross-domain crux)."
+  - id: architecture
+    module: wmoop.architecture
+    cluster: technology
+    status: candidate
+    steward: ~
+    depends_on: [core, geography]
+    subdomains: [architecture.buildings, architecture.structures]
+  - id: food
+    module: wmoop.food
+    cluster: technology
+    status: candidate
+    steward: ~
+    depends_on: [core, nature]
+    subdomains: [food.ingredients, food.dishes, food.culinary]
+    note: "Home of the CulinaryVegetable category used in the Tomato example."
+  - id: tools
+    module: wmoop.tools
+    cluster: technology
+    status: candidate
+    steward: ~
+    depends_on: [core]
+    subdomains: [tools.handtools, tools.machines]
+  - id: software
+    module: wmoop.software
+    cluster: technology
+    status: candidate
+    steward: ~
+    depends_on: [core, computing]
+    subdomains: [software.systems, software.formats]
+
+  # --- Health & Medicine ----------------------------------------------------
+  - id: medicine
+    module: wmoop.medicine
+    cluster: health
+    status: candidate
+    steward: ~
+    depends_on: [core, nature]
+    subdomains: [medicine.anatomy, medicine.conditions, medicine.treatments]
+    note: "medicine.anatomy builds on nature.anatomy via a declared link, not a copy."

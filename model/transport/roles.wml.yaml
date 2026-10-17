@@ -8,17 +8,35 @@ roles:
   - id: wmoop.transport/Driver
     name: Driver
     definition: The role of a licensed person who operates a road vehicle.
+    provenance:
+      - { source: "Directive 2006/126/EC of the European Parliament", kind: definitional,
+          note: "Role modelled from the EU driving-licence concept." }
     played_by: wmoop.nature/Person          # S3 — the natural type that can hold this role
     context:   wmoop.transport              # the domain where the role is meaningful
     cardinality_per_player: "0..1"          # a Person holds at most one Driver role
     capabilities: [ wmoop.transport/IDrive ] # behaviour unlocked while the role is active
     properties:
-      - { id: wmoop.transport/Driver#licenceNumber,     name: licenceNumber, type: string, cardinality: "1" }
+      - id: wmoop.transport/Driver#licenceNumber
+        name: licenceNumber
+        type: string
+        cardinality: "1"
+        definition: The identifier printed on the holder's driving licence.
+        provenance:
+          - { source: "Directive 2006/126/EC of the European Parliament", ref: "Annex I (security features)", kind: sourced }
       - id: wmoop.transport/Driver#licenceCategories
         name: licenceCategories
         type: wmoop.transport/LicenceCategory
         cardinality: "1..*"                 # at least one category
-      - { id: wmoop.transport/Driver#licenceExpiry, name: licenceExpiry, type: date, cardinality: "0..1" }
+        definition: The EU licence categories the holder is entitled to drive.
+        provenance:
+          - { source: "Directive 2006/126/EC of the European Parliament", ref: "Annex, Art. 4", kind: sourced }
+      - id: wmoop.transport/Driver#licenceExpiry
+        name: licenceExpiry
+        type: date
+        cardinality: "0..1"
+        definition: The date on which the licence ceases to be administratively valid.
+        provenance:
+          - { source: "Directive 2006/126/EC of the European Parliament", ref: "Art. 7 (administrative validity)", kind: sourced }
     relations:
       - id: wmoop.transport/Driver#operates
         name: operates
@@ -29,11 +47,19 @@ roles:
   - id: wmoop.transport/Owner
     name: Owner
     definition: The role of an entity that owns a vehicle. Held alongside Driver, independently.
+    provenance:
+      - { source: "Original WMOOP definition", kind: definitional }
     played_by: wmoop.nature/Person
     context:   wmoop.transport
     cardinality_per_player: "0..*"          # a person may own several vehicles over time
     properties:
-      - { id: wmoop.transport/Owner#ownedSince, name: ownedSince, type: date, cardinality: "0..1" }
+      - id: wmoop.transport/Owner#ownedSince
+        name: ownedSince
+        type: date
+        cardinality: "0..1"
+        definition: The date from which this owner has held the vehicle.
+        provenance:
+          - { source: "Original WMOOP definition", kind: definitional }
     relations:
       - id: wmoop.transport/Owner#owns
         name: owns

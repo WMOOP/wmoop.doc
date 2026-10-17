@@ -9,10 +9,15 @@ Per-language repositories (`wmoop.net`, and later `wmoop.java`, `wmoop.py`, `wmo
 
 ```
 model/
-├── nature/      wmoop.nature     — biology branch (Animal → Human → Person)
-├── transport/   wmoop.transport  — Vehicle hierarchy + the Driver/Owner roles
-└── geography/   wmoop.geography  — administrative areas (Composite / part_of)
+├── nature/        wmoop.nature     — biology branch (Animal → Human → Person)
+├── transport/     wmoop.transport  — Vehicle hierarchy + the Driver/Owner roles
+├── geography/     wmoop.geography  — administrative areas (Composite / part_of)
+└── taxonomy.yaml  domain registry  — the full domain map (clusters, status, deps)
 ```
+
+`taxonomy.yaml` is **not** a WML module; it is the catalog of all domains (seeded, planned and
+candidate) from which the diagrams in [`../docs/06-domain-taxonomy.md`](../docs/06-domain-taxonomy.md)
+are generated. Add or move a domain there, then regenerate the diagrams.
 
 Each top-level folder is a **module** (an L1 domain). A module declares its `id`, `version`, and
 its `depends_on` edges — which must stay **acyclic** (Invariant 5). A module may span several
@@ -24,7 +29,8 @@ its `depends_on` edges — which must stay **acyclic** (Invariant 5). A module m
 - `datatypes:` / `enumerations:` — value types and closed value sets.
 - `interfaces:` — behavioural contracts (capabilities).
 - `concepts:` — L1 classes, with `extends` (shallow, Liskov-clean `subclass_of` only),
-  `properties` (each typed, with `unit` when measurable), `invariants`, and `provenance`.
+  `properties` (**each typed, defined, and sourced** — every property carries its own
+  `definition` and `provenance`, with `unit` when measurable), `invariants`, and `provenance`.
 - `roles:` — cross-cutting / cross-domain facets attached by composition (`has_role`), e.g.
   `Driver` *played_by* `Person`. **Never** modelled as `Driver : Person`.
 - `relations:` — associations such as `part_of` (mereology) and domain links, with inverses.

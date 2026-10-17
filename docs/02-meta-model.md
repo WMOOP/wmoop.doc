@@ -461,9 +461,13 @@ A property on a Type is one of these **typed slots**:
 **Every property carries:**
 - `cardinality` — one of `0..1`, `1`, `0..*`, `1..*`, or explicit `m..n`. **Required = minimum ≥ 1.**
 - optional modifiers: `default`, `immutable` (set once), `identifying` (contributes to natural key), `unique`, `derived: <expression>`, `ordered` (for `*` collections), `constraints` (`min`/`max`/`pattern`/`enumSubset`).
-- `definition` and, for non-obvious facts, `provenance`.
+- `definition` **and** `provenance` — **both are mandatory on every property**, not only on
+  "non-obvious" ones. A structural or naming choice is still sourced honestly with
+  `kind: definitional`/`stipulative` (rather than left blank); an empirical claim uses
+  `kind: empirical` with a resolvable `source`.
 
-**Provenance object** (required on definitions, and on L2 facts): `{ source: <citation/URI>, kind: definitional | empirical | stipulative | derived, retrievedOn?: Date, confidence?: 0..1 }`. This operationalizes Invariant 4 ("facts are sourced") while allowing `stipulative` for naming conventions and `derived` for computed values.
+**Provenance object** (required on every concept, role, enumeration **and property** definition, and
+on L2 facts): `{ source: <citation/URI>, kind: definitional | empirical | stipulative | derived, retrievedOn?: Date, confidence?: 0..1 }`. This operationalizes Invariant 4 ("facts are sourced") while allowing `definitional`/`stipulative` for naming and modelling conventions and `derived` for computed values — so *nothing is unsourced*, but a modelling choice is never dressed up as an empirical citation.
 
 ### 6.4 Quantities, units, and dimensional checking
 
