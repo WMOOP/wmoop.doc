@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- GENERATED from model/**/*.wml.yaml by schema/yaml_to_xml.py - DO NOT EDIT.
+     The YAML is the single source of truth; regenerate with:
+       python schema/yaml_to_xml.py -->
+<module xmlns="https://wmoop.org/wml/1" id="wmoop.architecture" version="0.1.0" title="Architecture">
+  <dependsOn module="wmoop.core" version="^1.0.0" />
+  <datatypes>
+    <datatype id="wmoop.architecture/FloorCount" name="FloorCount" base="integer">
+      <definition>A non-negative count of storeys (floors) in a building.</definition>
+      <constraints minimum="0" />
+    </datatype>
+  </datatypes>
+  <concepts>
+    <concept id="wmoop.architecture/Building" name="Building" kind="concrete">
+      <definition>A roofed, permanent construction with walls, standing more or less independently, intended for human occupancy or use.</definition>
+      <provenance source="ISO 6707-1:2020 Buildings and civil engineering works — Vocabulary — Part 1: General terms" kind="sourced" ref="term 'building'" note="Scope narrowed to occupiable constructions." />
+      <property id="wmoop.architecture/Building#floorCount" name="floorCount" type="wmoop.architecture/FloorCount" cardinality="0..1">
+        <definition>Number of storeys the building has above and below ground.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" note="Per-building values are sourced at L2." />
+      </property>
+    </concept>
+    <concept id="wmoop.architecture/Room" name="Room" kind="concrete">
+      <definition>An interior space within a building, enclosed by walls, floor and ceiling and normally entered through a door. A Room is a PART OF a Building (mereology), it is not a kind of Building.</definition>
+      <provenance source="ISO 6707-1:2020 Buildings and civil engineering works — Vocabulary — Part 1: General terms" kind="sourced" ref="term 'space/room'" />
+      <property id="wmoop.architecture/Room#floorArea" name="floorArea" type="wmoop.core/Area" unit="m2" cardinality="0..1">
+        <definition>The usable floor area enclosed by the room.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" note="Per-room values are sourced at L2." />
+      </property>
+      <relation id="wmoop.architecture/Room#partOf" name="partOf" target="wmoop.architecture/Building" cardinality="0..1" rel="part_of" inverse="wmoop.architecture/Building#contains" />
+    </concept>
+  </concepts>
+</module>

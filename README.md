@@ -1,3 +1,10 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="brand/logo/wmoop-logo-dark.svg">
+    <img alt="WMOOP — World Map Object-Oriented Programming" src="brand/logo/wmoop-logo-light.svg" width="420">
+  </picture>
+</p>
+
 # WMOOP — World Map Object-Oriented Programming
 
 > **Describe the world in OOP. Map every real-world object into programming languages — once.**
@@ -85,6 +92,10 @@ A runnable implementation of exactly this is in [`wmoop.net`](https://github.com
 - [PATTERNS.md](PATTERNS.md) — the OOP best practices and design patterns WMOOP uses and
   recommends (SOLID, GRASP, Role Object, Composite, Visitor, Strategy, Specification, Builder,
   Factory, Registry, …), each tied to the meta-model.
+
+**Design & brand**
+- [brand/DESIGN.md](brand/DESIGN.md) — the visual identity & design system: the logo family,
+  the palette, and the per-repo logo pattern (the mark encodes the architecture itself).
 
 **Taking part**
 - [CONTRIBUTING.md](CONTRIBUTING.md) — how humans contribute.

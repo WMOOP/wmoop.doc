@@ -1,0 +1,73 @@
+module:
+  id: wmoop.org
+  version: 0.1.0
+  title: Organisations & Institutions
+  depends_on:
+    - { module: wmoop.core,   version: "^1.0.0" }   # L0 upper ontology
+    - { module: wmoop.nature, version: "^0.6.0" }   # for Person (the Employee role player) [INV-5]
+
+# ---------------------------------------------------------------------------
+# Society's building block: the Organization (a social endurant — a structured
+# group of people pursuing a shared purpose), plus the Employee role already
+# referenced by the meta-model as wm:org.employment:Employee. Other domains build
+# on this: wmoop.education's EducationalInstitution IS-A Organization. Agentive
+# facets of a Person (Employee) are ROLES by composition, never subclasses [INV-3].
+# ---------------------------------------------------------------------------
+
+concepts:
+  - id: wmoop.org/Organization
+    name: Organization
+    kind: concrete
+    definition: >
+      A structured, persistent group of people (and resources) acting together
+      to pursue one or more shared goals, recognised as a single entity.
+    provenance:
+      - { source: "schema.org/Organization (https://schema.org/Organization)", kind: sourced,
+          note: "Scope aligned to a social endurant with its own identity." }
+    properties:
+      - id: wmoop.org/Organization#legalName
+        name: legalName
+        type: string
+        cardinality: "0..1"
+        definition: The registered or officially recognised name of the organisation.
+        provenance:
+          - { source: "Original WMOOP definition", kind: definitional }
+      - id: wmoop.org/Organization#foundingDate
+        name: foundingDate
+        type: date
+        cardinality: "0..1"
+        definition: The calendar date on which the organisation was established.
+        provenance:
+          - { source: "Original WMOOP definition", kind: definitional }
+
+roles:
+  - id: wmoop.org/Employee
+    name: Employee
+    definition: The role of a person engaged under a contract of employment by an organisation.
+    provenance:
+      - { source: "ILO International Standard Classification of Occupations (ISCO-08), conceptual framework",
+          kind: sourced, note: "Employment is a contextual, time-bounded relation, modelled as a role." }
+    played_by: wmoop.nature/Person            # S3 — the natural type that holds the role
+    context:   wmoop.org                      # the domain where the role is meaningful
+    cardinality_per_player: "0..*"            # a person may hold several jobs over time
+    properties:
+      - id: wmoop.org/Employee#employeeId
+        name: employeeId
+        type: string
+        cardinality: "0..1"
+        definition: The identifier the employing organisation assigns to the holder.
+        provenance:
+          - { source: "Original WMOOP definition", kind: definitional }
+      - id: wmoop.org/Employee#hiredOn
+        name: hiredOn
+        type: date
+        cardinality: "0..1"
+        definition: The date from which the employment relation is in effect.
+        provenance:
+          - { source: "Original WMOOP definition", kind: definitional }
+    relations:
+      - id: wmoop.org/Employee#employedBy
+        name: employedBy
+        target: wmoop.org/Organization
+        cardinality: "1"
+        inverse: wmoop.org/Organization#employs     # R6 [INV-5]
