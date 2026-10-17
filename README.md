@@ -77,6 +77,9 @@ A runnable implementation of exactly this is in [`wmoop.net`](https://github.com
 4. [Academic program](docs/04-academic.md) — how instructors use WMOOP in OOP courses.
 5. [Adversarial design review](docs/05-adversarial-review.md) — the project's honest *limitations
    and threats to validity*, from an independent critique.
+6. [The World Domain Map](docs/06-domain-taxonomy.md) — the proposed top-level domain categories
+   (L1) and their hierarchy, with a living cluster map and dependency diagram generated from
+   [`model/taxonomy.yaml`](model/taxonomy.yaml).
 
 **OOP craft**
 - [PATTERNS.md](PATTERNS.md) — the OOP best practices and design patterns WMOOP uses and
@@ -129,5 +132,7 @@ known open problems honestly — read it before assuming anything is final.
 
 - **Code** (tooling, generated bindings, examples): **Apache-2.0** — see [`LICENSE`](LICENSE).
 - **Model data & documentation** (WML files, prose): **CC-BY-4.0** — see
-  [`LICENSE-DATA.md`](LICENSE-DATA.md). Attribute third-party sources as required by their
-  licences; record provenance on every fact (Invariant 4).
+  [`LICENSE-DATA.md`](LICENSE-DATA.md). Any reuse **must credit the WMOOP project and link back to
+  this source repository** (<https://github.com/WMOOP/wmoop.doc>); see the required attribution in
+  [`LICENSE-DATA.md`](LICENSE-DATA.md). Attribute third-party sources as required by their licences;
+  record provenance on every fact (Invariant 4).

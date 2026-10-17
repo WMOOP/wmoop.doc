@@ -32,7 +32,7 @@ Before comparing candidates, we fix the requirements. A format is only a good *s
 | R4 | **Roles** as first-class, composable facets with their own state, a `played_by` constraint and a context | Person-as-Driver must *not* be `Driver : Person` `[INV-3]` |
 | R5 | **Properties** with type, **unit**, cardinality, defaults, and value constraints | Quantities carry units `[INV-4]` |
 | R6 | **Relations** (named associations) with target type, cardinality, inverse | Cross-domain links are declared `[INV-5]` |
-| R7 | **Per-concept metadata**: stable global ID, human name, definition, provenance/citation | Every concept is sourced `[INV-4]` |
+| R7 | **Per-concept *and per-property* metadata**: stable global ID, human name, definition, provenance/citation on every concept, role, enumeration **and property** | Every concept *and every property* is sourced `[INV-4]` |
 | R8 | **Versioned modules** with an explicit, acyclic dependency graph | Domains are versioned modules `[INV-5]` |
 | R9 | **Machine-checkable**: a formal grammar + automatable semantic rules | Humans *and* AI contribute against an automated DoD `[INV-6]` |
 | R10 | **Codegen-friendly**: an unambiguous, closed-world mapping to OOP constructs in 4+ languages | The whole point of the pipeline |
@@ -50,7 +50,7 @@ Before comparing candidates, we fix the requirements. A format is only a good *s
 | **Roles (R4)** | Modellable via object properties, but by convention only | None | None | **First-class `roles` with `played_by`/context** |
 | Units on properties (R5) | Via external vocab (QUDT), verbose | No (annotations only) | No (custom keywords) | **Native (`unit` + `wmoop.core/Quantity`)** |
 | Relations + inverse (R6) | Native & excellent (`owl:inverseOf`) | References by field, no semantics | `$ref` only, no inverse | **Native (`relations` + `inverse`)** |
-| Provenance per concept (R7) | Via annotation properties | Comments only | `description` only | **Native, required (`provenance`)** |
+| Provenance per concept **and property** (R7) | Via annotation properties | Comments only | `description` only | **Native, required (`provenance`)** |
 | Versioned modules + acyclic deps (R8) | `owl:imports`, no version semantics | `import`, no SemVer | `$id`/`$ref`, no module versioning | **Native, with SemVer + CI acyclicity check** |
 | Codegen to idiomatic OOP (R10) | Lossy & ambiguous (OWL class ≠ OOP class) | Excellent, but **DTOs only** | Decent DTO generators | **Purpose-built for this; one mapping per construct** |
 | Authoring ergonomics / diffs (R11) | Steep; hard PR review | `.proto` is readable | Verbose JSON | **YAML: comments, clean diffs** |
@@ -104,7 +104,7 @@ Enforced semantic rules (checked by the compiler, §2.4) — these are *why* the
 - **S2 LSP-safe overrides** `[INV-3]`: a `property_override` MAY only *narrow* a parent property (e.g., tighten `maximum`, restrict an `enum` to a subset). Widening, type change, or making an optional property required in a subtype fails CI. (This is why `Moped` can cap `engineDisplacement ≤ 50` but could not *raise* `Motorcycle`'s cap.)
 - **S3 Roles are not classes** `[INV-3]`: a `role` MUST declare `played_by` (a concept); it MUST NOT appear in any `extends`. A lint flags agentive-noun concepts (`…er`/`…or`, e.g. a proposed `Driver` *concept*) with "should this be a role?".
 - **S4 Acyclic module graph** `[INV-5]`: `depends_on` is resolved and must be a DAG.
-- **S5 Provenance present** `[INV-4]`: every `concept`, `role`, and `datatype` MUST carry a non-empty `definition`; concepts/roles MUST carry at least one `provenance` entry (or an explicit `provenance: [{source: "original", ...}]`).
+- **S5 Provenance present** `[INV-4]`: every `concept`, `role`, `datatype`, `enumeration`, **and every `property`** MUST carry a non-empty `definition`; and every `concept`, `role`, `enumeration`, **and every `property`** MUST carry at least one `provenance` entry. A property's `provenance` records where its **definition and documentation** come from — an external authority for a sourced term (`{ source: "ISO 3833:1977", ref: "§3.1", kind: sourced }`) or the project itself for a structural/definitional choice (`{ source: "Original WMOOP definition", kind: definitional }`). Factual property *values* at L2 additionally carry their own per-value source. A missing `definition` or `provenance` on any of these fails CI.
 - **S6 Stable IDs** `[INV-4]`: every element has a globally unique, immutable ID; renames are a MAJOR change that keeps the old ID as a `deprecated_alias`.
 
 ### 1.5 Worked example — Vehicle → RoadVehicle → Motorcycle → Moped, Person, and the Driver role
@@ -126,6 +126,7 @@ datatypes:
   - id: wmoop.transport/WheelCount
     name: WheelCount
     base: integer
+    definition: A non-negative count of road wheels on a vehicle.
     constraints: { minimum: 0 }
 
 enumerations:
@@ -166,11 +167,18 @@ concepts:
         cardinality: "1"            # exactly one
         required: true
         definition: Number of road wheels in contact with the ground.
+        provenance:                 # S5 — every property is defined AND sourced [INV-4]
+          - { source: "Original WMOOP definition", kind: definitional,
+              note: "Aligns with the ISO 3833 road-vehicle typology." }
       - id: wmoop.transport/Vehicle#maxSpeed
         name: maxSpeed
         type: wmoop.core/Speed      # a Quantity, dimension = speed
         unit: km/h                  # R5 — units are first-class [INV-4]
         cardinality: "0..1"
+        definition: The maximum design speed the vehicle can sustain on level ground.
+        provenance:
+          - { source: "Original WMOOP definition", kind: definitional,
+              note: "Per-model figures are sourced at L2." }
     invariants:
       - id: wheels-nonneg
         expr: "self.wheelCount >= 0"
@@ -181,12 +189,18 @@ concepts:
     kind: abstract
     extends: wmoop.transport/Vehicle             # R2 — single, shallow is-a (depth 2)
     definition: A vehicle designed to travel on public roads.
+    provenance:
+      - { source: "Original WMOOP definition", kind: definitional }
     properties:
       - id: wmoop.transport/RoadVehicle#roadLegal
         name: roadLegal
         type: boolean
         cardinality: "1"
         default: true
+        definition: Whether the vehicle is approved for use on public roads in its jurisdiction.
+        provenance:
+          - { source: "Original WMOOP definition", kind: definitional,
+              note: "The governing jurisdiction is recorded per-instance." }
 
   - id: wmoop.transport/Motorcycle
     name: Motorcycle
@@ -194,6 +208,8 @@ concepts:
     extends: wmoop.transport/RoadVehicle         # depth 3
     implements: [ wmoop.transport/IDrive ]
     definition: A two- or three-wheeled motor road vehicle.
+    provenance:
+      - { source: "Original WMOOP definition", kind: definitional }
     property_overrides:
       - property: wmoop.transport/Vehicle#wheelCount
         constraints: { enum: [2, 3] }            # S2 — narrows parent's domain, LSP-safe
@@ -203,6 +219,10 @@ concepts:
         type: wmoop.core/Volume
         unit: cm3
         cardinality: "1"
+        definition: Total swept volume of the engine's cylinders.
+        provenance:
+          - { source: "Original WMOOP definition", kind: definitional,
+              note: "Per-model figures are sourced at L2." }
 
   - id: wmoop.transport/Moped
     name: Moped
@@ -232,8 +252,20 @@ concepts:
     provenance:
       - { source: "Original WMOOP definition", note: "Legal/social person is a separate role." }
     properties:
-      - { id: wmoop.nature/Person#fullName,    name: fullName,    type: string, cardinality: "1" }
-      - { id: wmoop.nature/Person#dateOfBirth, name: dateOfBirth, type: date,   cardinality: "0..1" }
+      - id: wmoop.nature/Person#fullName
+        name: fullName
+        type: string
+        cardinality: "1"
+        definition: The person's full personal name as used for identification.
+        provenance:
+          - { source: "Original WMOOP definition", kind: definitional }
+      - id: wmoop.nature/Person#dateOfBirth
+        name: dateOfBirth
+        type: date
+        cardinality: "0..1"
+        definition: The calendar date on which the person was born.
+        provenance:
+          - { source: "Original WMOOP definition", kind: definitional }
 ```
 
 **File `model/transport/roles.wml.yaml`** (module `wmoop.transport`) — the cross-domain facet `[INV-3]`. `Driver` is a **role played by** a `Person`, carrying its own meta (licence number, categories, expiry). It is attached by composition, never by `Driver : Person`:
@@ -243,17 +275,35 @@ roles:
   - id: wmoop.transport/Driver
     name: Driver
     definition: The role of a licensed person who operates a road vehicle.
+    provenance:
+      - { source: "Directive 2006/126/EC of the European Parliament", kind: definitional,
+          note: "Role modelled from the EU driving-licence concept." }
     played_by: wmoop.nature/Person          # S3 — the natural type that can hold this role
     context:   wmoop.transport              # the domain where the role is meaningful
     cardinality_per_player: "0..1"          # a Person holds at most one Driver role
     capabilities: [ wmoop.transport/IDrive ] # behaviour unlocked while the role is active
     properties:
-      - { id: wmoop.transport/Driver#licenceNumber,     name: licenceNumber, type: string, cardinality: "1" }
+      - id: wmoop.transport/Driver#licenceNumber
+        name: licenceNumber
+        type: string
+        cardinality: "1"
+        definition: The identifier printed on the holder's driving licence.
+        provenance:
+          - { source: "Directive 2006/126/EC of the European Parliament", ref: "Annex I (security features)", kind: sourced }
       - id: wmoop.transport/Driver#licenceCategories
         name: licenceCategories
         type: wmoop.transport/LicenceCategory
         cardinality: "1..*"                 # at least one category
-      - { id: wmoop.transport/Driver#licenceExpiry, name: licenceExpiry, type: date, cardinality: "0..1" }
+        definition: The EU licence categories the holder is entitled to drive.
+        provenance:
+          - { source: "Directive 2006/126/EC of the European Parliament", ref: "Annex, Art. 4", kind: sourced }
+      - id: wmoop.transport/Driver#licenceExpiry
+        name: licenceExpiry
+        type: date
+        cardinality: "0..1"
+        definition: The date on which the licence ceases to be administratively valid.
+        provenance:
+          - { source: "Directive 2006/126/EC of the European Parliament", ref: "Art. 7 (administrative validity)", kind: sourced }
     relations:
       - id: wmoop.transport/Driver#operates
         name: operates

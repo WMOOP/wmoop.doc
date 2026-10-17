@@ -9,6 +9,7 @@ datatypes:
   - id: wmoop.geography/Population
     name: Population
     base: integer
+    definition: A non-negative count of people resident in an area.
     constraints: { minimum: 0 }
 
 concepts:
@@ -16,6 +17,8 @@ concepts:
     name: Place
     kind: abstract
     definition: A location in space that can be referred to and contained within another.
+    provenance:
+      - { source: "Original WMOOP definition", kind: definitional }
 
   - id: wmoop.geography/AdministrativeArea
     name: AdministrativeArea
@@ -24,12 +27,18 @@ concepts:
     definition: >
       A government-defined area that may contain smaller administrative areas. Containment
       is a `part_of` relation (mereology), NOT inheritance: a city is not a *kind of* county.
+    provenance:
+      - { source: "Original WMOOP definition", kind: definitional,
+          note: "Concrete subdivisions follow national schemes (e.g. ISO 3166-2)." }
     properties:
       - id: wmoop.geography/AdministrativeArea#residentPopulation
         name: residentPopulation
         type: wmoop.geography/Population
         cardinality: "0..1"
         definition: People resident directly in this area, excluding its sub-areas.
+        provenance:
+          - { source: "Original WMOOP definition", kind: definitional,
+              note: "Per-area values are sourced at L2 (e.g. a national census)." }
     relations:
       - id: wmoop.geography/AdministrativeArea#partOf
         name: partOf
@@ -48,16 +57,21 @@ concepts:
     extends: wmoop.geography/AdministrativeArea
     definition: A nation state or distinct territory.
     provenance:
-      - { source: "ISO 3166-1", note: "Coding only; contested status is handled per ETHICS.md with provenance." }
+      - { source: "ISO 3166-1", note: "Coding only; contested status is handled per ETHICS.md with provenance.", kind: sourced }
 
   - id: wmoop.geography/County
     name: County
     kind: concrete
     extends: wmoop.geography/AdministrativeArea
     definition: A first-level administrative subdivision of a country (exact meaning varies by country).
+    provenance:
+      - { source: "ISO 3166-2", note: "First-level subdivisions; the local term varies by country.", kind: sourced }
 
   - id: wmoop.geography/City
     name: City
     kind: concrete
     extends: wmoop.geography/AdministrativeArea
     definition: A populated urban settlement; a leaf administrative area with no sub-areas.
+    provenance:
+      - { source: "Original WMOOP definition", kind: definitional,
+          note: "The legal threshold for 'city' varies by jurisdiction." }
