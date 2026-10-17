@@ -93,6 +93,10 @@ A runnable implementation of exactly this is in [`wmoop.net`](https://github.com
   recommends (SOLID, GRASP, Role Object, Composite, Visitor, Strategy, Specification, Builder,
   Factory, Registry, …), each tied to the meta-model.
 
+**Design & brand**
+- [brand/DESIGN.md](brand/DESIGN.md) — the visual identity & design system: the logo family,
+  the palette, and the per-repo logo pattern (the mark encodes the architecture itself).
+
 **Taking part**
 - [CONTRIBUTING.md](CONTRIBUTING.md) — how humans contribute.
 - [AI_CONTRIBUTING.md](AI_CONTRIBUTING.md) — the protocol for AI/LLM contributors.

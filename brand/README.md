@@ -7,6 +7,9 @@
 All assets are **SVG** (vector, theme-friendly, editable text). Open
 [`preview.html`](preview.html) in a browser to see the whole system in light and dark.
 
+📖 **Full design document:** [`DESIGN.md`](DESIGN.md) — the design rules, the embedded
+logo gallery, the palette, and the per-repo recipe, all in one page.
+
 ---
 
 ## What the mark means
