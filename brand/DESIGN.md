@@ -171,8 +171,28 @@ accent to `#FBBF24` (see `logo/wmoop-logo-dark.svg`).
 - **Minimum sizes:** full-colour mark down to **24 px**; below that use
   `wmoop-mark-mono.svg`, which stays legible at 16 px.
 - **Favicon / avatar:** export the mark to PNG (GitHub org avatars and `.ico`
-  favicons cannot be SVG). Recommended raster sizes: 16, 32, 48, 180 (Apple
-  touch), 400 (org avatar).
+  favicons cannot be SVG). Ready-made exports live in [`assets/png/`](assets/png):
+
+  | File | Size | Use |
+  |------|------|-----|
+  | `favicon.ico` | 16/32/48 | classic favicon (multi-resolution) |
+  | `favicon-16/32/48.png` | 16–48 | PNG favicons (transparent) |
+  | `apple-touch-icon-180.png` | 180 | iOS home-screen (white tile) |
+  | `avatar-400.png` | 400 | **GitHub org avatar** (dark) |
+  | `avatar-light-400.png` | 400 | org avatar, light alternative |
+  | `social-banner-1280x640.png` | 1280×640 | repo social preview / OG image |
+
+  They are rasterised from the SVG sources (`assets/avatar-dark.svg`,
+  `assets/avatar-light.svg`, `assets/social-banner.svg`, and `logo/wmoop-mark.svg`)
+  with headless Chrome at a 1× device scale — re-run that step to regenerate.
+
+  Favicon `<head>` tags:
+
+  ```html
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-180.png">
+  ```
 
 ---
 
@@ -253,7 +273,11 @@ brand/
 ├─ DESIGN.md                      this document
 ├─ preview.html                   self-contained light/dark gallery
 ├─ assets/
-│  └─ palette.svg                 the colour swatches above
+│  ├─ palette.svg                 the colour swatches above
+│  ├─ avatar-dark.svg             org-avatar source (dark)
+│  ├─ avatar-light.svg            org-avatar source (light)
+│  ├─ social-banner.svg           social-banner source
+│  └─ png/                        rasterised exports (favicons, avatar, banner)
 ├─ logo/
 │  ├─ wmoop-mark.svg              primary mark
 │  ├─ wmoop-mark-mono.svg         single-colour mark
