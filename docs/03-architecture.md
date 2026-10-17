@@ -558,6 +558,22 @@ The model is versioned per **module** (`wmoop.transport 0.3.0`); a **world relea
 - **Bindings**: a **release bot** reacts to a model release by running `wmoopc gen` and opening a PR in each `wmoop.<lang>` that updates `generated/`, bumps the pinned model digest, and runs conformance. Green → auto-mergeable; red (e.g. a MAJOR removed a method a hand-written file called) → a human fixes the behaviour half. Generated code never needs manual edits.
 - **Binding versioning (lockstep + local patch):** a binding's `major.minor` tracks the model it generates from; a trailing local patch covers binding-only fixes. Model `1.4.0` → `Wmoop.Transport` NuGet `1.4.0`, with `1.4.1` reserved for hand-written/binding fixes against the same model. This makes "which model does package X implement?" readable from the version string. A binding declares a compatible model range in its manifest for consumers.
 
+### 4.5 Package independence and extension by addition
+
+Two consumer-facing guarantees fall out of the modular model `[INV-5]`. Both are **binding requirements**, not nice-to-haves — they are what make WMOOP libraries easy to drop into any project and grow without edits.
+
+**(a) Each domain is an independent, minimal, drop-in package.** The L0 core and every L1 domain compile to their *own* independently-versioned, independently-published package — `Wmoop.Core`, `Wmoop.Nature`, `Wmoop.Transport`, `Wmoop.Geography`, … (Maven `org.wmoop:core|nature|…`, PyPI `wmoop-core|wmoop-nature|…`, vcpkg/Conan `wmoop-core|…`). A consumer installs **only the domains they use**: each package declares exactly its own `depends_on` edges (the acyclic graph, S4), so adding `Wmoop.Nature` never drags in Transport. The only forced runtime dependency is `Wmoop.Core` — the small `ConceptId`/`Quantity`/role kernel, dependency-free, no framework or DI container — plus the domains a package itself declares. This **resolves open question §7.4 in favour of per-domain packages**, trading a few more dependency edges for easy, standalone integration.
+
+**(b) You extend by *adding* a package, never by editing the core (OCP).** New attributes, metadata, or facets are introduced by a **new package that depends on the base** and attaches roles / qualities / classifications / relations to existing concepts *by composition* — the [Role Object](../PATTERNS.md) pattern raised to distribution scale, and the Open/Closed Principle at the package boundary. A base concept is **closed for modification, open for extension**: it is never re-opened, mutated, or forked.
+
+> **Worked example — `Person` → Driver / Student / Teacher.** `Person` ships in `Wmoop.Nature`. Making a person a **Driver** is *already* a separate package (`Wmoop.Transport`) attaching a `Driver` role `played_by wmoop.nature/Person` — Nature is untouched and never recompiled. The *same* mechanism serves **Student** and **Teacher**: a `Wmoop.Education` domain adds those roles on `Person`. A consumer who needs all three installs `Wmoop.Nature` + `Wmoop.Transport` + `Wmoop.Education`; one who needs only biology installs `Wmoop.Nature` alone.
+
+**Out-of-tree extension is first-class.** The identical mechanism works for facets WMOOP does *not* model canonically: a consumer or third party publishes **their own** complementary package (e.g. `Acme.Payroll` attaching an `Employee` role to `Person`) against the public, immutable concept **IDs** (S6) and the role machinery — **no upstream contribution and no fork required**. In-tree (a governed WMOOP domain) and out-of-tree (a private or third-party add-on) differ only in *where* they are published and whether they are ratified; the extension surface is the same. Such a package:
+
+- may **add** — roles, qualities, classifications, relations, and wholly new concepts — but must **not** mutate, re-open, or redefine a base concept's committed shape;
+- references the base only through declared, versioned **cross-domain relations** `[INV-5]` and stable **IDs** (S6), never generated names;
+- **pins a compatible model range** (§4.4), so a base MAJOR bump cannot silently break it.
+
 ---
 
 ## 5. (e) Replication walkthrough, with a side-by-side parity proof
@@ -717,6 +733,6 @@ Attaching `Driver` to a non-`Person` fails with `WM-ROLE-PLAYER-MISMATCH` in eve
 1. **Role identity & lifetime at L2:** is a `Driver` role globally identified, or only relative to its player? Affects serialization and cross-domain references.
 2. **Relation storage ownership:** does `operates`/`operatedBy` live on the role, the vehicle, or a separate association object? (Recommend association-owned for many-to-many; decide before many relations exist.)
 3. **Expression language for `invariants`:** adopt a tiny, sandboxed subset (CEL-like) that every language can evaluate identically, so invariants are part of conformance rather than hand-ported.
-4. **Module granularity:** version per domain (`wmoop.transport`) vs per sub-domain. Finer modules = more independent evolution but more dependency edges to keep acyclic.
+4. **Module granularity — decided (§4.5):** per-domain packages (`Wmoop.Nature`, `Wmoop.Transport`, …), so each domain is independently consumable and extensible by addition; the accepted cost is more dependency edges to keep acyclic (S4). Open sub-question: whether unusually large domains later split into sub-domain packages.
 5. **C#-first on-ramp scope:** ship the `import --from csharp` lifter in v1, or start DSL-only and add on-ramps once the model stabilizes?
 6. **Behaviour conformance:** §3 pins *structure and constraints*; should a later suite also pin selected *behaviours* (e.g. unit conversions) via input/output vectors, accepting that it narrows idiomatic freedom?
