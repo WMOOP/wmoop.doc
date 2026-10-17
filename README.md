@@ -1,3 +1,10 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="brand/logo/wmoop-logo-dark.svg">
+    <img alt="WMOOP — World Map Object-Oriented Programming" src="brand/logo/wmoop-logo-light.svg" width="420">
+  </picture>
+</p>
+
 # WMOOP — World Map Object-Oriented Programming
 
 > **Describe the world in OOP. Map every real-world object into programming languages — once.**
