@@ -1,0 +1,28 @@
+name: Domain map
+
+# Keeps the two Mermaid diagrams in docs/06-domain-taxonomy.md generated from
+# model/taxonomy.yaml and the real module headers (Invariant 1: generated, never
+# hand-copied). Fails if the diagrams are stale or the registry disagrees with the model.
+# Deliberately has no path filter, so it can be a required check without blocking PRs
+# that touch neither file.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  taxonomy:
+    name: Diagrams match registry
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install "pyyaml>=6,<7"
+      - name: Check generated diagrams are current
+        run: python tools/gen_taxonomy.py --check

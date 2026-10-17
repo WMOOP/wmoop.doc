@@ -380,6 +380,8 @@ contributedBy: { human: your-handle }
 
 With `Vehicle → AutoVehicle → Moped` each added via the [class template](#71-add-a-class-concept) (`numberOfWheels` as a `prop`, Moped overriding its default to 2).
 
+> **Added or moved a domain?** Update [`model/taxonomy.yaml`](./model/taxonomy.yaml) and run `python tools/gen_taxonomy.py` to regenerate the two diagrams in [`docs/06-domain-taxonomy.md`](./docs/06-domain-taxonomy.md); CI fails if they are stale. Never edit the diagrams by hand.
+
 ### 7.4 Add a cross-domain link / role
 
 **When:** a facet one domain attaches to a concept in another (the Person-as-Driver case). This is **composition**, declared in `_crosslinks/`.
@@ -519,6 +521,7 @@ Each gate below blocks merge when red. "How to fix" tells you exactly what to ch
 | **Liskov / roles soundness** | No cross-domain `kindOf`; subtypes don't drop/narrow required properties; inheritance depth within cap. | Convert to a role/relation; restore the contract; flatten. |
 | **Conformance tests** | Generated bindings compile and pass the cross-language conformance suite. | Usually a modeling error surfaced by generation — fix the model. |
 | **Generated-file drift** | No hand-edited generated binding/DB files in the diff. | Revert generated files; only edit `model/**`. |
+| **Domain-map drift** | `python tools/gen_taxonomy.py --check`: the diagrams in `docs/06-domain-taxonomy.md` match `model/taxonomy.yaml`, and each seeded domain's `depends_on` matches its module header. | Run `python tools/gen_taxonomy.py` and commit the result; fix the registry or header if it reports a mismatch. |
 | **SemVer / breaking-change** | Breaking edits bump the domain MAJOR; a changelog entry exists. | Bump `version`; add the changelog note. |
 
 ---
