@@ -1,0 +1,5 @@
+# Dependencies for the WML validator (schema/validate_wml.py, schema/yaml_to_xml.py).
+# Install with:  python -m pip install -r schema/requirements.txt
+PyYAML>=6.0          # parse the *.wml.yaml source
+jsonschema>=4.18     # grammar gate against wml.schema.json (needs 2020-12 support)
+xmlschema>=2.5       # XSD gate against wml.xsd (pure-Python; no libxml2 needed)

@@ -1,0 +1,388 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wmoop.org/schema/wml.schema.json",
+  "title": "WML module file",
+  "description": "Meta-schema (grammar) for a WMOOP Modeling Language (WML) source file, authored in YAML and compiled to canonical JSON. One `*.wml.yaml` file holds one module's header (`module:`) and/or one or more of its declaration sections (`datatypes`, `enumerations`, `interfaces`, `concepts`, `roles`, `individuals`). A module MAY span several files; only one of them carries the `module:` header (the others are continuation fragments, e.g. `roles.wml.yaml`). This schema enforces the structural grammar and the per-node constraints (R1-R12, S5/S6 shapes). Cross-file semantic rules that a context-free grammar cannot express - inheritance depth (S1), LSP-safe overrides (S2), roles-not-classes beyond shape (S3), acyclic module graph (S4), referential integrity, unit/dimension consistency - are enforced by schema/validate_wml.py. See schema/README.md and docs/03-architecture.md.",
+  "type": "object",
+  "minProperties": 1,
+  "additionalProperties": false,
+  "properties": {
+    "module": { "$ref": "#/$defs/module" },
+    "datatypes": { "type": "array", "items": { "$ref": "#/$defs/datatype" } },
+    "enumerations": { "type": "array", "items": { "$ref": "#/$defs/enumeration" } },
+    "interfaces": { "type": "array", "items": { "$ref": "#/$defs/interface" } },
+    "concepts": { "type": "array", "items": { "$ref": "#/$defs/concept" } },
+    "roles": { "type": "array", "items": { "$ref": "#/$defs/role" } },
+    "individuals": { "type": "array", "items": { "$ref": "#/$defs/individual" } }
+  },
+
+  "$defs": {
+    "moduleQName": {
+      "type": "string",
+      "pattern": "^wmoop\\.[a-z][a-z0-9]*(\\.[a-z][a-z0-9]*)*$",
+      "description": "A module identifier, e.g. `wmoop.transport`. Lowercase, dot-separated."
+    },
+    "typeQName": {
+      "type": "string",
+      "pattern": "^wmoop\\.[a-z][a-z0-9]*(\\.[a-z][a-z0-9]*)*/[A-Z][A-Za-z0-9]*$",
+      "description": "A type-level identifier (concept, role, datatype, enumeration, interface), e.g. `wmoop.transport/Moped`. `<module>/<PascalCaseName>`."
+    },
+    "memberQName": {
+      "type": "string",
+      "pattern": "^wmoop\\.[a-z][a-z0-9]*(\\.[a-z][a-z0-9]*)*/[A-Z][A-Za-z0-9]*#[a-z][A-Za-z0-9]*$",
+      "description": "A member identifier (property or relation), e.g. `wmoop.transport/Vehicle#wheelCount`. `<module>/<Concept>#<camelCaseMember>`."
+    },
+    "primitive": {
+      "type": "string",
+      "enum": ["string", "boolean", "integer", "decimal", "number", "date", "datetime", "time", "duration"],
+      "description": "A built-in primitive value type."
+    },
+    "typeRef": {
+      "description": "A reference to a value type: either a built-in primitive or the QName of a datatype/enumeration/concept.",
+      "oneOf": [
+        { "$ref": "#/$defs/primitive" },
+        { "$ref": "#/$defs/typeQName" }
+      ]
+    },
+    "returnsRef": {
+      "description": "An operation return type: a typeRef or `void`.",
+      "oneOf": [
+        { "const": "void" },
+        { "$ref": "#/$defs/primitive" },
+        { "$ref": "#/$defs/typeQName" }
+      ]
+    },
+    "semver": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(-[0-9A-Za-z.-]+)?(\\+[0-9A-Za-z.-]+)?$",
+      "description": "An exact semantic version, e.g. `0.3.0`."
+    },
+    "semverRange": {
+      "type": "string",
+      "pattern": "^[\\^~]?[0-9]+\\.[0-9]+\\.[0-9]+(-[0-9A-Za-z.-]+)?$",
+      "description": "A dependency version range, e.g. `^1.0.0` or `0.5.0`."
+    },
+    "cardinality": {
+      "type": "string",
+      "pattern": "^[0-9]+(\\.\\.([0-9]+|\\*))?$",
+      "description": "A cardinality constraint: `1`, `0..1`, `1..*`, `0..*`, `2..5`."
+    },
+    "typeName": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Za-z0-9]*$",
+      "description": "The PascalCase local name of a type."
+    },
+    "memberName": {
+      "type": "string",
+      "pattern": "^[a-z][A-Za-z0-9]*$",
+      "description": "The camelCase local name of a member."
+    },
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "provenanceEntry": {
+      "type": "object",
+      "description": "One provenance record. `source` is mandatory. A factual claim SHOULD set `kind: sourced` with a resolvable `ref`; a modelling/naming choice SHOULD set `kind: definitional` or `kind: convention`.",
+      "required": ["source"],
+      "additionalProperties": false,
+      "properties": {
+        "source": { "$ref": "#/$defs/nonEmptyString" },
+        "kind": { "type": "string", "enum": ["sourced", "definitional", "convention"] },
+        "ref": { "type": "string" },
+        "note": { "type": "string" },
+        "url": { "type": "string" },
+        "retrieved": { "type": "string", "format": "date" },
+        "doi": { "type": "string" },
+        "isbn": { "type": "string" },
+        "author": { "type": "string" },
+        "title": { "type": "string" },
+        "year": { "type": ["integer", "string"] },
+        "type": { "type": "string", "enum": ["book", "paper", "standard", "dataset", "url", "report", "software"] },
+        "locator": { "type": "string" }
+      }
+    },
+    "provenanceList": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/provenanceEntry" }
+    },
+    "constraints": {
+      "type": "object",
+      "description": "Value constraints applied to a datatype, property, or property override.",
+      "additionalProperties": false,
+      "properties": {
+        "minimum": { "type": "number" },
+        "maximum": { "type": "number" },
+        "exclusiveMinimum": { "type": "number" },
+        "exclusiveMaximum": { "type": "number" },
+        "multipleOf": { "type": "number", "exclusiveMinimum": 0 },
+        "minLength": { "type": "integer", "minimum": 0 },
+        "maxLength": { "type": "integer", "minimum": 0 },
+        "pattern": { "type": "string" },
+        "format": { "type": "string" },
+        "enum": { "type": "array", "minItems": 1 }
+      }
+    },
+    "classifiedAsEntry": {
+      "type": "object",
+      "description": "A non-inheritance classification against an external scheme (contested or perspectival membership). Does NOT create a subclass edge.",
+      "required": ["scheme", "value"],
+      "additionalProperties": false,
+      "properties": {
+        "scheme": { "$ref": "#/$defs/nonEmptyString" },
+        "value": { "$ref": "#/$defs/nonEmptyString" }
+      }
+    },
+    "labels": {
+      "type": "object",
+      "description": "Alternate / localized labels for a node, grouped by kind (e.g. `alt`, `pref`, `short`). Each group is a list of {lang, value}. The canonical `name` stays the stable code identifier; `labels` carry human/localized forms (e.g. `diriginte` for FormTutor).",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "required": ["lang", "value"],
+          "additionalProperties": false,
+          "properties": {
+            "lang": { "type": "string", "pattern": "^[a-z]{2,3}(-[A-Za-z0-9]+)*$", "description": "A BCP-47 language subtag, e.g. `ro`, `en`, `la`." },
+            "value": { "$ref": "#/$defs/nonEmptyString" }
+          }
+        }
+      }
+    },
+
+    "module": {
+      "type": "object",
+      "description": "The module header: a versioned namespace plus its acyclic dependency list.",
+      "required": ["id", "version", "title"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/moduleQName" },
+        "version": { "$ref": "#/$defs/semver" },
+        "title": { "$ref": "#/$defs/nonEmptyString" },
+        "depends_on": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["module", "version"],
+            "additionalProperties": false,
+            "properties": {
+              "module": { "$ref": "#/$defs/moduleQName" },
+              "version": { "$ref": "#/$defs/semverRange" }
+            }
+          }
+        }
+      }
+    },
+
+    "datatype": {
+      "type": "object",
+      "description": "A named primitive refinement (base + constraints, optional unit). Requires a definition; provenance is optional (a datatype is usually a convention).",
+      "required": ["id", "name", "base", "definition"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/typeQName" },
+        "name": { "$ref": "#/$defs/typeName" },
+        "base": { "$ref": "#/$defs/primitive" },
+        "definition": { "$ref": "#/$defs/nonEmptyString" },
+        "labels": { "$ref": "#/$defs/labels" },
+        "unit": { "type": "string" },
+        "constraints": { "$ref": "#/$defs/constraints" },
+        "provenance": { "$ref": "#/$defs/provenanceList" }
+      }
+    },
+
+    "enumeration": {
+      "type": "object",
+      "description": "A closed value set. Requires definition and provenance (S5).",
+      "required": ["id", "name", "definition", "provenance", "values"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/typeQName" },
+        "name": { "$ref": "#/$defs/typeName" },
+        "definition": { "$ref": "#/$defs/nonEmptyString" },
+        "labels": { "$ref": "#/$defs/labels" },
+        "provenance": { "$ref": "#/$defs/provenanceList" },
+        "values": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["id", "definition"],
+            "additionalProperties": false,
+            "properties": {
+              "id": { "type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_]*$" },
+              "name": { "type": "string" },
+              "definition": { "$ref": "#/$defs/nonEmptyString" }
+            }
+          }
+        }
+      }
+    },
+
+    "interface": {
+      "type": "object",
+      "description": "A behaviour contract: abstract operations only. Requires a definition.",
+      "required": ["id", "name", "definition", "operations"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/typeQName" },
+        "name": { "$ref": "#/$defs/typeName" },
+        "definition": { "$ref": "#/$defs/nonEmptyString" },
+        "labels": { "$ref": "#/$defs/labels" },
+        "provenance": { "$ref": "#/$defs/provenanceList" },
+        "operations": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["name", "returns"],
+            "additionalProperties": false,
+            "properties": {
+              "name": { "$ref": "#/$defs/memberName" },
+              "returns": { "$ref": "#/$defs/returnsRef" },
+              "params": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["name", "type"],
+                  "additionalProperties": false,
+                  "properties": {
+                    "name": { "$ref": "#/$defs/memberName" },
+                    "type": { "$ref": "#/$defs/typeRef" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "property": {
+      "type": "object",
+      "description": "A typed, defined, sourced attribute of a concept or role. Every property carries its own definition and provenance (S5); measurable properties carry a unit (R5).",
+      "required": ["id", "name", "type", "cardinality", "definition", "provenance"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/memberQName" },
+        "name": { "$ref": "#/$defs/memberName" },
+        "type": { "$ref": "#/$defs/typeRef" },
+        "unit": { "type": "string" },
+        "cardinality": { "$ref": "#/$defs/cardinality" },
+        "required": { "type": "boolean" },
+        "default": {},
+        "definition": { "$ref": "#/$defs/nonEmptyString" },
+        "labels": { "$ref": "#/$defs/labels" },
+        "provenance": { "$ref": "#/$defs/provenanceList" },
+        "constraints": { "$ref": "#/$defs/constraints" }
+      }
+    },
+
+    "propertyOverride": {
+      "type": "object",
+      "description": "An LSP-safe narrowing of an inherited property (S2). References the inherited property by its QName.",
+      "required": ["property"],
+      "additionalProperties": false,
+      "properties": {
+        "property": { "$ref": "#/$defs/memberQName" },
+        "constraints": { "$ref": "#/$defs/constraints" },
+        "default": {}
+      }
+    },
+
+    "invariant": {
+      "type": "object",
+      "description": "A concept-level boolean constraint evaluated over `self`.",
+      "required": ["id", "expr"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$" },
+        "expr": { "$ref": "#/$defs/nonEmptyString" },
+        "message": { "type": "string" }
+      }
+    },
+
+    "relation": {
+      "type": "object",
+      "description": "A named association to another concept, with cardinality and an optional declared inverse. `rel` distinguishes a plain association from mereology (`part_of`) etc. - never `subclass_of` (use `extends`).",
+      "required": ["id", "name", "target", "cardinality"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/memberQName" },
+        "name": { "$ref": "#/$defs/memberName" },
+        "rel": { "type": "string", "enum": ["association", "part_of", "aggregation", "composition"] },
+        "target": { "$ref": "#/$defs/typeRef" },
+        "cardinality": { "$ref": "#/$defs/cardinality" },
+        "inverse": { "$ref": "#/$defs/memberQName" },
+        "definition": { "type": "string" },
+        "provenance": { "$ref": "#/$defs/provenanceList" }
+      }
+    },
+
+    "concept": {
+      "type": "object",
+      "description": "An L1 class: abstract or concrete, with single shallow `extends` (R2/S1), optional `implements`, `properties`, `property_overrides`, `invariants`, `relations`, and non-inheritance `classified_as`. Requires definition and provenance (S5).",
+      "required": ["id", "name", "kind", "definition", "provenance"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/typeQName" },
+        "name": { "$ref": "#/$defs/typeName" },
+        "kind": { "type": "string", "enum": ["abstract", "concrete"] },
+        "extends": { "$ref": "#/$defs/typeQName" },
+        "implements": { "type": "array", "items": { "$ref": "#/$defs/typeQName" } },
+        "definition": { "$ref": "#/$defs/nonEmptyString" },
+        "labels": { "$ref": "#/$defs/labels" },
+        "provenance": { "$ref": "#/$defs/provenanceList" },
+        "classified_as": { "type": "array", "items": { "$ref": "#/$defs/classifiedAsEntry" } },
+        "properties": { "type": "array", "items": { "$ref": "#/$defs/property" } },
+        "property_overrides": { "type": "array", "items": { "$ref": "#/$defs/propertyOverride" } },
+        "invariants": { "type": "array", "items": { "$ref": "#/$defs/invariant" } },
+        "relations": { "type": "array", "items": { "$ref": "#/$defs/relation" } }
+      }
+    },
+
+    "role": {
+      "type": "object",
+      "description": "A composable, cross-cutting facet attached to a concept by composition. MUST declare `played_by` and MUST NOT appear in any `extends` (S3 - a role is not a class). Requires definition and provenance (S5).",
+      "required": ["id", "name", "definition", "provenance", "played_by"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/typeQName" },
+        "name": { "$ref": "#/$defs/typeName" },
+        "definition": { "$ref": "#/$defs/nonEmptyString" },
+        "labels": { "$ref": "#/$defs/labels" },
+        "provenance": { "$ref": "#/$defs/provenanceList" },
+        "played_by": { "$ref": "#/$defs/typeQName" },
+        "context": { "$ref": "#/$defs/moduleQName" },
+        "cardinality_per_player": { "$ref": "#/$defs/cardinality" },
+        "capabilities": { "type": "array", "items": { "$ref": "#/$defs/typeQName" } },
+        "properties": { "type": "array", "items": { "$ref": "#/$defs/property" } },
+        "relations": { "type": "array", "items": { "$ref": "#/$defs/relation" } }
+      }
+    },
+
+    "individual": {
+      "type": "object",
+      "description": "An L2 reference instance (e.g. a curriculum subject, an organ system, a planet). Carries sourced property values of the concept it instantiates. `values` is a map of the instantiated concept's property local-names to concrete values.",
+      "required": ["id", "name", "instance_of"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/typeQName" },
+        "name": { "$ref": "#/$defs/nonEmptyString" },
+        "instance_of": { "$ref": "#/$defs/typeQName" },
+        "definition": { "$ref": "#/$defs/nonEmptyString" },
+        "labels": { "$ref": "#/$defs/labels" },
+        "provenance": { "$ref": "#/$defs/provenanceList" },
+        "values": {
+          "type": "object",
+          "description": "Property local-name (camelCase) to value. Factual values should be sourced via the node's `provenance` (or a future per-value source).",
+          "propertyNames": { "pattern": "^[a-z][A-Za-z0-9]*$" },
+          "additionalProperties": {}
+        }
+      }
+    }
+  }
+}

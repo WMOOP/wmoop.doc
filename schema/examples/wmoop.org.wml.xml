@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- GENERATED from model/**/*.wml.yaml by schema/yaml_to_xml.py - DO NOT EDIT.
+     The YAML is the single source of truth; regenerate with:
+       python schema/yaml_to_xml.py -->
+<module xmlns="https://wmoop.org/wml/1" id="wmoop.org" version="0.1.0" title="Organisations &amp; Institutions">
+  <dependsOn module="wmoop.core" version="^1.0.0" />
+  <dependsOn module="wmoop.nature" version="^0.6.0" />
+  <concepts>
+    <concept id="wmoop.org/Organization" name="Organization" kind="concrete">
+      <definition>A structured, persistent group of people (and resources) acting together to pursue one or more shared goals, recognised as a single entity.</definition>
+      <provenance source="schema.org/Organization (https://schema.org/Organization)" kind="sourced" note="Scope aligned to a social endurant with its own identity." />
+      <property id="wmoop.org/Organization#legalName" name="legalName" type="string" cardinality="0..1">
+        <definition>The registered or officially recognised name of the organisation.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" />
+      </property>
+      <property id="wmoop.org/Organization#foundingDate" name="foundingDate" type="date" cardinality="0..1">
+        <definition>The calendar date on which the organisation was established.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" />
+      </property>
+    </concept>
+  </concepts>
+  <roles>
+    <role id="wmoop.org/Employee" name="Employee" playedBy="wmoop.nature/Person" context="wmoop.org" cardinalityPerPlayer="0..*">
+      <definition>The role of a person engaged under a contract of employment by an organisation.</definition>
+      <provenance source="ILO International Standard Classification of Occupations (ISCO-08), conceptual framework" kind="sourced" note="Employment is a contextual, time-bounded relation, modelled as a role." />
+      <property id="wmoop.org/Employee#employeeId" name="employeeId" type="string" cardinality="0..1">
+        <definition>The identifier the employing organisation assigns to the holder.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" />
+      </property>
+      <property id="wmoop.org/Employee#hiredOn" name="hiredOn" type="date" cardinality="0..1">
+        <definition>The date from which the employment relation is in effect.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" />
+      </property>
+      <relation id="wmoop.org/Employee#employedBy" name="employedBy" target="wmoop.org/Organization" cardinality="1" inverse="wmoop.org/Organization#employs" />
+    </role>
+  </roles>
+</module>
