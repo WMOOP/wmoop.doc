@@ -59,11 +59,11 @@ domains:
   - id: core
     module: wmoop.core
     cluster: foundation
-    status: planned
+    status: seeded
     steward: ~
     depends_on: []
     subdomains: [core.quantities, core.units, core.dimensions, core.provenance, core.identity]
-    note: "Realises L0 (Quantity, Unit, Dimension, Provenance, wmid/QName, base datatypes). Referenced by every module as wmoop.core; the module file is pending."
+    note: "Realises L0 (QuantityKind + SI Dimension 7-vector, Unit + toCanonical, Provenance, wmid/QName base datatypes). Referenced by every module as wmoop.core; the module file is model/core/core.wml.yaml (v1.0.0)."
 
   # --- Formal & Abstract ----------------------------------------------------
   - id: math
