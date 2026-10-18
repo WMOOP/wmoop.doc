@@ -74,6 +74,9 @@ On dark backgrounds the globe lightens to `#60A5FA → #22D3EE` and the role acc
 | `wmoop.py` | `#3776AB` + `#FFD43B` | two interlocking squares |
 | `wmoop.cpp` | `#00599C` | `C++` |
 | `wmoop.tools` | `#0D9488` teal | gear |
+| `wmoop.js` | `#CA8A04` gold | yellow `JS` tile |
+| `wmoop.json` | `#E11D48` rose | `{ }` braces |
+| `wmoop.db` | `#15803D` green | database cylinder |
 
 > The glyphs are **original, simplified renderings**, not the official language logos.
 > Language names and signature colours are used nominatively, only to identify which
