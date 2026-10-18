@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- GENERATED from model/**/*.wml.yaml by schema/yaml_to_xml.py - DO NOT EDIT.
+     The YAML is the single source of truth; regenerate with:
+       python schema/yaml_to_xml.py -->
+<module xmlns="https://wmoop.org/wml/1" id="wmoop.education" version="0.1.0" title="Education">
+  <dependsOn module="wmoop.core" version="^1.0.0" />
+  <dependsOn module="wmoop.nature" version="^0.6.0" />
+  <dependsOn module="wmoop.org" version="^0.1.0" />
+  <dependsOn module="wmoop.architecture" version="^0.1.0" />
+  <datatypes>
+    <datatype id="wmoop.education/SeatingCapacity" name="SeatingCapacity" base="integer">
+      <definition>A non-negative count of student seats in a teaching space.</definition>
+      <constraints minimum="0" />
+    </datatype>
+    <datatype id="wmoop.education/GradeValue" name="GradeValue" base="decimal">
+      <definition>A numeric grade value. The admissible range depends on the GradingScale it is recorded against (recorded per Mark), so no single bound is fixed here.</definition>
+      <constraints minimum="0" />
+    </datatype>
+  </datatypes>
+  <enumerations>
+    <enumeration id="wmoop.education/ISCEDLevel" name="ISCEDLevel">
+      <definition>Levels of education of the UNESCO International Standard Classification of Education (ISCED 2011).</definition>
+      <provenance source="UNESCO-UIS, International Standard Classification of Education (ISCED 2011), UIS/2012/INS/10 REV" kind="sourced" ref="Levels of education" />
+      <value id="EARLY_CHILDHOOD">
+        <definition>ISCED 0 — early childhood education.</definition>
+      </value>
+      <value id="PRIMARY">
+        <definition>ISCED 1 — primary education.</definition>
+      </value>
+      <value id="LOWER_SECONDARY">
+        <definition>ISCED 2 — lower secondary education.</definition>
+      </value>
+      <value id="UPPER_SECONDARY">
+        <definition>ISCED 3 — upper secondary education.</definition>
+      </value>
+      <value id="POST_SECONDARY_NON_TERTIARY">
+        <definition>ISCED 4 — post-secondary non-tertiary education.</definition>
+      </value>
+      <value id="SHORT_CYCLE_TERTIARY">
+        <definition>ISCED 5 — short-cycle tertiary education.</definition>
+      </value>
+      <value id="BACHELOR_OR_EQUIVALENT">
+        <definition>ISCED 6 — bachelor's or equivalent level.</definition>
+      </value>
+      <value id="MASTER_OR_EQUIVALENT">
+        <definition>ISCED 7 — master's or equivalent level.</definition>
+      </value>
+      <value id="DOCTORAL_OR_EQUIVALENT">
+        <definition>ISCED 8 — doctoral or equivalent level.</definition>
+      </value>
+    </enumeration>
+    <enumeration id="wmoop.education/GradingScale" name="GradingScale">
+      <definition>Named grading scales against which a numeric Mark is interpreted. Scales are jurisdiction-specific.</definition>
+      <provenance source="Original WMOOP definition" kind="definitional" note="An open, extensible set; the enumerated members are common national scales, each sourced." />
+      <value id="ROMANIAN_1_10">
+        <definition>Romanian school scale, integers/decimals from 1 (lowest) to 10 (highest); pass &gt;= 5.</definition>
+      </value>
+      <value id="PERCENTAGE_0_100">
+        <definition>A percentage score from 0 to 100.</definition>
+      </value>
+      <value id="GPA_0_4">
+        <definition>A grade-point average from 0.0 to 4.0.</definition>
+      </value>
+    </enumeration>
+  </enumerations>
+  <concepts>
+    <concept id="wmoop.education/EducationalInstitution" name="EducationalInstitution" kind="abstract" extends="wmoop.org/Organization">
+      <definition>An organisation whose primary purpose is to provide education through one or more educational programmes.</definition>
+      <provenance source="UNESCO-UIS, International Standard Classification of Education (ISCED 2011), UIS/2012/INS/10 REV" kind="sourced" ref="'educational institution' / 'educational programme'" />
+      <property id="wmoop.education/EducationalInstitution#iscedLevels" name="iscedLevels" type="wmoop.education/ISCEDLevel" cardinality="1..*">
+        <definition>The ISCED levels of education the institution provides.</definition>
+        <provenance source="UNESCO-UIS, International Standard Classification of Education (ISCED 2011), UIS/2012/INS/10 REV" kind="sourced" />
+      </property>
+      <relation id="wmoop.education/EducationalInstitution#housedIn" name="housedIn" target="wmoop.education/SchoolBuilding" cardinality="0..*" inverse="wmoop.education/SchoolBuilding#houses">
+        <definition>The building(s) the institution occupies.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" note="Deliberately a relation, not inheritance — the key modelling point of this domain." />
+      </relation>
+    </concept>
+    <concept id="wmoop.education/School" name="School" kind="concrete" extends="wmoop.education/EducationalInstitution">
+      <definition>An institution providing primary and/or secondary education (typically ISCED levels 1-3).</definition>
+      <provenance source="UNESCO-UIS, International Standard Classification of Education (ISCED 2011), UIS/2012/INS/10 REV" kind="sourced" ref="primary &amp; secondary education (ISCED 1-3)" />
+      <propertyOverride property="wmoop.education/EducationalInstitution#iscedLevels">
+        <constraints>
+          <enum>PRIMARY</enum>
+          <enum>LOWER_SECONDARY</enum>
+          <enum>UPPER_SECONDARY</enum>
+        </constraints>
+      </propertyOverride>
+    </concept>
+    <concept id="wmoop.education/SchoolBuilding" name="SchoolBuilding" kind="concrete" extends="wmoop.architecture/Building">
+      <definition>A building designed for or used by a school to deliver education.</definition>
+      <provenance source="Original WMOOP definition" kind="definitional" note="The physical counterpart of a School; a genuine is-a of Building (unlike School itself)." />
+    </concept>
+    <concept id="wmoop.education/Classroom" name="Classroom" kind="concrete" extends="wmoop.architecture/Room">
+      <definition>A room in which a class of students is taught.</definition>
+      <provenance source="Original WMOOP definition" kind="definitional" note="A functional specialisation of Room; its containment in a building is the inherited part_of relation." />
+      <property id="wmoop.education/Classroom#seatingCapacity" name="seatingCapacity" type="wmoop.education/SeatingCapacity" cardinality="0..1">
+        <definition>The number of students the classroom is furnished to seat.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" />
+      </property>
+    </concept>
+    <concept id="wmoop.education/Laboratory" name="Laboratory" kind="concrete" extends="wmoop.architecture/Room">
+      <definition>A room equipped for practical scientific, technical or computing instruction.</definition>
+      <provenance source="Original WMOOP definition" kind="definitional" />
+      <property id="wmoop.education/Laboratory#discipline" name="discipline" type="string" cardinality="0..1">
+        <definition>The discipline the laboratory is equipped for (e.g. chemistry, physics, informatics).</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" />
+      </property>
+    </concept>
+    <concept id="wmoop.education/CurriculumSubject" name="CurriculumSubject" kind="concrete">
+      <definition>A branch of knowledge studied and taught as part of a curriculum (e.g. Mathematics, Biology, Music). An abstract entity; the specific subjects are reference individuals at L2.</definition>
+      <provenance source="UNESCO-UIS, ISCED Fields of Education and Training 2013 (ISCED-F 2013)" kind="sourced" ref="broad/narrow fields" />
+      <property id="wmoop.education/CurriculumSubject#iscedfField" name="iscedfField" type="string" cardinality="0..1">
+        <definition>The ISCED-F 2013 field of education and training this subject belongs to.</definition>
+        <provenance source="UNESCO-UIS, ISCED Fields of Education and Training 2013 (ISCED-F 2013)" kind="sourced" />
+      </property>
+    </concept>
+    <concept id="wmoop.education/Mark" name="Mark" kind="concrete">
+      <definition>A grade awarded to a student for a curriculum subject: a numeric value on a named grading scale, at a point in time. Reified so the (student, subject, value, date) fact is a first-class object [meta-model §10 Q5].</definition>
+      <provenance source="Original WMOOP definition" kind="definitional" note="Reification of an n-ary assessment relation." />
+      <property id="wmoop.education/Mark#value" name="value" type="wmoop.education/GradeValue" cardinality="1">
+        <definition>The numeric grade awarded.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" />
+      </property>
+      <property id="wmoop.education/Mark#scale" name="scale" type="wmoop.education/GradingScale" cardinality="1">
+        <definition>The grading scale against which the value is interpreted.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" />
+      </property>
+      <property id="wmoop.education/Mark#awardedOn" name="awardedOn" type="date" cardinality="0..1">
+        <definition>The date on which the mark was awarded.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" />
+      </property>
+      <relation id="wmoop.education/Mark#forSubject" name="forSubject" target="wmoop.education/CurriculumSubject" cardinality="1" inverse="wmoop.education/CurriculumSubject#assessedBy">
+        <definition>The curriculum subject the mark assesses.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" />
+      </relation>
+    </concept>
+    <concept id="wmoop.education/StudentClass" name="StudentClass" kind="concrete">
+      <definition>A cohort of students taught together as a unit (a "class" or "form"). A Collection: a many-as-one with its own identity, label and tutor.</definition>
+      <provenance source="Original WMOOP definition" kind="definitional" note="L0 Collection (category H)." />
+      <property id="wmoop.education/StudentClass#label" name="label" type="string" cardinality="1">
+        <definition>The class's identifying label within its school (e.g. "9A").</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" />
+      </property>
+      <property id="wmoop.education/StudentClass#studyYear" name="studyYear" type="integer" cardinality="0..1">
+        <definition>The year/grade level of study the class is in.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" />
+      </property>
+      <relation id="wmoop.education/StudentClass#atSchool" name="atSchool" target="wmoop.education/School" cardinality="0..1" inverse="wmoop.education/School#classes">
+        <definition>The school the class belongs to.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" />
+      </relation>
+    </concept>
+  </concepts>
+  <roles>
+    <role id="wmoop.education/Student" name="Student" playedBy="wmoop.nature/Person" context="wmoop.education" cardinalityPerPlayer="0..*">
+      <definition>The role of a person enrolled at an educational institution to follow a programme of study.</definition>
+      <provenance source="UNESCO-UIS, International Standard Classification of Education (ISCED 2011), UIS/2012/INS/10 REV" kind="sourced" note="Enrolment is a contextual, time-bounded relation — modelled as a role, not a kind of Person." />
+      <property id="wmoop.education/Student#enrolmentId" name="enrolmentId" type="string" cardinality="0..1">
+        <definition>The identifier the institution assigns to the enrolled student.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" />
+      </property>
+      <property id="wmoop.education/Student#studyYear" name="studyYear" type="integer" cardinality="0..1">
+        <definition>The year/grade the student is currently enrolled in.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" />
+      </property>
+      <relation id="wmoop.education/Student#enrolledAt" name="enrolledAt" target="wmoop.education/EducationalInstitution" cardinality="1..*" inverse="wmoop.education/EducationalInstitution#enrols" />
+      <relation id="wmoop.education/Student#memberOfClass" name="memberOfClass" target="wmoop.education/StudentClass" cardinality="0..1" inverse="wmoop.education/StudentClass#members" />
+      <relation id="wmoop.education/Student#marks" name="marks" target="wmoop.education/Mark" cardinality="0..*" inverse="wmoop.education/Mark#awardedTo" />
+    </role>
+    <role id="wmoop.education/Teacher" name="Teacher" playedBy="wmoop.nature/Person" context="wmoop.education" cardinalityPerPlayer="0..*">
+      <definition>The role of a person who instructs students in one or more curriculum subjects.</definition>
+      <provenance source="ILO International Standard Classification of Occupations (ISCO-08), Major group 2 'Professionals', Sub-major 23 'Teaching professionals'" kind="sourced" note="An occupation/role of a Person, not a kind of Person." />
+      <property id="wmoop.education/Teacher#staffId" name="staffId" type="string" cardinality="0..1">
+        <definition>The identifier the institution assigns to the teacher.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" />
+      </property>
+      <relation id="wmoop.education/Teacher#teaches" name="teaches" target="wmoop.education/CurriculumSubject" cardinality="1..*" inverse="wmoop.education/CurriculumSubject#taughtBy" />
+      <relation id="wmoop.education/Teacher#teachesAt" name="teachesAt" target="wmoop.education/EducationalInstitution" cardinality="1..*" inverse="wmoop.education/EducationalInstitution#teachingStaff" />
+    </role>
+    <role id="wmoop.education/FormTutor" name="FormTutor" playedBy="wmoop.nature/Person" context="wmoop.education" cardinalityPerPlayer="0..1">
+      <definition>The role of a teacher additionally responsible for the pastoral oversight and administration of one specific class/form. Known in Romanian as "diriginte" (English: form tutor / homeroom teacher).</definition>
+      <provenance source="Original WMOOP definition" kind="definitional" note="A role held IN ADDITION TO the Teacher role by the same Person; co-held, not a subclass of Teacher (roles are never in `extends`, S3). Alt labels: ro 'diriginte', en 'homeroom teacher'." />
+      <relation id="wmoop.education/FormTutor#tutors" name="tutors" target="wmoop.education/StudentClass" cardinality="1" inverse="wmoop.education/StudentClass#tutoredBy" />
+    </role>
+  </roles>
+  <individuals>
+    <individual id="wmoop.education/Mathematics" name="Mathematics" instanceOf="wmoop.education/CurriculumSubject">
+      <definition>The study of quantity, structure, space and change.</definition>
+      <value property="iscedfField">054 Mathematics and statistics</value>
+      <provenance source="UNESCO-UIS, ISCED Fields of Education and Training 2013 (ISCED-F 2013)" kind="sourced" ref="field 054" />
+    </individual>
+    <individual id="wmoop.education/RomanianLanguage" name="RomanianLanguage" instanceOf="wmoop.education/CurriculumSubject">
+      <definition>The study of the Romanian language and its literature.</definition>
+      <value property="iscedfField">023 Languages</value>
+      <provenance source="UNESCO-UIS, ISCED Fields of Education and Training 2013 (ISCED-F 2013)" kind="sourced" ref="field 023" />
+    </individual>
+    <individual id="wmoop.education/Biology" name="Biology" instanceOf="wmoop.education/CurriculumSubject">
+      <definition>The study of living organisms and their vital processes.</definition>
+      <value property="iscedfField">051 Biological and related sciences</value>
+      <provenance source="UNESCO-UIS, ISCED Fields of Education and Training 2013 (ISCED-F 2013)" kind="sourced" ref="field 051" />
+    </individual>
+    <individual id="wmoop.education/Music" name="Music" instanceOf="wmoop.education/CurriculumSubject">
+      <definition>The study of organised sound, its theory, performance and history.</definition>
+      <value property="iscedfField">021 Arts</value>
+      <provenance source="UNESCO-UIS, ISCED Fields of Education and Training 2013 (ISCED-F 2013)" kind="sourced" ref="field 021" />
+    </individual>
+  </individuals>
+</module>

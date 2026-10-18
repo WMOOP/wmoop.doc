@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="WMOOP emblem">
+  <title>WMOOP — World Map Object-Oriented Programming · emblem</title>
+  <desc>Academic / community seal. Best on light or neutral backgrounds.</desc>
+  <defs>
+    <linearGradient id="wmGlobeEm" x1="56" y1="56" x2="144" y2="144" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2563EB"/>
+      <stop offset="1" stop-color="#06B6D4"/>
+    </linearGradient>
+    <path id="wmTop" d="M26 100 A74 74 0 0 1 174 100"/>
+    <path id="wmBot" d="M174 100 A74 74 0 0 1 26 100"/>
+  </defs>
+
+  <!-- seal rings -->
+  <g fill="none" stroke="url(#wmGlobeEm)">
+    <circle cx="100" cy="100" r="96" stroke-width="2"/>
+    <circle cx="100" cy="100" r="88" stroke-width="4"/>
+  </g>
+
+  <!-- ring text -->
+  <g fill="#334155" font-family="'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" font-weight="700" font-size="9.4" letter-spacing="0.6">
+    <text text-anchor="middle"><textPath href="#wmTop" startOffset="50%">WORLD MAP OBJECT-ORIENTED PROGRAMMING</textPath></text>
+    <text text-anchor="middle"><textPath href="#wmBot" startOffset="50%">OPEN WORLD MODEL · WML · EST. 2026</textPath></text>
+  </g>
+
+  <!-- side separators -->
+  <g fill="url(#wmGlobeEm)">
+    <path d="M18 100 L22 95 L26 100 L22 105 Z"/>
+    <path d="M174 100 L178 95 L182 100 L178 105 Z"/>
+  </g>
+
+  <!-- centre: the concept mark -->
+  <g transform="translate(40,40)">
+    <g fill="none" stroke="url(#wmGlobeEm)" stroke-width="4.5">
+      <circle cx="60" cy="60" r="44"/>
+      <ellipse cx="60" cy="60" rx="17" ry="44" stroke-width="3"/>
+      <ellipse cx="60" cy="60" rx="44" ry="17" stroke-width="3"/>
+    </g>
+    <g stroke="#3B82F6" stroke-width="4" stroke-linecap="round">
+      <line x1="60" y1="60" x2="60" y2="16"/>
+      <line x1="60" y1="60" x2="104" y2="60"/>
+      <line x1="60" y1="60" x2="60" y2="104"/>
+      <line x1="60" y1="60" x2="16" y2="60"/>
+    </g>
+    <path d="M74 60 L81 55 L88 60 L81 65 Z" fill="#F59E0B" stroke="#B45309" stroke-width="2"/>
+    <g stroke-width="3.5">
+      <rect x="53.5" y="53.5" width="13" height="13" rx="3.5" fill="#FFFFFF" stroke="#1D4ED8"/>
+      <rect x="53.5" y="9.5"  width="13" height="13" rx="3.5" fill="#FFFFFF" stroke="#1D4ED8"/>
+      <rect x="53.5" y="97.5" width="13" height="13" rx="3.5" fill="#FFFFFF" stroke="#1D4ED8"/>
+      <rect x="9.5"  y="53.5" width="13" height="13" rx="3.5" fill="#FFFFFF" stroke="#1D4ED8"/>
+      <rect x="97.5" y="53.5" width="13" height="13" rx="3.5" fill="#FDE68A" stroke="#B45309"/>
+    </g>
+  </g>
+</svg>

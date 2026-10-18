@@ -38,6 +38,18 @@ Every modelling fact is expressed through a small, fixed vocabulary of **meta-mo
 >
 > Inheritance is reserved for rigid, substitutable **is-a** and kept **shallow** (depth budget ≈ 4). Cross-domain intersection is expressed with **Role objects**: a `Person` (Nature domain) *acquires* a `Driver` role (Transport domain) — **never** `Driver : Person`.
 
+### The engineering standard
+
+> **Across every WMOOP repository, use the best, most-established methods, concepts and patterns — at the right level of abstraction.**
+
+This is binding for **all** repos (`wmoop.doc`, `wmoop.net`, and every generated binding and tool), not just this one. In practice:
+
+- **Proven over clever.** Reach first for well-understood, named designs — [SOLID](#11-solid), [GRASP](#12-grasp), the GoF patterns catalogued below, and each language's own idioms — not ad-hoc constructions. Reinventing a standard pattern badly is a reviewable defect.
+- **Depend on abstractions.** Program to interfaces/traits, roles and specifications, not concrete generated types ([DIP](#11-solid), §1.3); remove cross-language duplication by **generation**, never copy-paste.
+- **…but abstract only to the altitude a real use case demands.** Abstraction is a tool, not a goal: **KISS and YAGNI win ties** ([§1.3](#13-supporting-principles)). No speculative layers, no indirection without a second concrete user — **[premature abstraction](#4-anti-patterns) is itself an anti-pattern** and is reviewed like any other. (The whitepaper tracks over-engineering as a project risk.)
+- **Idiomatic per language.** One model generates C#, Java, Python and C++; each binding must read as natural code *in that language*, not as a transliteration.
+- **Justify departures.** Consistent with this guide's normative status, a deviation from a recommended pattern or abstraction is allowed only when argued in review.
+
 ### Invariants every concept obeys
 
 1. A concept is written **once** (in WML); cross-language duplication is removed by **generation**, not copy-paste.

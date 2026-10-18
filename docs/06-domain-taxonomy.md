@@ -72,13 +72,13 @@ README/whitepaper seed taxonomy or v1 roadmap) · ⚪ **candidate** (proposed he
 
 | # | Cluster | Domains | Grounded in |
 |---|---|---|---|
-| 0 | **Foundation** | `core` 🟡 | — (realises L0) |
+| 0 | **Foundation** | `core` 🟢 | — (realises L0) |
 | I | **Formal & Abstract** | `math` 🟡 · `computing` ⚪ · `language` ⚪ | DDC 500/000, OECD Natural/Formal, SUMO *Abstract* |
 | II | **Physical & Natural World** | `physics` ⚪ · `chemistry` ⚪ · `nature` 🟢 · `earth` ⚪ · `space` 🟡 | DDC 500, OECD Natural, LCC Q, schema.org Taxon |
 | III | **Geography & Place** | `geography` 🟢 | LCC G, DDC 910, schema.org Place |
-| IV | **Society & Institutions** | `org` ⚪ · `economy` ⚪ · `law` ⚪ · `politics` ⚪ | DDC 300, OECD Social, LCC H/J/K, schema.org Organization |
+| IV | **Society & Institutions** | `org` 🟢 · `education` 🟢 · `economy` ⚪ · `law` ⚪ · `politics` ⚪ | DDC 300/370, OECD Social, LCC H/J/K/L, schema.org Organization/EducationalOrganization |
 | V | **Culture & The Arts** | `music` 🟡 · `visualarts` ⚪ · `literature` ⚪ · `philosophy` ⚪ · `religion` ⚪ | DDC 100/200/400/700/800, OECD Humanities, LCC B/M/N/P |
-| VI | **Technology & Artifacts** | `transport` 🟢 · `architecture` ⚪ · `food` ⚪ · `tools` ⚪ · `software` ⚪ | DDC 600, OECD Engineering, LCC T, schema.org Product |
+| VI | **Technology & Artifacts** | `transport` 🟢 · `architecture` 🟢 · `food` ⚪ · `tools` ⚪ · `software` ⚪ | DDC 600, OECD Engineering, LCC T, schema.org Product |
 | VII | **Health & Medicine** | `medicine` ⚪ | OECD Medical & Health, LCC R, schema.org MedicalEntity |
 
 ---
@@ -89,12 +89,12 @@ Each sub-domain lists an example concept and, where useful, its dominant L0 cate
 (**End**urant · **Perd**urant · **Abs**tract · **Role** · **Rel**ation).
 
 ### 0 · Foundation
-- **`core`** 🟡 — realises L0; every module depends on it.
+- **`core`** 🟢 — realises L0; every module depends on it.
   - `core.quantities` — `Length`, `Mass`, `Speed`, `Count` (Abs)
   - `core.units` — `m`, `kg`, `km_per_h`, `cm3`
   - `core.dimensions` — the SI 7-vector (L,M,T,I,Θ,N,J)
   - `core.provenance` · `core.identity` — citations, `wmid`/QName
-  - *Referenced everywhere as `wmoop.core`; the module file is still pending.*
+  - *Referenced everywhere as `wmoop.core`; realised in [`model/core/core.wml.yaml`](../model/core/core.wml.yaml) (v1.0.0).*
 
 ### I · Formal & Abstract
 - **`math`** 🟡 — `math.number` (`NaturalNumber`, Abs) · `math.algebra` (`Group`, Abs) ·
@@ -112,7 +112,8 @@ Each sub-domain lists an example concept and, where useful, its dominant L0 cate
   End) · `chemistry.reactions` (`Combustion`, **Perd**).
 - **`nature`** 🟢 — `nature.taxonomy` (ranks as `classified_as` facts, not inheritance) ·
   **`nature.animals`** 🟡 (`Animal → Human`) · **`nature.plants`** 🟡 (`Tomato`) · `nature.fungi` ·
-  `nature.microbes` · `nature.anatomy` (`Heart`, part-of) · `nature.genetics` (`Cell`, `DNA` —
+  `nature.microbes` · **`nature.anatomy`** 🟢 (`AnatomicalStructure → Organ`; `Heart/Brain/Lung/…`;
+  `OrganSystem` Collection; `Organ part_of Animal`) · `nature.genetics` (`Cell`, `DNA` —
   roadmap *depth on demand*) · `nature.people` (`Person`, End — the flagship role *player*).
 - **`earth`** ⚪ — `earth.landforms` (`Mountain`, End) · `earth.geology` · `earth.hydrology`
   (`River`) · `earth.atmosphere` · `earth.climate`.
@@ -125,8 +126,13 @@ Each sub-domain lists an example concept and, where useful, its dominant L0 cate
   `geography.human` (`Settlement`, `Region`) · `geography.coordinates` (`GeoPoint`).
 
 ### IV · Society & Institutions
-- **`org`** ⚪ — `org.structure` (`Organization`, End) · `org.employment` (`Employee`, **Role** on a
-  `Person` — already referenced by the meta-model).
+- **`org`** 🟢 — `org.structure` (`Organization`, End) · `org.employment` (`Employee`, **Role** on a
+  `Person` — the role the meta-model references).
+- **`education`** 🟢 — `education.institutions` (`School` is-a `Organization`, **not** a `Building`;
+  `SchoolBuilding` is-a `architecture/Building`) · `education.roles` (`Student`, `Teacher`,
+  `FormTutor`/RO *diriginte* — **Roles** on `Person`, co-held) · `education.curriculum`
+  (`CurriculumSubject`, **Abs**; `Mathematics`/`Biology`/`Music` as **L2**) · `education.assessment`
+  (`Mark` — a reified grade).
 - **`economy`** ⚪ — `economy.money` (`Currency`) · `economy.markets` · `economy.products` (`Product`,
   `Offer`).
 - **`law`** ⚪ — `law.jurisdiction` · `law.rights` · `law.licences` (`DrivingAuthorisation` — the
@@ -144,7 +150,8 @@ Each sub-domain lists an example concept and, where useful, its dominant L0 cate
 - **`transport`** 🟢 — **`transport.vehicles`** 🟢 (`Vehicle → RoadVehicle → Motorcycle → Moped`,
   shallow **is-a**) · **`transport.driving`** 🟢 (`Driver`, **Role**) · `transport.ownership`
   (`VehicleOwner`, **Role**).
-- **`architecture`** ⚪ (`Building`) · **`food`** ⚪ (`Dish`; home of the `CulinaryVegetable`
+- **`architecture`** 🟢 — `architecture.buildings` (`Building`, End; `Room` **part_of** `Building`) ·
+  `architecture.structures`. · **`food`** ⚪ (`Dish`; home of the `CulinaryVegetable`
   category) · **`tools`** ⚪ · **`software`** ⚪.
 
 ### VII · Health & Medicine
@@ -160,7 +167,7 @@ Containment view — clusters and the domains inside them. Colour = status.
 <!-- GEN:cluster-map START - generated by tools/gen_taxonomy.py from model/taxonomy.yaml; do not edit by hand -->
 ```mermaid
 flowchart TB
-  core["core 🟡"]:::plan
+  core["core 🟢"]:::seed
 
   subgraph I["I · Formal & Abstract"]
     direction LR
@@ -181,7 +188,8 @@ flowchart TB
   end
   subgraph IV["IV · Society & Institutions"]
     direction LR
-    org["org ⚪"]:::cand
+    org["org 🟢"]:::seed
+    education["education 🟢"]:::seed
     economy["economy ⚪"]:::cand
     law["law ⚪"]:::cand
     politics["politics ⚪"]:::cand
@@ -197,7 +205,7 @@ flowchart TB
   subgraph VI["VI · Technology & Artifacts"]
     direction LR
     transport["transport 🟢"]:::seed
-    architecture["architecture ⚪"]:::cand
+    architecture["architecture 🟢"]:::seed
     food["food ⚪"]:::cand
     tools["tools ⚪"]:::cand
     software["software ⚪"]:::cand
@@ -223,13 +231,15 @@ by a seeded module today; dashed edges are what a candidate domain will declare 
 <!-- GEN:dep-graph START - generated by tools/gen_taxonomy.py from model/taxonomy.yaml; do not edit by hand -->
 ```mermaid
 flowchart LR
-  core["core 🟡"]:::plan
+  core["core 🟢"]:::seed
   math["math 🟡"]:::plan
   nature["nature 🟢"]:::seed
   geography["geography 🟢"]:::seed
   transport["transport 🟢"]:::seed
+  architecture["architecture 🟢"]:::seed
+  org["org 🟢"]:::seed
+  education["education 🟢"]:::seed
   music["music 🟡"]:::plan
-  org["org ⚪"]:::cand
   law["law ⚪"]:::cand
   food["food ⚪"]:::cand
   medicine["medicine ⚪"]:::cand
@@ -240,13 +250,18 @@ flowchart LR
   transport --> core
   transport --> nature
   transport --> geography
+  architecture --> core
+  org --> core
+  org --> nature
+  education --> core
+  education --> nature
+  education --> org
+  education --> architecture
 
   %% planned / candidate edges
   math -.-> core
   music -.-> core
   music -.-> math
-  org -.-> core
-  org -.-> nature
   law -.-> core
   law -.-> geography
   food -.-> core

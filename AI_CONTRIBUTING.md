@@ -35,6 +35,28 @@ In short: structured + validated + clear automated DoD + local reward signal = a
 
 ---
 
+## The generation workflow — from a well-documented source to conformant WML
+
+This is the core AI loop: **in = a well-documented source; out = exactly the WML the model needs, and nothing more.** Follow it in order — each step maps to a gate you can check yourself, so you generate *and verify* before a human looks. This workflow is packaged as the repo skill [`wml-contribute`](.claude/skills/wml-contribute/SKILL.md); invoke it whenever you turn a source into a contribution so the steps run the same way every time.
+
+1. **Intake & qualify the source.** Confirm it is authoritative and **resolvable** — standard + clause, paper + DOI, official dataset + URL + `retrieved` date, textbook + ISBN + page (§5). No resolvable source → **stop and open an issue** (§6); do not author.
+2. **Scope to one atomic unit.** One concept or a tight sibling cluster, **≤ 5 node files** (§7). Never model a whole domain in one pass.
+3. **Reuse before you create.** Search the model for an existing concept, datatype, enumeration, or property that already covers it; extend or reference it rather than duplicating (`CONTRIBUTING.md` §8 duplicate gate).
+4. **Classify every thing against the L0 stereotypes _before_ writing a line** (`docs/03-architecture.md` §1.4; `PATTERNS.md` — the prime directive). For each noun/attribute, pick the shape:
+   - a genuine, shallow, substitutable **is-a** → `subclass_of`, kept shallow;
+   - a contextual, non-permanent **facet** → a **role** attached by composition — *never* a subclass. An agentive noun (`…er`/`…or`: Driver, Owner, Employee, **Student**, **Teacher**) is almost always a **role**, not a class;
+   - a measurable **attribute** → a `quality`/Quantity **with a unit** (no bare numbers);
+   - a **perspectival or contested** category → `classified_as` tags or multiple sourced schemes — never a forced single tree;
+   - a **part-whole** → `part_of`; a general link → an `association`/relation with an inverse.
+5. **Fill the slots.** Stable ID (S6), name, a **concise definition in your own words** (never pasted source prose, §5), parent or role target, and **properties — each with its own `definition` and `provenance`** (the per-property rule, `docs/03-architecture.md` S5), a `unit` on every quantity, and a cardinality. Fill nothing you cannot source or justify.
+6. **Source everything, honestly typed.** Every concept, role, enumeration **and property** carries `provenance`: `kind: sourced` + a resolvable citation for a factual claim; `kind: definitional`/`convention` for a modelling or naming choice. Never dress a convention up as a fact, or a guess as a convention (§5).
+7. **Extend by _adding_, never by editing the base.** When the source attaches a new facet to an existing concept, add a role/quality in the appropriate (possibly new) domain — **do not re-open or fork the base** (`docs/03-architecture.md` §4.5). *"This source lets a `Person` act as a Student"* → add a `Student` role `played_by wmoop.nature/Person` in an education domain; `Person` is untouched.
+8. **Disclose.** Fill `contributedBy.agent`, add the `Assisted-by:` commit trailer, label the PR `ai-authored`, name a human sponsor (§4).
+9. **Run the oracle and the checklist.** `wmoop validate && wmoop lint && wmoop conformance`, then the §8 checklist. **Flag uncertainty** (`confidence`, `uncertain`, `disputed`) rather than smoothing it over (§6).
+10. **Ship small and green — or ask.** Open a ≤ 5-file, all-green PR with the `ai_contribution` block (§13). If anything is unsourced or shaky, open an **issue** instead (§6).
+
+---
+
 ## 3. Scope: autonomous agents and human-operated AI
 
 This applies to any contribution where an AI materially authored the content — a fully autonomous agent, a human using an AI assistant to draft nodes, or a batch pipeline. If in doubt, disclose. The rule is simple: **if a model wrote it, label it.**

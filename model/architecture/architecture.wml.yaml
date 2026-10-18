@@ -1,0 +1,70 @@
+module:
+  id: wmoop.architecture
+  version: 0.1.0
+  title: Architecture
+  depends_on:
+    - { module: wmoop.core, version: "^1.0.0" }   # L0 upper ontology (Quantity, units)
+
+# ---------------------------------------------------------------------------
+# The built environment: the PHYSICAL endurants that other domains sit inside.
+# Kept deliberately minimal — just enough for cross-domain reuse (e.g. a School,
+# in wmoop.education, is HOUSED IN a Building; a Classroom IS-A Room). The point
+# this module exists to make: a School is NOT a kind of Building. The building is
+# the physical plant (here); the school is a social Organization (wmoop.org +
+# wmoop.education). They are linked by a relation, never by inheritance [INV-3].
+# ---------------------------------------------------------------------------
+
+datatypes:
+  - id: wmoop.architecture/FloorCount
+    name: FloorCount
+    base: integer
+    definition: A non-negative count of storeys (floors) in a building.
+    constraints: { minimum: 0 }
+
+concepts:
+  - id: wmoop.architecture/Building
+    name: Building
+    kind: concrete                               # a plain building can be instantiated
+    definition: >
+      A roofed, permanent construction with walls, standing more or less
+      independently, intended for human occupancy or use.
+    provenance:
+      - { source: "ISO 6707-1:2020 Buildings and civil engineering works — Vocabulary — Part 1: General terms",
+          ref: "term 'building'", kind: sourced, note: "Scope narrowed to occupiable constructions." }
+    properties:
+      - id: wmoop.architecture/Building#floorCount
+        name: floorCount
+        type: wmoop.architecture/FloorCount
+        cardinality: "0..1"
+        definition: Number of storeys the building has above and below ground.
+        provenance:
+          - { source: "Original WMOOP definition", kind: definitional,
+              note: "Per-building values are sourced at L2." }
+
+  - id: wmoop.architecture/Room
+    name: Room
+    kind: concrete
+    definition: >
+      An interior space within a building, enclosed by walls, floor and ceiling
+      and normally entered through a door. A Room is a PART OF a Building
+      (mereology), it is not a kind of Building.
+    provenance:
+      - { source: "ISO 6707-1:2020 Buildings and civil engineering works — Vocabulary — Part 1: General terms",
+          ref: "term 'space/room'", kind: sourced }
+    properties:
+      - id: wmoop.architecture/Room#floorArea
+        name: floorArea
+        type: wmoop.core/Area      # a Quantity, dimension = area
+        unit: m2                   # R5 — units are first-class [INV-4]
+        cardinality: "0..1"
+        definition: The usable floor area enclosed by the room.
+        provenance:
+          - { source: "Original WMOOP definition", kind: definitional,
+              note: "Per-room values are sourced at L2." }
+    relations:
+      - id: wmoop.architecture/Room#partOf
+        name: partOf
+        rel: part_of                              # mereology — NOT subclass_of
+        target: wmoop.architecture/Building
+        cardinality: "0..1"
+        inverse: wmoop.architecture/Building#contains   # R6 [INV-5]

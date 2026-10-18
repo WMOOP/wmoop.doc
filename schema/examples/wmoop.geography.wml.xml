@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- GENERATED from model/**/*.wml.yaml by schema/yaml_to_xml.py - DO NOT EDIT.
+     The YAML is the single source of truth; regenerate with:
+       python schema/yaml_to_xml.py -->
+<module xmlns="https://wmoop.org/wml/1" id="wmoop.geography" version="0.2.0" title="Geography">
+  <dependsOn module="wmoop.core" version="^1.0.0" />
+  <datatypes>
+    <datatype id="wmoop.geography/Population" name="Population" base="integer">
+      <definition>A non-negative count of people resident in an area.</definition>
+      <constraints minimum="0" />
+    </datatype>
+  </datatypes>
+  <concepts>
+    <concept id="wmoop.geography/Place" name="Place" kind="abstract">
+      <definition>A location in space that can be referred to and contained within another.</definition>
+      <provenance source="Original WMOOP definition" kind="definitional" />
+    </concept>
+    <concept id="wmoop.geography/AdministrativeArea" name="AdministrativeArea" kind="abstract" extends="wmoop.geography/Place">
+      <definition>A government-defined area that may contain smaller administrative areas. Containment is a `part_of` relation (mereology), NOT inheritance: a city is not a *kind of* county.</definition>
+      <provenance source="Original WMOOP definition" kind="definitional" note="Concrete subdivisions follow national schemes (e.g. ISO 3166-2)." />
+      <property id="wmoop.geography/AdministrativeArea#residentPopulation" name="residentPopulation" type="wmoop.geography/Population" cardinality="0..1">
+        <definition>People resident directly in this area, excluding its sub-areas.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" note="Per-area values are sourced at L2 (e.g. a national census)." />
+      </property>
+      <relation id="wmoop.geography/AdministrativeArea#partOf" name="partOf" target="wmoop.geography/AdministrativeArea" cardinality="0..1" rel="part_of" inverse="wmoop.geography/AdministrativeArea#contains" />
+    </concept>
+    <concept id="wmoop.geography/Country" name="Country" kind="concrete" extends="wmoop.geography/AdministrativeArea">
+      <definition>A nation state or distinct territory.</definition>
+      <provenance source="ISO 3166-1" kind="sourced" note="Coding only; contested status is handled per ETHICS.md with provenance." />
+    </concept>
+    <concept id="wmoop.geography/County" name="County" kind="concrete" extends="wmoop.geography/AdministrativeArea">
+      <definition>A first-level administrative subdivision of a country (exact meaning varies by country).</definition>
+      <provenance source="ISO 3166-2" kind="sourced" note="First-level subdivisions; the local term varies by country." />
+    </concept>
+    <concept id="wmoop.geography/City" name="City" kind="concrete" extends="wmoop.geography/AdministrativeArea">
+      <definition>A populated urban settlement; a leaf administrative area with no sub-areas.</definition>
+      <provenance source="Original WMOOP definition" kind="definitional" note="The legal threshold for 'city' varies by jurisdiction." />
+    </concept>
+  </concepts>
+</module>

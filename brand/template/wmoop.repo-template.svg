@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 430 120" role="img" aria-label="wmoop.REPO">
+  <title>WMOOP per-repo lockup template</title>
+  <!--
+    HOW TO MAKE A NEW REPO LOGO (the pattern):
+    1. Copy this file to brand/repos/wmoop.<ext>.svg
+    2. Pick the language colour -> replace every  LANG_COLOR  below.
+       (secondary colour, if any -> LANG_ALT)
+    3. Replace the glyph in the chip (see brand/README.md for the 6 built-in glyphs).
+    4. Set the wordmark extension (.ext) and the one-line role in the tagline.
+    The globe (blue->cyan) and the composition/role motif stay CONSTANT across
+    every repo: only the ring, the chip glyph, and ".ext" carry the language.
+  -->
+  <defs>
+    <linearGradient id="wmGlobeT" x1="20" y1="18" x2="98" y2="100" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2563EB"/>
+      <stop offset="1" stop-color="#06B6D4"/>
+    </linearGradient>
+  </defs>
+
+  <g transform="translate(6,9) scale(0.85)">
+    <!-- constant globe -->
+    <g fill="none" stroke="url(#wmGlobeT)" stroke-width="4.5">
+      <circle cx="60" cy="60" r="44"/>
+      <ellipse cx="60" cy="60" rx="17" ry="44" stroke-width="3"/>
+      <ellipse cx="60" cy="60" rx="44" ry="17" stroke-width="3"/>
+    </g>
+    <!-- LANGUAGE ORBIT RING -->
+    <circle cx="60" cy="60" r="51" fill="none" stroke="#94A3B8" stroke-width="3"/>
+    <!-- constant graph + composition/role -->
+    <g stroke="#3B82F6" stroke-width="4" stroke-linecap="round">
+      <line x1="60" y1="60" x2="60" y2="16"/>
+      <line x1="60" y1="60" x2="104" y2="60"/>
+      <line x1="60" y1="60" x2="60" y2="104"/>
+      <line x1="60" y1="60" x2="16" y2="60"/>
+    </g>
+    <path d="M74 60 L81 55 L88 60 L81 65 Z" fill="#F59E0B" stroke="#B45309" stroke-width="2"/>
+    <g stroke-width="3.5">
+      <rect x="53.5" y="53.5" width="13" height="13" rx="3.5" fill="#FFFFFF" stroke="#1D4ED8"/>
+      <rect x="53.5" y="9.5"  width="13" height="13" rx="3.5" fill="#FFFFFF" stroke="#1D4ED8"/>
+      <rect x="53.5" y="97.5" width="13" height="13" rx="3.5" fill="#FFFFFF" stroke="#1D4ED8"/>
+      <rect x="9.5"  y="53.5" width="13" height="13" rx="3.5" fill="#FFFFFF" stroke="#1D4ED8"/>
+      <rect x="97.5" y="53.5" width="13" height="13" rx="3.5" fill="#FDE68A" stroke="#B45309"/>
+    </g>
+    <!-- LANGUAGE CHIP (white tile, coloured border, language glyph) -->
+    <rect x="78" y="78" width="40" height="40" rx="12" fill="#FFFFFF" stroke="#94A3B8" stroke-width="3"/>
+    <!-- GLYPH GOES HERE, centred at (98,98) -->
+    <g transform="translate(98,98)" stroke="#94A3B8" stroke-width="3" stroke-linecap="round" fill="none">
+      <line x1="-9" y1="0" x2="9" y2="0"/>
+      <line x1="0" y1="-9" x2="0" y2="9"/>
+    </g>
+  </g>
+
+  <g font-family="'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif">
+    <text x="122" y="60" font-size="46" font-weight="800" letter-spacing="0.3">
+      <tspan fill="#0F172A">wmoop</tspan><tspan fill="#94A3B8">.ext</tspan>
+    </text>
+    <text x="124" y="88" font-size="13" font-weight="600" letter-spacing="0.8" fill="#475569">one-line role of this repo</text>
+  </g>
+</svg>

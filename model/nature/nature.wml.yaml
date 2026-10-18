@@ -1,14 +1,17 @@
 module:
   id: wmoop.nature
-  version: 0.5.0
+  version: 0.6.0                              # 0.5.0 -> 0.6.0: added the anatomy file (Organ, OrganSystem, part_of Animal) — MINOR
   title: Nature
   depends_on:
     - { module: wmoop.core, version: "^1.0.0" }
+  # This module spans several files: nature.wml.yaml (Animal -> Human -> Person)
+  # and anatomy.wml.yaml (AnatomicalStructure -> Organ; OrganSystem; part_of Animal).
 
 datatypes:
   - id: wmoop.nature/LegCount
     name: LegCount
     base: integer
+    definition: A non-negative count of legs in an organism's typical adult body plan.
     constraints: { minimum: 0 }
 
 concepts:
@@ -17,9 +20,16 @@ concepts:
     kind: abstract
     definition: A multicellular eukaryotic organism of the kingdom Animalia.
     provenance:
-      - { source: "NCBI Taxonomy", ref: "taxid 33208 (Metazoa)" }
+      - { source: "NCBI Taxonomy", ref: "taxid 33208 (Metazoa)", kind: sourced }
     properties:
-      - { id: wmoop.nature/Animal#legCount, name: legCount, type: wmoop.nature/LegCount, cardinality: "0..1" }
+      - id: wmoop.nature/Animal#legCount
+        name: legCount
+        type: wmoop.nature/LegCount
+        cardinality: "0..1"
+        definition: Number of legs in the organism's typical adult body plan.
+        provenance:
+          - { source: "Original WMOOP definition", kind: definitional,
+              note: "Structural trait; per-taxon values are sourced at L2." }
 
   - id: wmoop.nature/Human
     name: Human
@@ -30,7 +40,7 @@ concepts:
       (Chordate, Mammal, Primate, …) are carried as `classified_as` facts rather than
       as inheritance levels, so the code hierarchy stays shallow [INV-3].
     provenance:
-      - { source: "NCBI Taxonomy", ref: "taxid 9606 (Homo sapiens)" }
+      - { source: "NCBI Taxonomy", ref: "taxid 9606 (Homo sapiens)", kind: sourced }
     classified_as:
       - { scheme: "NCBI Taxonomy", value: "Chordata / Mammalia / Primates / Hominidae" }
 
@@ -40,7 +50,20 @@ concepts:
     extends: wmoop.nature/Human
     definition: An individual human being.
     provenance:
-      - { source: "Original WMOOP definition", note: "Legal/social person is a separate role, not biology." }
+      - { source: "Original WMOOP definition", kind: definitional,
+          note: "Legal/social person is a separate role, not biology." }
     properties:
-      - { id: wmoop.nature/Person#fullName,    name: fullName,    type: string, cardinality: "1" }
-      - { id: wmoop.nature/Person#dateOfBirth, name: dateOfBirth, type: date,   cardinality: "0..1" }
+      - id: wmoop.nature/Person#fullName
+        name: fullName
+        type: string
+        cardinality: "1"
+        definition: The person's full personal name as used for identification.
+        provenance:
+          - { source: "Original WMOOP definition", kind: definitional }
+      - id: wmoop.nature/Person#dateOfBirth
+        name: dateOfBirth
+        type: date
+        cardinality: "0..1"
+        definition: The calendar date on which the person was born.
+        provenance:
+          - { source: "Original WMOOP definition", kind: definitional }

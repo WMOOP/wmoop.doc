@@ -1,0 +1,427 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  wml.xsd - W3C XML Schema for the WML-in-XML serialization.
+
+  This is the XSD equivalent of schema/wml.schema.json: the same WML grammar and
+  the same per-node constraints (QName shapes, cardinality, kinds, provenance),
+  expressed for an XML document instead of a YAML/JSON one. It is a *projection*
+  of the canonical YAML source (one <module> document per WML module), produced
+  deterministically by schema/yaml_to_xml.py; the YAML under model/** stays the
+  single source of truth (Invariant 1).
+
+  Cross-file semantic rules (inheritance depth S1, LSP overrides S2, roles-not-
+  classes S3, acyclic deps S4, referential integrity) are NOT expressible in a
+  context-free grammar and are enforced by schema/validate_wml.py, exactly as the
+  JSON side relies on it. See schema/README.md and docs/03-architecture.md.
+
+  Target namespace: https://wmoop.org/wml/1
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:wml="https://wmoop.org/wml/1"
+           targetNamespace="https://wmoop.org/wml/1"
+           elementFormDefault="qualified"
+           attributeFormDefault="unqualified">
+
+  <!-- ===================== simple (lexical) types ===================== -->
+
+  <xs:simpleType name="nonEmptyString">
+    <xs:restriction base="xs:string"><xs:minLength value="1"/></xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="moduleQName">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="wmoop\.[a-z][a-z0-9]*(\.[a-z][a-z0-9]*)*"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="typeQName">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="wmoop\.[a-z][a-z0-9]*(\.[a-z][a-z0-9]*)*/[A-Z][A-Za-z0-9]*"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="memberQName">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="wmoop\.[a-z][a-z0-9]*(\.[a-z][a-z0-9]*)*/[A-Z][A-Za-z0-9]*#[a-z][A-Za-z0-9]*"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="typeName">
+    <xs:restriction base="xs:string"><xs:pattern value="[A-Z][A-Za-z0-9]*"/></xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="memberName">
+    <xs:restriction base="xs:string"><xs:pattern value="[a-z][A-Za-z0-9]*"/></xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="enumValueId">
+    <xs:restriction base="xs:string"><xs:pattern value="[A-Za-z][A-Za-z0-9_]*"/></xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="invariantId">
+    <xs:restriction base="xs:string"><xs:pattern value="[a-z][a-z0-9]*(-[a-z0-9]+)*"/></xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="cardinality">
+    <xs:restriction base="xs:string"><xs:pattern value="[0-9]+(\.\.([0-9]+|\*))?"/></xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="semver">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.\-]+)?(\+[0-9A-Za-z.\-]+)?"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="semverRange">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[\^~]?[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.\-]+)?"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="langTag">
+    <xs:restriction base="xs:string"><xs:pattern value="[a-z]{2,3}(-[A-Za-z0-9]+)*"/></xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="primitive">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="string"/>
+      <xs:enumeration value="boolean"/>
+      <xs:enumeration value="integer"/>
+      <xs:enumeration value="decimal"/>
+      <xs:enumeration value="number"/>
+      <xs:enumeration value="date"/>
+      <xs:enumeration value="datetime"/>
+      <xs:enumeration value="time"/>
+      <xs:enumeration value="duration"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="voidType">
+    <xs:restriction base="xs:string"><xs:enumeration value="void"/></xs:restriction>
+  </xs:simpleType>
+
+  <!-- a value type: a primitive or the QName of a datatype/enumeration/concept -->
+  <xs:simpleType name="typeRef">
+    <xs:union memberTypes="wml:primitive wml:typeQName"/>
+  </xs:simpleType>
+
+  <!-- an operation return type: a typeRef or 'void' -->
+  <xs:simpleType name="returnsRef">
+    <xs:union memberTypes="wml:voidType wml:primitive wml:typeQName"/>
+  </xs:simpleType>
+
+  <xs:simpleType name="kind">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="abstract"/>
+      <xs:enumeration value="concrete"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="provenanceKind">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="sourced"/>
+      <xs:enumeration value="definitional"/>
+      <xs:enumeration value="convention"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="relKind">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="association"/>
+      <xs:enumeration value="part_of"/>
+      <xs:enumeration value="aggregation"/>
+      <xs:enumeration value="composition"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- ===================== shared complex types ===================== -->
+
+  <xs:complexType name="provenance">
+    <xs:attribute name="source" type="wml:nonEmptyString" use="required"/>
+    <xs:attribute name="kind" type="wml:provenanceKind"/>
+    <xs:attribute name="ref" type="xs:string"/>
+    <xs:attribute name="note" type="xs:string"/>
+    <xs:attribute name="url" type="xs:string"/>
+    <xs:attribute name="retrieved" type="xs:string"/>
+    <xs:attribute name="doi" type="xs:string"/>
+    <xs:attribute name="isbn" type="xs:string"/>
+    <xs:attribute name="author" type="xs:string"/>
+    <xs:attribute name="title" type="xs:string"/>
+    <xs:attribute name="year" type="xs:string"/>
+    <xs:attribute name="type" type="xs:string"/>
+    <xs:attribute name="locator" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="constraints">
+    <xs:sequence>
+      <!-- enum constraint values (numbers or tokens are carried as text) -->
+      <xs:element name="enum" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="minimum" type="xs:decimal"/>
+    <xs:attribute name="maximum" type="xs:decimal"/>
+    <xs:attribute name="exclusiveMinimum" type="xs:decimal"/>
+    <xs:attribute name="exclusiveMaximum" type="xs:decimal"/>
+    <xs:attribute name="multipleOf" type="xs:decimal"/>
+    <xs:attribute name="minLength" type="xs:nonNegativeInteger"/>
+    <xs:attribute name="maxLength" type="xs:nonNegativeInteger"/>
+    <xs:attribute name="pattern" type="xs:string"/>
+    <xs:attribute name="format" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="label">
+    <xs:simpleContent>
+      <xs:extension base="wml:nonEmptyString">
+        <xs:attribute name="lang" type="wml:langTag" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="labelGroup">
+    <xs:sequence>
+      <xs:element name="label" type="wml:label" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <!-- the group kind, e.g. 'alt', 'pref', 'short' -->
+    <xs:attribute name="kind" type="wml:nonEmptyString" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="labels">
+    <xs:sequence>
+      <xs:element name="group" type="wml:labelGroup" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="classifiedAs">
+    <xs:attribute name="scheme" type="wml:nonEmptyString" use="required"/>
+    <xs:attribute name="value" type="wml:nonEmptyString" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="dependency">
+    <xs:attribute name="module" type="wml:moduleQName" use="required"/>
+    <xs:attribute name="version" type="wml:semverRange" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="implementsRef">
+    <xs:attribute name="ref" type="wml:typeQName" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="capabilityRef">
+    <xs:attribute name="ref" type="wml:typeQName" use="required"/>
+  </xs:complexType>
+
+  <!-- ===================== member types ===================== -->
+
+  <xs:complexType name="property">
+    <xs:sequence>
+      <xs:element name="definition" type="wml:nonEmptyString"/>
+      <xs:element name="labels" type="wml:labels" minOccurs="0"/>
+      <xs:element name="constraints" type="wml:constraints" minOccurs="0"/>
+      <xs:element name="provenance" type="wml:provenance" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="wml:memberQName" use="required"/>
+    <xs:attribute name="name" type="wml:memberName" use="required"/>
+    <xs:attribute name="type" type="wml:typeRef" use="required"/>
+    <xs:attribute name="unit" type="xs:string"/>
+    <xs:attribute name="cardinality" type="wml:cardinality" use="required"/>
+    <xs:attribute name="required" type="xs:boolean"/>
+    <xs:attribute name="default" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="relation">
+    <xs:sequence>
+      <xs:element name="definition" type="wml:nonEmptyString" minOccurs="0"/>
+      <xs:element name="provenance" type="wml:provenance" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="wml:memberQName" use="required"/>
+    <xs:attribute name="name" type="wml:memberName" use="required"/>
+    <xs:attribute name="target" type="wml:typeRef" use="required"/>
+    <xs:attribute name="cardinality" type="wml:cardinality" use="required"/>
+    <xs:attribute name="rel" type="wml:relKind"/>
+    <xs:attribute name="inverse" type="wml:memberQName"/>
+  </xs:complexType>
+
+  <xs:complexType name="propertyOverride">
+    <xs:sequence>
+      <xs:element name="constraints" type="wml:constraints" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="property" type="wml:memberQName" use="required"/>
+    <xs:attribute name="default" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="invariant">
+    <xs:sequence>
+      <xs:element name="expr" type="wml:nonEmptyString"/>
+      <xs:element name="message" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="wml:invariantId" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="param">
+    <xs:attribute name="name" type="wml:memberName" use="required"/>
+    <xs:attribute name="type" type="wml:typeRef" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="operation">
+    <xs:sequence>
+      <xs:element name="param" type="wml:param" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="name" type="wml:memberName" use="required"/>
+    <xs:attribute name="returns" type="wml:returnsRef" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="enumValue">
+    <xs:sequence>
+      <xs:element name="definition" type="wml:nonEmptyString"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="wml:enumValueId" use="required"/>
+    <xs:attribute name="name" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="individualValue">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="property" type="wml:memberName" use="required"/>
+        <xs:attribute name="unit" type="xs:string"/>
+        <xs:attribute name="source" type="xs:string"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <!-- ===================== top-level declarations ===================== -->
+
+  <xs:complexType name="datatype">
+    <xs:sequence>
+      <xs:element name="definition" type="wml:nonEmptyString"/>
+      <xs:element name="labels" type="wml:labels" minOccurs="0"/>
+      <xs:element name="constraints" type="wml:constraints" minOccurs="0"/>
+      <xs:element name="provenance" type="wml:provenance" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="wml:typeQName" use="required"/>
+    <xs:attribute name="name" type="wml:typeName" use="required"/>
+    <xs:attribute name="base" type="wml:primitive" use="required"/>
+    <xs:attribute name="unit" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="enumeration">
+    <xs:sequence>
+      <xs:element name="definition" type="wml:nonEmptyString"/>
+      <xs:element name="labels" type="wml:labels" minOccurs="0"/>
+      <xs:element name="provenance" type="wml:provenance" maxOccurs="unbounded"/>
+      <xs:element name="value" type="wml:enumValue" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="wml:typeQName" use="required"/>
+    <xs:attribute name="name" type="wml:typeName" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="interface">
+    <xs:sequence>
+      <xs:element name="definition" type="wml:nonEmptyString"/>
+      <xs:element name="labels" type="wml:labels" minOccurs="0"/>
+      <xs:element name="provenance" type="wml:provenance" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="operation" type="wml:operation" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="wml:typeQName" use="required"/>
+    <xs:attribute name="name" type="wml:typeName" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="concept">
+    <xs:sequence>
+      <xs:element name="definition" type="wml:nonEmptyString"/>
+      <xs:element name="labels" type="wml:labels" minOccurs="0"/>
+      <xs:element name="provenance" type="wml:provenance" maxOccurs="unbounded"/>
+      <xs:element name="classifiedAs" type="wml:classifiedAs" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="implements" type="wml:implementsRef" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="property" type="wml:property" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="propertyOverride" type="wml:propertyOverride" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="invariant" type="wml:invariant" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="relation" type="wml:relation" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="wml:typeQName" use="required"/>
+    <xs:attribute name="name" type="wml:typeName" use="required"/>
+    <xs:attribute name="kind" type="wml:kind" use="required"/>
+    <xs:attribute name="extends" type="wml:typeQName"/>
+  </xs:complexType>
+
+  <xs:complexType name="role">
+    <xs:sequence>
+      <xs:element name="definition" type="wml:nonEmptyString"/>
+      <xs:element name="labels" type="wml:labels" minOccurs="0"/>
+      <xs:element name="provenance" type="wml:provenance" maxOccurs="unbounded"/>
+      <xs:element name="capability" type="wml:capabilityRef" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="property" type="wml:property" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="relation" type="wml:relation" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="wml:typeQName" use="required"/>
+    <xs:attribute name="name" type="wml:typeName" use="required"/>
+    <xs:attribute name="playedBy" type="wml:typeQName" use="required"/>
+    <xs:attribute name="context" type="wml:moduleQName"/>
+    <xs:attribute name="cardinalityPerPlayer" type="wml:cardinality"/>
+  </xs:complexType>
+
+  <xs:complexType name="individual">
+    <xs:sequence>
+      <xs:element name="definition" type="wml:nonEmptyString" minOccurs="0"/>
+      <xs:element name="labels" type="wml:labels" minOccurs="0"/>
+      <xs:element name="value" type="wml:individualValue" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="provenance" type="wml:provenance" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="wml:typeQName" use="required"/>
+    <xs:attribute name="name" type="wml:nonEmptyString" use="required"/>
+    <xs:attribute name="instanceOf" type="wml:typeQName" use="required"/>
+  </xs:complexType>
+
+  <!-- ===================== the module document ===================== -->
+
+  <xs:element name="module">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="dependsOn" type="wml:dependency" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="datatypes" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="datatype" type="wml:datatype" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="enumerations" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="enumeration" type="wml:enumeration" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="interfaces" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="interface" type="wml:interface" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="concepts" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="concept" type="wml:concept" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="roles" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="role" type="wml:role" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="individuals" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="individual" type="wml:individual" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="id" type="wml:moduleQName" use="required"/>
+      <xs:attribute name="version" type="wml:semver" use="required"/>
+      <xs:attribute name="title" type="wml:nonEmptyString" use="required"/>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>

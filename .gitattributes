@@ -1,0 +1,3 @@
+# Generated WML-in-XML projections are byte-compared by `schema/yaml_to_xml.py --check`
+# (the CI diff-guard). Pin them to LF so the check is stable regardless of core.autocrlf.
+schema/examples/*.wml.xml text eol=lf

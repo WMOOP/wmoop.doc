@@ -34,9 +34,14 @@ These are the project's load-bearing invariants. Every contribution is judged ag
 | **I1** | **Schema-first / ontology-first.** | The canonical, language-neutral **World Model (WM)** is the single source of truth. You edit *it*. |
 | **I2** | **Three layers.** | **L0** meta-model (small, fixed upper ontology), **L1** domain models (classes, properties, relations, roles), **L2** instances (optional reference data, e.g. the planets). Know which layer you are touching. |
 | **I3** | **Composition, interfaces/traits, and ROLES over deep inheritance.** | Inheritance models genuine, stable *is-a-kind-of* essence only, and stays shallow (Liskov-respecting). Cross-cutting or cross-domain facets (a Person *as* a Driver) are **roles attached by composition** — never `Driver : Person`. |
-| **I4** | **Every concept is self-describing and sourced.** | Stable global ID, human name, definition, provenance/citation, and (for quantities) units — on **every** node. Facts are sourced. |
+| **I4** | **Every concept *and every property* is self-describing and sourced.** | Stable global ID, human name, definition, and provenance/citation on **every** node — every concept, role, enumeration **and property** — plus units on quantities. Nothing is left unsourced: a term is either cited to an external authority (`kind: sourced`) or explicitly marked as a project choice (`kind: definitional`/`convention`). |
 | **I5** | **Versioned, acyclic modules.** | Domains are versioned modules with an explicit **acyclic** dependency graph. Cross-domain links are declared and versioned. |
 | **I6** | **Everything is machine-checkable.** | A clear, automated **Definition of Done** means humans *and* AI can contribute safely. If CI is green and a reviewer approves, it is correct-by-construction. |
+
+> **Engineering standard.** Code and model alike use the best, most-established methods, concepts and
+> patterns — at the right level of abstraction: proven over clever, abstractions over concretions, but
+> never abstraction for its own sake (KISS/YAGNI). [`PATTERNS.md`](./PATTERNS.md) is the normative guide
+> for all repos; departures are justified in review.
 
 ---
 
@@ -489,7 +494,7 @@ A contribution is **Done** when **all** of the following are true. Every item is
 
 - [ ] **Validates:** `wmoop validate` passes (schema + referential integrity).
 - [ ] **Lints:** `wmoop lint` passes (naming, style, Liskov/roles heuristics).
-- [ ] **Required fields:** every touched node has `id`, `name`, `definition`, `layer`, `status`, `provenance` (and `unit`/`dimension`/`datatype` for quantities).
+- [ ] **Required fields:** every touched node — **including every property** — has `id`, `name`, `definition`, `layer`, `status`, `provenance` (and `unit`/`dimension`/`datatype` for quantities). A property with no `definition` or no `provenance` fails this gate.
 - [ ] **Sourced:** every factual claim has `kind: sourced` with a resolvable citation; definitions/conventions are explicitly marked as such.
 - [ ] **IDs:** unique, correctly shaped, immutable (no existing ID was renamed/mutated).
 - [ ] **No orphans:** every node is reachable from a domain root and every referenced ID resolves.
@@ -515,7 +520,7 @@ Each gate below blocks merge when red. "How to fix" tells you exactly what to ch
 | **ID immutability** | No previously-merged ID was renamed or deleted. | Use an `alias`/`replacedBy` + deprecation instead of editing the ID. |
 | **Referential integrity / no-orphan** | Every `kindOf`, `ref`, `appliesTo`, `instanceOf`, `dependsOn` resolves; every node reachable from a root. | Add the missing target, or fix the typo in the reference. |
 | **Acyclic-dependency** | `dependsOn` graph and `kindOf` graph are DAGs. | Break the cycle — usually one side should be a role/relation, not a dependency. |
-| **Provenance presence** | Every node has `provenance`; factual nodes are `sourced` with resolvable citations. | Add a citation or mark `definitional`/`convention` honestly. |
+| **Provenance presence** | Every node — concepts, roles, enumerations, **and every property** — has a `definition` and `provenance`; factual nodes are `sourced` with resolvable citations. | Add a citation or mark `definitional`/`convention` honestly. |
 | **Unit validity** | Quantity properties/values carry a valid UCUM `unit` + `dimension`. | Add/fix the unit code. |
 | **Duplicate detection** | No near-duplicate (same normalized name/definition) of an existing node. | Reuse the existing node, or justify the distinction in the PR. |
 | **Liskov / roles soundness** | No cross-domain `kindOf`; subtypes don't drop/narrow required properties; inheritance depth within cap. | Convert to a role/relation; restore the contract; flatten. |

@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- GENERATED from model/**/*.wml.yaml by schema/yaml_to_xml.py - DO NOT EDIT.
+     The YAML is the single source of truth; regenerate with:
+       python schema/yaml_to_xml.py -->
+<module xmlns="https://wmoop.org/wml/1" id="wmoop.transport" version="0.3.0" title="Transport">
+  <dependsOn module="wmoop.core" version="^1.0.0" />
+  <dependsOn module="wmoop.nature" version="^0.6.0" />
+  <dependsOn module="wmoop.geography" version="^0.2.0" />
+  <datatypes>
+    <datatype id="wmoop.transport/WheelCount" name="WheelCount" base="integer">
+      <definition>A non-negative count of road wheels on a vehicle.</definition>
+      <constraints minimum="0" />
+    </datatype>
+  </datatypes>
+  <enumerations>
+    <enumeration id="wmoop.transport/LicenceCategory" name="LicenceCategory">
+      <definition>EU driving-licence categories.</definition>
+      <provenance source="Directive 2006/126/EC of the European Parliament" kind="sourced" ref="Annex, Art. 4" />
+      <value id="AM">
+        <definition>Mopeds, light quadricycles (&lt;=45 km/h)</definition>
+      </value>
+      <value id="A1">
+        <definition>Light motorcycles up to 125 cm3 / 11 kW</definition>
+      </value>
+      <value id="A2">
+        <definition>Motorcycles up to 35 kW</definition>
+      </value>
+      <value id="A">
+        <definition>All motorcycles and motor tricycles</definition>
+      </value>
+      <value id="B">
+        <definition>Cars up to 3500 kg</definition>
+      </value>
+    </enumeration>
+  </enumerations>
+  <interfaces>
+    <interface id="wmoop.transport/IDrive" name="IDrive">
+      <definition>Contract for operating a road vehicle.</definition>
+      <operation name="startEngine" returns="boolean" />
+      <operation name="driveTo" returns="void">
+        <param name="destination" type="wmoop.geography/Place" />
+      </operation>
+    </interface>
+  </interfaces>
+  <concepts>
+    <concept id="wmoop.transport/Vehicle" name="Vehicle" kind="abstract">
+      <definition>A man-made means of transport for moving people or goods.</definition>
+      <provenance source="ISO 3833:1977 Road vehicles — Types — Terms and definitions" kind="sourced" note="Scope narrowed to transport artifacts." />
+      <property id="wmoop.transport/Vehicle#wheelCount" name="wheelCount" type="wmoop.transport/WheelCount" cardinality="1" required="true">
+        <definition>Number of road wheels in contact with the ground.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" note="Aligns with the ISO 3833 road-vehicle typology." />
+      </property>
+      <property id="wmoop.transport/Vehicle#maxSpeed" name="maxSpeed" type="wmoop.core/Speed" unit="km/h" cardinality="0..1">
+        <definition>The maximum design speed the vehicle can sustain on level ground.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" note="Per-model figures are sourced at L2." />
+      </property>
+      <invariant id="wheels-nonneg">
+        <expr>self.wheelCount &gt;= 0</expr>
+        <message>A vehicle cannot have a negative wheel count.</message>
+      </invariant>
+    </concept>
+    <concept id="wmoop.transport/RoadVehicle" name="RoadVehicle" kind="abstract" extends="wmoop.transport/Vehicle">
+      <definition>A vehicle designed to travel on public roads.</definition>
+      <provenance source="Original WMOOP definition" kind="definitional" />
+      <property id="wmoop.transport/RoadVehicle#roadLegal" name="roadLegal" type="boolean" cardinality="1" default="true">
+        <definition>Whether the vehicle is approved for use on public roads in its jurisdiction.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" note="The governing jurisdiction is recorded per-instance." />
+      </property>
+    </concept>
+    <concept id="wmoop.transport/Motorcycle" name="Motorcycle" kind="concrete" extends="wmoop.transport/RoadVehicle">
+      <definition>A two- or three-wheeled motor road vehicle.</definition>
+      <provenance source="Original WMOOP definition" kind="definitional" />
+      <implements ref="wmoop.transport/IDrive" />
+      <property id="wmoop.transport/Motorcycle#engineDisplacement" name="engineDisplacement" type="wmoop.core/Volume" unit="cm3" cardinality="1">
+        <definition>Total swept volume of the engine's cylinders.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" note="Per-model figures are sourced at L2." />
+      </property>
+      <propertyOverride property="wmoop.transport/Vehicle#wheelCount">
+        <constraints>
+          <enum>2</enum>
+          <enum>3</enum>
+        </constraints>
+      </propertyOverride>
+    </concept>
+    <concept id="wmoop.transport/Moped" name="Moped" kind="concrete" extends="wmoop.transport/Motorcycle">
+      <definition>A low-powered motorcycle whose engine displacement and top speed are limited by law (EU category L1e-B).</definition>
+      <provenance source="Regulation (EU) No 168/2013" kind="sourced" ref="Annex I, category L1e-B" />
+      <propertyOverride property="wmoop.transport/Motorcycle#engineDisplacement">
+        <constraints maximum="50" />
+      </propertyOverride>
+      <propertyOverride property="wmoop.transport/Vehicle#maxSpeed">
+        <constraints maximum="45" />
+      </propertyOverride>
+    </concept>
+  </concepts>
+  <roles>
+    <role id="wmoop.transport/Driver" name="Driver" playedBy="wmoop.nature/Person" context="wmoop.transport" cardinalityPerPlayer="0..1">
+      <definition>The role of a licensed person who operates a road vehicle.</definition>
+      <provenance source="Directive 2006/126/EC of the European Parliament" kind="definitional" note="Role modelled from the EU driving-licence concept." />
+      <capability ref="wmoop.transport/IDrive" />
+      <property id="wmoop.transport/Driver#licenceNumber" name="licenceNumber" type="string" cardinality="1">
+        <definition>The identifier printed on the holder's driving licence.</definition>
+        <provenance source="Directive 2006/126/EC of the European Parliament" kind="sourced" ref="Annex I (security features)" />
+      </property>
+      <property id="wmoop.transport/Driver#licenceCategories" name="licenceCategories" type="wmoop.transport/LicenceCategory" cardinality="1..*">
+        <definition>The EU licence categories the holder is entitled to drive.</definition>
+        <provenance source="Directive 2006/126/EC of the European Parliament" kind="sourced" ref="Annex, Art. 4" />
+      </property>
+      <property id="wmoop.transport/Driver#licenceExpiry" name="licenceExpiry" type="date" cardinality="0..1">
+        <definition>The date on which the licence ceases to be administratively valid.</definition>
+        <provenance source="Directive 2006/126/EC of the European Parliament" kind="sourced" ref="Art. 7 (administrative validity)" />
+      </property>
+      <relation id="wmoop.transport/Driver#operates" name="operates" target="wmoop.transport/RoadVehicle" cardinality="0..*" inverse="wmoop.transport/RoadVehicle#operatedBy" />
+    </role>
+    <role id="wmoop.transport/Owner" name="Owner" playedBy="wmoop.nature/Person" context="wmoop.transport" cardinalityPerPlayer="0..*">
+      <definition>The role of an entity that owns a vehicle. Held alongside Driver, independently.</definition>
+      <provenance source="Original WMOOP definition" kind="definitional" />
+      <property id="wmoop.transport/Owner#ownedSince" name="ownedSince" type="date" cardinality="0..1">
+        <definition>The date from which this owner has held the vehicle.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" />
+      </property>
+      <relation id="wmoop.transport/Owner#owns" name="owns" target="wmoop.transport/Vehicle" cardinality="1..*" inverse="wmoop.transport/Vehicle#ownedBy" />
+    </role>
+  </roles>
+</module>

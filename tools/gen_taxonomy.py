@@ -78,11 +78,14 @@ def load_headers(model_dir: Path, root: Path) -> tuple[dict, list[str]]:
     """Map module id -> {"path", "depends_on"} from every `module:` header under model/.
 
     Files without a `module:` header (e.g. transport/roles.wml.yaml, a continuation file)
-    are skipped.
+    are skipped, as is anything under a `_`-prefixed directory (model/_template/ is a
+    copy-paste starter, not a real module).
     """
     headers: dict[str, dict] = {}
     problems: list[str] = []
     for path in sorted(model_dir.rglob("*.wml.yaml")):
+        if any(part.startswith("_") for part in path.relative_to(model_dir).parts[:-1]):
+            continue
         rel = path.relative_to(root).as_posix()
         doc = load_yaml(path)
         header = doc.get("module") if isinstance(doc, dict) else None

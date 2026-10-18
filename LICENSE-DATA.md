@@ -23,14 +23,33 @@ translated and embedded in other datasets and products as widely as possible. CC
 > turn is consistent and encourages the citation culture the project depends on. This choice may be
 > revisited through the RFC process in [GOVERNANCE.md](GOVERNANCE.md).
 
-## Full text & attribution
+## Attribution is required — name the source repository
+
+CC-BY-4.0 lets you copy, remix and redistribute the model data and documentation **only on the
+condition that you give credit**. For WMOOP, that credit **must identify the project and link back
+to its canonical source repository**, so anyone who receives your work can trace it to the original.
+This is the attribution the Licensor requires under CC-BY-4.0 §3(a), and it mirrors Invariant 4 —
+every fact is sourced and creditable.
+
+Every published use — a paper, dataset, product, slide, course, derived model, or generated language
+binding — must carry, in a place and form reasonable for the medium:
+
+1. the name **WMOOP World Model** (or "the WMOOP project");
+2. a link to the **canonical source repository**: <https://github.com/WMOOP/wmoop.doc>;
+3. the licence, **CC-BY-4.0**, with its link;
+4. if you changed the material, a note that changes were made (and ideally what).
+
+**Attribution string (copy-paste):**
+> "World Model data from the WMOOP project — source: https://github.com/WMOOP/wmoop.doc — licensed
+> CC-BY-4.0. Changes were made."
+>
+> *(Drop the final sentence if you redistribute the material unmodified.)*
+
+## Full text
 
 - Apache-2.0: see [`LICENSE`](LICENSE).
-- CC-BY-4.0: <https://creativecommons.org/licenses/by/4.0/legalcode>. A copy will be added to the
-  repository as `LICENSE-CC-BY-4.0.txt`.
-
-**Attribution string (suggested):**
-> "World Model data from the WMOOP project (https://github.com/WMOOP), licensed CC-BY-4.0."
+- CC-BY-4.0: see [`LICENSE-CC-BY-4.0.txt`](LICENSE-CC-BY-4.0.txt) for the full legal text, or
+  <https://creativecommons.org/licenses/by/4.0/legalcode>.
 
 ## Third-party data
 

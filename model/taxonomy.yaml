@@ -16,7 +16,7 @@
 #   candidate — proposed in the taxonomy doc; needs a steward + sourcing before
 #               it is added (Risk: scope explosion → opt-in, maintainer-gated)
 
-registry_version: 0.1.0
+registry_version: 0.2.0
 updated: 2026-10-17
 
 # ---------------------------------------------------------------------------
@@ -56,7 +56,7 @@ clusters:
 # domain's dependencies must be listed too (so a drawn node never hides an edge).
 # Omit this key to draw every domain.
 # ---------------------------------------------------------------------------
-dependency_graph: [core, math, nature, geography, transport, music, org, law, food, medicine]
+dependency_graph: [core, math, nature, geography, transport, architecture, org, education, music, law, food, medicine]
 
 # ---------------------------------------------------------------------------
 # Domains are the L1 modules (`wmoop.<id>`). `depends_on` must stay ACYCLIC
@@ -68,11 +68,11 @@ domains:
   - id: core
     module: wmoop.core
     cluster: foundation
-    status: planned
+    status: seeded
     steward: ~
     depends_on: []
     subdomains: [core.quantities, core.units, core.dimensions, core.provenance, core.identity]
-    note: "Realises L0 (Quantity, Unit, Dimension, Provenance, wmid/QName, base datatypes). Referenced by every module as wmoop.core; the module file is pending."
+    note: "Realises L0 (QuantityKind + SI Dimension 7-vector, Unit + toCanonical, Provenance, wmid/QName base datatypes). Referenced by every module as wmoop.core; the module file is model/core/core.wml.yaml (v1.0.0)."
 
   # --- Formal & Abstract ----------------------------------------------------
   - id: math
@@ -121,7 +121,7 @@ domains:
     steward: ~
     depends_on: [core]
     subdomains: [nature.taxonomy, nature.animals, nature.plants, nature.fungi, nature.microbes, nature.anatomy, nature.genetics, nature.people]
-    note: "Life sciences / biology. Holds Animal -> Human -> Person today. genetics (cells/DNA) is roadmap 'depth on demand'."
+    note: "Life sciences / biology. Holds Animal -> Human -> Person, plus nature.anatomy (AnatomicalStructure -> Organ; OrganSystem; Organ part_of Animal). genetics (cells/DNA) is roadmap 'depth on demand'."
   - id: earth
     module: wmoop.earth
     cluster: natural
@@ -152,11 +152,19 @@ domains:
   - id: org
     module: wmoop.org
     cluster: society
-    status: candidate
+    status: seeded
     steward: ~
     depends_on: [core, nature]
     subdomains: [org.structure, org.employment]
-    note: "Already referenced by the meta-model as wm:org.employment:Employee (a role played by a Person)."
+    note: "Organization (social endurant) + the Employee role on Person (the role the meta-model references as wm:org.employment:Employee). Base for wmoop.education."
+  - id: education
+    module: wmoop.education
+    cluster: society
+    status: seeded
+    steward: ~
+    depends_on: [core, nature, org, architecture]
+    subdomains: [education.institutions, education.roles, education.curriculum, education.assessment]
+    note: "The worked 'school' example. School is-a Organization (NOT a Building; the building is a separate SchoolBuilding is-a architecture/Building). Student/Teacher/FormTutor (RO 'diriginte') are roles on Person; CurriculumSubject is abstract with L2 subjects; Mark reifies a grade (value + scale + subject)."
   - id: economy
     module: wmoop.economy
     cluster: society
@@ -230,10 +238,11 @@ domains:
   - id: architecture
     module: wmoop.architecture
     cluster: technology
-    status: candidate
+    status: seeded
     steward: ~
-    depends_on: [core, geography]
+    depends_on: [core]
     subdomains: [architecture.buildings, architecture.structures]
+    note: "Building + Room (Room part_of Building). The physical plant that wmoop.education's Classroom/Laboratory specialise and a School is housed in."
   - id: food
     module: wmoop.food
     cluster: technology
