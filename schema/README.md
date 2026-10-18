@@ -15,6 +15,13 @@ twin for an XML serialization, plus the validator that runs them against the can
 > They encode the *same* rules (identifier shapes, kinds, cardinalities, required slots,
 > provenance). Pick whichever matches your toolchain; the YAML under `model/**` stays the single
 > source of truth (Invariant 1) and the XML is a *generated projection* of it.
+>
+> **Canonical home.** The two schema files live canonically in the separate repo
+> [`WMOOP/wmoop.json`](https://github.com/WMOOP/wmoop.json) (its documented purpose, per
+> `CONTRIBUTING.md` and `docs/05-adversarial-review.md`). The copies in this directory are
+> line-for-line **mirrors**, kept in-repo so the validator and CI run offline;
+> [`check_canonical.py`](check_canonical.py) fails if they drift. **Edit the schema in `wmoop.json`,
+> then re-sync here** — do not treat the copies here as the source.
 
 Normative keywords (MUST/SHOULD/MAY) follow RFC 2119.
 
@@ -24,9 +31,10 @@ Normative keywords (MUST/SHOULD/MAY) follow RFC 2119.
 
 | File | What it is |
 |------|------------|
-| [`wml.schema.json`](wml.schema.json) | JSON Schema (Draft 2020-12) meta-schema for a WML module file (YAML → JSON). The context-free grammar. |
-| [`wml.xsd`](wml.xsd) | The XSD equivalent, for the WML-in-XML serialization. Same grammar, XML idiom. |
+| [`wml.schema.json`](wml.schema.json) | JSON Schema (Draft 2020-12) meta-schema for a WML module file (YAML → JSON). The context-free grammar. **Mirror** of the canonical copy in [`WMOOP/wmoop.json`](https://github.com/WMOOP/wmoop.json). |
+| [`wml.xsd`](wml.xsd) | The XSD equivalent, for the WML-in-XML serialization. Same grammar, XML idiom. **Mirror** of the canonical copy in `WMOOP/wmoop.json`. |
 | [`validate_wml.py`](validate_wml.py) | The **oracle**: runs the JSON Schema grammar gate **and** the cross-file semantic gates (S1–S6, referential integrity) that no context-free grammar can express. Optionally validates the XML projections against the XSD. |
+| [`check_canonical.py`](check_canonical.py) | Freshness check: fails if `wml.schema.json` / `wml.xsd` here have drifted from the canonical copies in `WMOOP/wmoop.json`. |
 | [`yaml_to_xml.py`](yaml_to_xml.py) | Deterministic projector: merges each module's `*.wml.yaml` files into one `<module>` XML document under [`examples/`](examples/). The XML is **generated** — never hand-edited. |
 | [`examples/*.wml.xml`](examples/) | The six seeded modules projected to WML-in-XML (exercise the XSD and double as a single-file view of each module). |
 | [`requirements.txt`](requirements.txt) | The validator's Python dependencies. |
@@ -47,6 +55,9 @@ python schema/yaml_to_xml.py
 
 # 4. CI diff-guard: fail if the committed XML is stale versus the YAML
 python schema/yaml_to_xml.py --check
+
+# 5. freshness check: fail if the schema mirrors drift from canonical WMOOP/wmoop.json
+python schema/check_canonical.py
 ```
 
 `validate_wml.py` exits `0` when every gate is green and `1` on any error (warnings alone do not
@@ -291,10 +302,13 @@ Target XML namespace: `https://wmoop.org/wml/1`.
 
 - **`docs/03-architecture.md`** is the prose specification and rationale. This directory is its
   enforceable counterpart: if the two ever disagree, that is a bug to reconcile.
-- **`CONTRIBUTING.md` / `AI_CONTRIBUTING.md`** reference the meta-schema as the artifact called
-  `wmoop.json` ("the JSON Schema meta-schema that validates the model"). `wml.schema.json` here
-  **is** that meta-schema; `wmoop.json` additionally denotes the *compiled* model export, which is a
-  separate build artifact (not in this directory).
+- **`CONTRIBUTING.md` / `AI_CONTRIBUTING.md` / `docs/05-adversarial-review.md`** place the JSON
+  Schema meta-schema in a separate repo, **[`WMOOP/wmoop.json`](https://github.com/WMOOP/wmoop.json)**.
+  That is now the **canonical home**: `wml.schema.json` and `wml.xsd` here are synced mirrors of it
+  (see the *Canonical home* note at the top and [`check_canonical.py`](check_canonical.py)). This
+  resolves the "two incompatible answers" inconsistency flagged in `docs/05-adversarial-review.md`
+  (the meta-schema lives in `wmoop.json`, not `wmoop.doc`). The name `wmoop.json` *also* denotes the
+  *compiled* model export — a separate build artifact, not these grammar files.
 - **`.claude/skills/wml-contribute`** points authors at the oracle; `validate_wml.py` is a runnable
   stand-in for the `wmoop validate` step until the full `wmoopc` CLI lands in `wmoop.tools`.
 

@@ -28,6 +28,17 @@ the MAJOR version.
   [`model/README.md`](model/README.md) to make contributing a new domain easy.
 - `model/taxonomy.yaml` updated (registry 0.1.0→0.2.0): `education` added; `architecture`, `org`,
   `nature.anatomy` promoted to **seeded**; the two diagrams in `docs/06-domain-taxonomy.md` regenerated.
+- **WML schema & validation (`schema/`)** — the machine contract for WML: `wml.schema.json`
+  (JSON Schema 2020-12) and `wml.xsd` (W3C XSD); a validator (`validate_wml.py`: grammar gate +
+  the S1–S6 semantic gates + referential integrity + optional XSD check); a deterministic YAML→XML
+  projector (`yaml_to_xml.py`) with the six seeded modules projected under `schema/examples/`; the
+  language specification (`schema/README.md`); and a CI workflow
+  (`.github/workflows/wml-validate.yml`).
+- **Canonical schema relocated** to the dedicated repo
+  [`WMOOP/wmoop.json`](https://github.com/WMOOP/wmoop.json). `schema/wml.schema.json` and
+  `schema/wml.xsd` here are now synced **mirrors**, guarded by a freshness check
+  (`schema/check_canonical.py`) — resolving the meta-schema-location inconsistency flagged in
+  `docs/05-adversarial-review.md`.
 - **Founding documentation set**: whitepaper, foundations & related work, the L0 meta-model,
   the WML schema format & cross-language generation design, the academic program, and an
   independent adversarial design review (`docs/`).

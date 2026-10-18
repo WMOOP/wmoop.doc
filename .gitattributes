@@ -1,3 +1,8 @@
 # Generated WML-in-XML projections are byte-compared by `schema/yaml_to_xml.py --check`
 # (the CI diff-guard). Pin them to LF so the check is stable regardless of core.autocrlf.
 schema/examples/*.wml.xml text eol=lf
+
+# Schema mirrors are byte-compared against canonical WMOOP/wmoop.json by
+# schema/check_canonical.py. Pin to LF so the comparison is stable cross-platform.
+schema/wml.schema.json text eol=lf
+schema/wml.xsd          text eol=lf

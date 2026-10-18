@@ -35,3 +35,6 @@ jobs:
 
       - name: Check XML projections are up to date
         run: python schema/yaml_to_xml.py --check
+
+      - name: Check schema mirrors are in sync with WMOOP/wmoop.json
+        run: python schema/check_canonical.py
