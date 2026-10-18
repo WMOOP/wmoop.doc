@@ -1,0 +1,9 @@
+# Merge / conflict backup files — never commit these
+*.orig
+*.rej
+*.bak
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*~
