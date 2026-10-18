@@ -19,9 +19,9 @@ For *what makes a contribution factually and ethically acceptable*, see **[ETHIC
 
 ### 1. Scope and first principles
 
-WMOOP maintains a single, language-neutral **World Model (WM)** — the canonical, declarative ontology that lives in `wmoop.doc` — and a set of per-language repositories (`wmoop.net`, `wmoop.java`, `wmoop.py`, `wmoop.cpp`, …) that are **generated from and conformance-tested against** the WM.
+WMOOP maintains a single, language-neutral **World Model (WM)** — the canonical, declarative ontology that lives in `wmoop.doc` — and a set of per-language repositories (`wmoop.net`, `wmoop.java`, `wmoop.py`, `wmoop.cpp`) that are **generated from and conformance-tested against** the WM, built by the tooling in `wmoop.tools`. The full repo list and every CI-enforced constant are fixed in the **Normative constants** table (§1.1).
 
-This governance is bound by six **architectural invariants**. They are not up for casual change; altering any of them requires a **Meta-RFC** (§6) and a Technical Steering Committee (TSC) supermajority (§4.4).
+This governance is bound by eight **architectural invariants**. They are not up for casual change; altering any of them requires a **Meta-RFC** (§6) and a Technical Steering Committee (TSC) supermajority (§4.4).
 
 | # | Invariant | One-line governance consequence |
 |---|-----------|----------------------------------|
@@ -31,8 +31,43 @@ This governance is bound by six **architectural invariants**. They are not up fo
 | I4 | **Every concept is sourced.** Stable global ID, human name, definition, provenance/citation, units for quantities. | CI blocks any merge missing these; see Definition of Done (§8). |
 | I5 | **Domains are versioned modules with an acyclic dependency graph.** Cross-domain links are declared and versioned. | A PR that introduces a dependency cycle fails CI and cannot be merged. |
 | I6 | **Everything is machine-checkable.** | The Definition of Done is automated; humans and AI contribute against the same gate. |
+| I7 | **Ontological completeness.** L0 represents endurants, perdurants and abstracts as first-class — not physical-objects-with-properties only. | Domains needing processes (perdurants) or abstractions (Math, Music) are first-class; reviewers don't force them into object-with-fields shapes. |
+| I8 | **Identity lifecycle & world-stance.** Stable id with first-class deprecation/`sameAs`/merge; open-world for facts, closed-world for schema conformance. | IDs are never reused; absence of a fact is not its negation; the DoD checks are the closed-world contract. |
 
 **"Write once, replicate everywhere" is mechanical.** Per-language code is *generated* and *conformance-tested*, never manually re-authored from the model. A human (or AI) who wants to change a concept in C# does not edit `wmoop.net` by hand — they change the WM, regenerate, and the change flows to every language.
+
+#### 1.1 Normative constants (single source of truth)
+
+> Every CI-enforced or cross-document constant has **exactly one value here**. Any other
+> document that needs one of these MUST link to this table, never restate it; a CI check
+> asserts the authored artefacts match these values. This table resolves the prior drift
+> between the meta-model, architecture, schema, contribution and pattern docs.
+
+| Constant | Normative value |
+|----------|-----------------|
+| **Concept / Role / Type ID (QName)** | `wmoop.<domain>(.<subdomain>)*/<PascalName>` — e.g. `wmoop.transport/Driver` |
+| **Member ID** | `<TypeQName>#<camelName>` — e.g. `wmoop.transport/Vehicle#wheelCount` |
+| **Module ID** | `wmoop.<domain>(.<subdomain>)*` — e.g. `wmoop.transport` |
+| **Opaque identity (optional backing)** | `wmid:` + Crockford-base32 ULID (26 chars). The QName is the working identifier in v0; `wmid` is reserved for stable identity across renames/merges. |
+| **Forbidden ID forms** | colon separators (`wm:x:Y`), dot-before-local-name CURIEs (`wm:x.Y`), reserved kind segments (`…role.`/`…prop.`/`…rel.`/`…ind.`), a `/role/` path segment, and the bare `wm:` prefix. Kind is a node property, never part of the id. |
+| **Inheritance keyword (WML)** | `extends` |
+| **Inheritance depth** | CI **error** at depth > 6; **warning** at depth 5. ("≤ 3–4 levels" in teaching material is a heuristic, not the gate.) |
+| **Role-player keyword (WML)** | `played_by` (rendered `playedBy` in the XML projection and camelCase bindings). `AddRole`/`HasRole`/`GetRole` are the generated runtime API, not the model keyword. |
+| **Provenance `kind` enum** | `sourced \| definitional \| convention` |
+| **Core invariants** | Eight: I1 schema-first · I2 three layers · I3 composition/roles over inheritance · I4 sourced/identified/measured · I5 versioned, acyclic domains · I6 machine-checkable · I7 ontological completeness · I8 identity lifecycle & open/closed-world stance |
+| **Canonical format** | WML (authored in YAML, compiled to canonical JSON) |
+| **Meta-schema (grammar)** | `wmoop.doc/schema/wml.schema.json` (JSON Schema; `wml.xsd` is a generated XML projection) |
+| **Compiled model artefact** | `wm-<ver>.json` (RFC 8785 JCS), published as a GitHub Release of `wmoop.doc`. Not named `wmoop.json`. |
+| **Compiler / tooling home** | `wmoop.tools` (ships `wmoopc`, the generators, projectors, conformance runner) |
+| **Conformance-gated bindings (v1)** | `wmoop.net` (C#), `wmoop.java`, `wmoop.py`, `wmoop.cpp` |
+| **Planned bindings (not yet conformance-gated)** | `wmoop.js`, `wmoop.db` |
+| **License — code** | Apache-2.0 (chosen) |
+| **License — model & docs** | CC-BY-4.0 (chosen) |
+| **AI PR — routine size** | ≤ 5 node files per automated PR; larger imports require an RFC + a sponsoring steward |
+| **AI PR — throughput** | ≤ 5 open automated PRs per bot; ≤ 10 automated PRs merged per domain per day |
+| **Contribution labels** | `human \| ai-assisted \| ai-generated` |
+| **Domain status** | `seeded` (module exists in `model/`) · `candidate` (needs steward + sources). Living list: `model/taxonomy.yaml`; map: `docs/06-domain-taxonomy.md`. |
+| **Geography** | Its own top-level domain (`wmoop.geography`); Transport depends on it — not a sub-domain of Nature. |
 
 ---
 
@@ -172,7 +207,7 @@ ADRs are **append-only**: a later decision supersedes an earlier one by a new AD
 When consensus genuinely fails:
 - **TSC quorum** = ⌈⅔ of seated members⌉.
 - **Ordinary decision** = simple majority of those voting; abstentions don't count against quorum.
-- **Supermajority decision** (changing an invariant I1–I6, this document, ETHICS.md red lines, or removing a maintainer for cause) = **two-thirds of seated members**.
+- **Supermajority decision** (changing an invariant I1–I8, this document, ETHICS.md red lines, or removing a maintainer for cause) = **two-thirds of seated members**.
 - Votes and rationale are public in the TSC minutes. A conflicted member (e.g. voting on removing themselves, or on their own employer's data source) **must recuse**.
 
 ---
@@ -187,7 +222,7 @@ Routine domain work does **not** need an RFC. RFCs exist for changes whose blast
 - changes to **code generators** or the **conformance contract** that affect all languages;
 - introducing a **new top-level domain**;
 - changing **stability-tier rules, versioning, or deprecation policy**;
-- a **Meta-RFC**: changing an invariant (I1–I6), this governance, or ETHICS.md.
+- a **Meta-RFC**: changing an invariant (I1–I8), this governance, or ETHICS.md.
 
 **RFC lifecycle:**
 
@@ -209,7 +244,7 @@ Draft ──▶ Discussion ──▶ Final Comment Period (FCP, 10 days) ──�
 
 #### 6.1 Identity is forever
 
-- Every concept carries a **stable global ID** (Invariant I4), e.g. `wm:nature.animals.Cetacean`.
+- Every concept carries a **stable global ID** (Invariant I4), e.g. `wmoop.nature.animals/Cetacean`.
 - **IDs are immutable and never reused.** You do not rename an ID. A rename is: mint a **new** ID, mark the old one `deprecated` with `replacedBy: <new-id>` and (where meaning is identical) a `sameAs` link. Consumers get a clean migration path and nothing silently changes meaning under them.
 
 #### 6.2 Semantic versioning of modules
@@ -242,7 +277,7 @@ Every concept, property, relation, and scheme carries a **stability tier**:
    ```yaml
    status: deprecated
    deprecatedSince: "nature@4.2.0"
-   replacedBy: "wm:nature.animals.Cetacean"
+   replacedBy: "wmoop.nature.animals/Cetacean"
    removeAfter: "nature@5.0.0"     # never sooner than the next MAJOR
    reason: "Folk grouping 'sea-fish' conflated mammals and fish; superseded by sourced taxonomy."
    ```
@@ -299,7 +334,7 @@ AI agents are **first-class, welcome contributors** — the project is explicitl
    |-------|---------|
    | Open automated PRs per bot at once | ≤ 5 |
    | Automated PRs merged per domain per day | ≤ 10 |
-   | Items changed per automated PR | ≤ 50 (larger imports go through an RFC + bulk-import review) |
+   | Node files added or changed per routine automated PR | ≤ 5 (larger imports go through an RFC + bulk-import review) |
    | Bulk import (new dataset / hundreds of instances) | Requires an RFC and a sponsoring steward regardless of size |
 
    Bots that exceed limits are auto-throttled by CI; repeated abuse → the sponsor is notified and the bot can be suspended by any core maintainer.
@@ -327,7 +362,7 @@ WMOOP is a *provenance-first* project, and the license choice reflects that etho
 | Material | License | Rationale |
 |----------|---------|-----------|
 | **Code** (generators, tooling, per-language outputs, tests) | **Apache-2.0** *(chosen)* | Permissive, patent grant, industry-standard for broad adoption across ecosystems. Already selected in the repos. |
-| **Model content & documentation** (definitions, prose, curated structure, the WM itself, these docs) | **CC-BY-4.0** *(recommended)* | See §10.1. |
+| **Model content & documentation** (definitions, prose, curated structure, the WM itself, these docs) | **CC-BY-4.0** *(chosen)* | See §10.1. |
 
 Every file/module carries an **SPDX identifier** (`SPDX-License-Identifier: Apache-2.0` or `CC-BY-4.0`) so licensing is machine-checkable. A top-level `LICENSES/` directory holds the full texts; `NOTICE` carries required attributions.
 

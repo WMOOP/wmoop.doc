@@ -25,7 +25,7 @@ It is written to hold under scrutiny from both a software architect and a resear
 | §9 | **Localization** (e.g., Romanian) | Local universities |
 | §10 | Appendices: templates, quick-reference card | Everyone |
 
-**Alignment note.** This document assumes the six *Core Architectural Invariants* and the WM (World Model) schema. Where it shows a file path (e.g. `*.concept.yaml`) or an ID form (e.g. `wm:nature.animals/Mammal`), the authoritative definitions live in the **WM Schema Specification** and **Authoring Guide**; this guide defers to them and only illustrates. See §10 cross-references.
+**Alignment note.** This document assumes the eight *Core Architectural Invariants* and the WM (World Model) schema. Where it shows a file path (e.g. `*.concept.yaml`) or an ID form (e.g. `wmoop.nature.animals/Mammal`), the authoritative definitions live in the **WM Schema Specification** and **Authoring Guide**; this guide defers to them and only illustrates. The WMOOP identifiers and WML keywords shown throughout this guide (e.g. `wmoop.nature.animals/Mammal`, `extends`, `played_by`) illustrate the canonical forms defined in the **Normative Constants** table in GOVERNANCE.md. See §10 cross-references.
 
 ---
 
@@ -49,11 +49,11 @@ Each outcome is written as *"the student can…"* and tied to the WMOOP activity
 |---|---|---|---|---|---|
 | LO-1 | **Abstraction** — find the essential, common properties and name the right level of generality | Define an abstract base concept (e.g. `Landform`, `Instrument`, `Vehicle`) carrying only shared, defensible properties | Author an abstract `kind: Class` concept with shared properties + definition | A1, A3, A6 | Analyze / Create |
 | LO-2 | **Encapsulation** — expose intent, hide representation; enforce invariants | Model properties with types, units, allowed ranges/enums; keep derived facts derived | Declare typed properties with units + constraints; generated code exposes read-only/invariant-guarded members | A0, A3 | Apply |
-| LO-3 | **Inheritance (and its limits)** — use `is-a` only for stable essence; keep it shallow; honour Liskov | Model genuine `subClassOf` where every instance of the child is permanently a kind of the parent and is substitutable | Build a shallow subtype chain; justify each `subClassOf`; add Liskov conformance cases | A1, A2 | Evaluate |
+| LO-3 | **Inheritance (and its limits)** — use `is-a` only for stable essence; keep it shallow; honour Liskov | Model genuine `extends` where every instance of the child is permanently a kind of the parent and is substitutable | Build a shallow subtype chain; justify each `extends`; add Liskov conformance cases | A1, A2 | Evaluate |
 | LO-4 | **Polymorphism** — one interface, many behaviours | Abstract operations (`area()`, `perimeter()`, sound production) realised per subtype | Define polymorphic operations; generated code dispatches per type; tests assert behaviour | A0, A1 | Apply |
 | LO-5 | **Interfaces / traits** — model capabilities orthogonal to the type hierarchy | Attach cross-cutting capabilities (`CanFly`, `IsTransposing`, `HasVertebralColumn`) as traits, not base classes | Declare `traits`; implement interfaces in generated code | A1, A2 | Analyze |
 | LO-6 | **Composition / part-of** — model `has-a`/whole-part containment instead of inheritance | Model mereological structure (country **contains** counties) via a `partOf` relation | Build a recursive `partOf` structure with cardinalities; **no** inheritance | **A4** | Evaluate |
-| LO-7 | **Roles / capabilities** — attach contextual, temporal, multiple facets by composition | A `Person` *acts as* `Driver`/`Student`/`Employee`; roles are attached, bounded, and plural | Author a `kind: Role` with `appliesTo`; compose onto a party; **never** subclass | **A5, A6** | Create |
+| LO-7 | **Roles / capabilities** — attach contextual, temporal, multiple facets by composition | A `Person` *acts as* `Driver`/`Student`/`Employee`; roles are attached, bounded, and plural | Author a `kind: Role` with `played_by`; compose onto a party; **never** subclass | **A5, A6** | Create |
 | LO-8 | **Generics / parametric polymorphism** | Reusable role-holders, typed collections, `Quantity<Unit>` | Use a generic role registry / typed collections in generated code | A5, A6 | Apply |
 | LO-9 | **SOLID** | SRP (one concept = one responsibility), OCP (extend by new subtypes/traits/roles, not edits), LSP (Liskov conformance), ISP (small traits), DIP (code depends on generated abstractions, not concretions) | Reviewed against SOLID checklist; OCP demonstrated by extension PRs | A2, A6 | Evaluate |
 | LO-10 | **Ontology / modelling thinking** | Choose the right category, resist a single forced tree, use categories/tags for contested classification | Decide `is-a` vs `part-of` vs `acts-as`; handle multi-classification with categories | A3, A4, A5 | Create |
@@ -77,15 +77,15 @@ Before any assignment, teach this one decision. Every rubric and every brief ref
 | **Substitutable?** (Liskov) | Yes — anywhere Y is expected, X works | No — a part is not the whole | No — a role is not the essence |
 | **Can stop being true while the object lives?** | **No** → if it can, it is *not* inheritance | — | **Yes** — roles start and end |
 | **Several at once?** | Rarely; avoid multiple inheritance | Many parts, yes | **Yes** — Driver *and* Employee *and* Student |
-| **Modelled as** | `subClassOf` (shallow) | `relation: partOf` (+ cardinality) | `kind: Role` + `appliesTo` (composition) |
-| **Worked example** | `Mammal subClassOf Vertebrate` | `City partOf County partOf Country` | `Person acts-as Driver` |
+| **Modelled as** | `extends` (shallow) | `relation: partOf` (+ cardinality) | `kind: Role` + `played_by` (composition) |
+| **Worked example** | `Mammal extends Vertebrate` | `City partOf County partOf Country` | `Person acts-as Driver` |
 
 ### 3.2 Litmus questions (apply in order)
 
 1. **Would it ever stop being true while the object still exists?** → **Role.** (A person stops being a driver when the licence expires; they do not stop being a person.)
 2. **Can one object be several of these simultaneously?** → **Role or trait**, not single inheritance.
 3. **Is it a whole/part containment ("made of", "located in", "administered under")?** → **Composition (`partOf`).**
-4. **Is it a genuine, permanent *kind-of* that is substitutable everywhere the parent is?** → **Inheritance** — and keep it shallow (≤ 3–4 levels; respect Liskov).
+4. **Is it a genuine, permanent *kind-of* that is substitutable everywhere the parent is?** → **Inheritance** — and keep it shallow (aim ≤ 3–4 levels as a teaching heuristic; the CI gate is depth ≤ 6, warn at 5; respect Liskov).
 5. **Is the classification contested or multi-axis?** (A fjord is a valley *and* a coastal feature; a piano is percussion *and* keyboard.) → Use **categories/tags / multiple-parent relations**, not a forced single tree.
 
 ### 3.3 The canonical anti-patterns (teach by negative example)
@@ -161,12 +161,12 @@ public sealed class Circle(Length radius) : Shape
 
 **Worked snippet (canonical YAML).**
 ```yaml
-id: wm:music.instruments/Violin
+id: wmoop.music.instruments/Violin
 kind: Class
 name: { en: Violin, ro: Vioară }
 definition: A bowed string instrument with four strings tuned in perfect fifths.
-subClassOf: wm:music.instruments/StringInstrument   # genuine is-a
-traits: [ wm:music.instruments/Bowed ]              # capability, not a base class
+extends: wmoop.music.instruments/StringInstrument   # genuine is-a
+traits: [ wmoop.music.instruments/Bowed ]              # capability, not a base class
 provenance:
   - source: "Hornbostel–Sachs classification (1914), rev. MIMO 2011"
     cite: "321.322-71"
@@ -183,7 +183,7 @@ version: 1.0.0
 
 **Brief.** Model a slice of the Linnaean hierarchy: `Animal` → `Vertebrate` → `Mammal`/`Bird`/`Fish`, down to a few species (`Sparrow`, `Penguin`, `Housefly`). Carry a common property such as `legCount`. **Do not** put `fly()` on `Bird`.
 
-**Modelling decision.** **Inheritance** for taxonomic `is-a` (ranks are stable, substitutable kinds-of) + **traits** for abilities (`ICanFly`, `ICanSwim`, `IsEndothermic`). The **penguin test**: `Penguin subClassOf Bird` but `Penguin` does **not** have `ICanFly`; `Sparrow` does. This proves why abilities belong in traits — otherwise `Penguin` violates Liskov on a `Bird.Fly()` contract.
+**Modelling decision.** **Inheritance** for taxonomic `is-a` (ranks are stable, substitutable kinds-of) + **traits** for abilities (`ICanFly`, `ICanSwim`, `IsEndothermic`). The **penguin test**: `Penguin extends Bird` but `Penguin` does **not** have `ICanFly`; `Sparrow` does. This proves why abilities belong in traits — otherwise `Penguin` violates Liskov on a `Bird.Fly()` contract.
 
 **Canonical deliverables.** `model/nature/animals/*` with ≥3 ranks deep, ≥3 species, ≥3 traits; conformance cases including an explicit **Liskov case**: "a `Bird` reference never guarantees flight," asserted via the trait, not the base.
 
@@ -217,11 +217,11 @@ public sealed class Penguin : Bird { /* deliberately not ICanFly */ }
 
 **Worked snippet (canonical YAML).**
 ```yaml
-id: wm:nature.geography/Mountain
+id: wmoop.nature.geography/Mountain
 kind: Class
 name: { en: Mountain, ro: Munte }
 definition: A landform rising prominently above its surroundings, typically >300 m local relief.
-subClassOf: wm:nature.geography/Landform
+extends: wmoop.nature.geography/Landform
 properties:
   - id: "#meanElevation"
     name: { en: mean elevation }
@@ -245,24 +245,24 @@ version: 1.0.0
 
 **Modelling decision.** **Composition / `partOf` (mereology)** — emphatically **not** inheritance. Students must *attempt and reject* an inheritance model in the PR write-up, applying the §3 litmus. Teach **aggregation vs composition lifetime** (a county's existence does not depend on a single city) and **recursive structures** with cardinalities.
 
-**Canonical deliverables.** `model/nature/geography/admin/*` defining `AdministrativeUnit` with a `partOf` relation and an `AdminLevel` enum (`Country`, `County`, `City`, …); L2 instances in `model/.../admin/instances/`; conformance: traversal (city → county → country), cardinality rules, and a **lint assertion that no admin concept uses `subClassOf` across levels**.
+**Canonical deliverables.** `model/nature/geography/admin/*` defining `AdministrativeUnit` with a `partOf` relation and an `AdminLevel` enum (`Country`, `County`, `City`, …); L2 instances in `model/.../admin/instances/`; conformance: traversal (city → county → country), cardinality rules, and a **lint assertion that no admin concept uses `extends` across levels**.
 
 **Learning outcomes.** LO-6 (keystone), LO-2, LO-10, LO-12, LO-13.
 
 **Worked snippet — the wrong vs right model.**
 ```yaml
 # ❌ WRONG — containment modelled as inheritance
-# id: wm:geography.admin/City
-# subClassOf: wm:geography.admin/County      # a city is NOT a kind of county
+# id: wmoop.geography.admin/City
+# extends: wmoop.geography.admin/County      # a city is NOT a kind of county
 
 # ✅ RIGHT — containment modelled as a part-of relation
-id: wm:geography.admin/City
+id: wmoop.geography.admin/City
 kind: Class
 name: { en: City, ro: Oraș }
 definition: A large permanent human settlement administered within a county.
 relations:
   - type: partOf                 # whole/part mereology, not subtype
-    target: wm:geography.admin/County
+    target: wmoop.geography.admin/County
     cardinality: "1"             # part of exactly one county (this model)
 version: 1.0.0
 ```
@@ -296,15 +296,15 @@ public sealed class AdministrativeUnit
 
 **Worked snippet (canonical YAML + generated C#).**
 ```yaml
-id: wm:transport.licensing/DriverRole
+id: wmoop.transport.licensing/DriverRole
 kind: Role
 name: { en: Driver, ro: Șofer }
-appliesTo: wm:nature.people/Person        # attached to Person — NOT subClassOf
+played_by: wmoop.nature.people/Person        # attached to Person — NOT extends
 definition: The capability of a Person to legally operate a road vehicle.
-dependsOn: [ "wm:nature.people@^2" ]       # declared, versioned, acyclic (Invariant 5)
+dependsOn: [ "wmoop.nature.people@^2" ]       # declared, versioned, acyclic (Invariant 5)
 temporal: { bounded: true }                # roles start and end
 properties:
-  - { id: "#licence",    name: {en: driving licence}, type: wm:transport.licensing/DrivingLicence }
+  - { id: "#licence",    name: {en: driving licence}, type: wmoop.transport.licensing/DrivingLicence }
   - { id: "#categories", name: {en: categories},      type: "set<LicenceCategory>" }   # AM,A1,A2,A,B,BE,C...
 version: 1.0.0
 ```
@@ -346,19 +346,19 @@ public sealed class Party                                                // comp
 **Worked snippet (model shape).**
 ```yaml
 # Vehicle: abstract is-a root with a shared property
-id: wm:transport/Vehicle
+id: wmoop.transport/Vehicle
 kind: Class
 name: { en: Vehicle, ro: Vehicul }
 definition: A machine that transports people or cargo.
 properties: [ { id: "#numberOfWheels", name: {en: number of wheels}, type: integer } ]
 relations:
-  - { type: hasPart, target: wm:transport/Wheel,  cardinality: "0..*" }   # composition
-  - { type: hasPart, target: wm:transport/Engine, cardinality: "0..1" }
+  - { type: hasPart, target: wmoop.transport/Wheel,  cardinality: "0..*" }   # composition
+  - { type: hasPart, target: wmoop.transport/Engine, cardinality: "0..1" }
 version: 1.0.0
 ---
-id: wm:transport/Moped
+id: wmoop.transport/Moped
 kind: Class
-subClassOf: wm:transport/AutoVehicle     # genuine is-a (AutoVehicle is-a Vehicle)
+extends: wmoop.transport/AutoVehicle     # genuine is-a (AutoVehicle is-a Vehicle)
 # operation by a Person is a ROLE link, defined on a Trip/operates relation, never `Moped : Driver`
 ```
 
@@ -443,7 +443,7 @@ A contribution (human- or AI-authored) is **Done** when every box is green. CI e
 
 - [ ] **1. Schema-valid.** Every `*.concept.yaml`/`*.domain.yaml` validates against the WM schema.
 - [ ] **2. Complete metadata.** Every concept has a stable **ID**, **name**, **definition**, **provenance**, and **units** on all quantities (Invariant 4).
-- [ ] **3. Modelling-decision lint.** No role modelled as a subclass; no `partOf` modelled as `subClassOf`; inheritance depth ≤ configured max; Liskov conformance cases present for subtypes.
+- [ ] **3. Modelling-decision lint.** No role modelled as a subclass; no `partOf` modelled as `extends`; inheritance depth ≤ configured max; Liskov conformance cases present for subtypes.
 - [ ] **4. Dependency graph acyclic & versioned.** Cross-domain links declared with semver ranges; no cycles (Invariant 5).
 - [ ] **5. Conformance passes.** All required conformance cases green.
 - [ ] **6. Codegen builds.** Generated code compiles and passes conformance in the target language(s).
@@ -584,7 +584,7 @@ WMOOP's model is **language-neutral** (Invariant 1), and localization respects t
 
 ### 10.1 Glossary (student-facing)
 - **Concept** — a modelled thing (class, role, relation) with a stable ID.
-- **Is-a / subClassOf** — genuine, permanent, substitutable kind-of (inheritance).
+- **Is-a / extends** — genuine, permanent, substitutable kind-of (inheritance).
 - **Part-of** — whole/part containment (composition); not a subtype.
 - **Role** — a contextual, often temporal, pluralizable capability attached to an entity by composition.
 - **Trait/interface** — an orthogonal capability (`CanFly`), independent of the type tree.
@@ -634,4 +634,4 @@ Assisted-by: <AI tool/model, if any>
 - **WM Schema Specification** — exact file format, ID grammar, allowed `kind`s, relation types.
 - **Authoring Guide** — how to write a concept/domain file + run CI locally.
 - **Governance doc** — CODEOWNERS, release/versioning, maintainer council.
-- **Core Architectural Invariants** — the six invariants this program assumes.
+- **Core Architectural Invariants** — the eight invariants this program assumes.

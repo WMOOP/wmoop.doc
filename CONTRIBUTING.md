@@ -3,7 +3,7 @@
 > **WMOOP — World Map Object-Oriented Programming**
 > *Describe World into OOP. Map all World Objects into Programming Languages.*
 
-Welcome. WMOOP is a collaborative, open-source effort to model the real world — biology, mathematics, music, astronomy, geography, transport, language, and beyond — as a **single, language-neutral, object-oriented knowledge model** from which idiomatic code is generated in many languages (C#, Java, Python, C++, JavaScript) and a database schema. This guide tells you how to contribute so that your work is correct, reusable, and automatically verifiable.
+Welcome. WMOOP is a collaborative, open-source effort to model the real world — biology, mathematics, music, astronomy, geography, transport, language, and beyond — as a **single, language-neutral, object-oriented knowledge model** from which idiomatic code is generated into bindings — C#, Java, Python and C++ are conformance-gated; JavaScript and a database schema (`wmoop.db`) are planned. This guide tells you how to contribute so that your work is correct, reusable, and automatically verifiable.
 
 If you only remember one sentence, remember this:
 
@@ -13,11 +13,11 @@ If you only remember one sentence, remember this:
 
 ## 1. The one rule, and why it exists
 
-The model is written **once**, declaratively, in a language-neutral form. Every per-language repository (`wmoop.net`, `wmoop.java`, `wmoop.py`, `wmoop.cpp`, `wmoop.js`) and the database (`wmoop.db`) is **produced by a code generator** and verified against the canonical model by a **conformance test suite**. "Write once, replicate everywhere" is therefore *mechanical*, not manual.
+The model is written **once**, declaratively, in a language-neutral form. Every per-language binding (`wmoop.net`, `wmoop.java`, `wmoop.py`, `wmoop.cpp` are conformance-gated today; `wmoop.js` and the database `wmoop.db` are planned) is **produced by a code generator** and verified against the canonical model by a **conformance test suite**. "Write once, replicate everywhere" is therefore *mechanical*, not manual.
 
 This is what lets:
 
-- a professor assign a student the **Geography** domain and have that student's work instantly become correct C#, Java, Python, C++ and SQL;
+- a professor assign a student the **Geography** domain and have that student's work instantly become correct C#, Java, Python and C++ (JavaScript and SQL are planned);
 - an AI agent contribute safely, because its output is a small, slot-shaped, machine-checkable artifact rather than free-form code in five languages;
 - the project scale to "the whole world" without the conceptual model ever being duplicated or drifting between languages.
 
@@ -37,6 +37,8 @@ These are the project's load-bearing invariants. Every contribution is judged ag
 | **I4** | **Every concept *and every property* is self-describing and sourced.** | Stable global ID, human name, definition, and provenance/citation on **every** node — every concept, role, enumeration **and property** — plus units on quantities. Nothing is left unsourced: a term is either cited to an external authority (`kind: sourced`) or explicitly marked as a project choice (`kind: definitional`/`convention`). |
 | **I5** | **Versioned, acyclic modules.** | Domains are versioned modules with an explicit **acyclic** dependency graph. Cross-domain links are declared and versioned. |
 | **I6** | **Everything is machine-checkable.** | A clear, automated **Definition of Done** means humans *and* AI can contribute safely. If CI is green and a reviewer approves, it is correct-by-construction. |
+| **I7** | **Ontological completeness.** | L0 represents endurants, perdurants and abstracts as first-class — not physical-objects-with-properties only — so Math and Music are modellable. |
+| **I8** | **Identity lifecycle & world-stance.** | Stable id with first-class deprecation/`sameAs`/merge; open-world for facts (absence ≠ falsehood), closed-world for schema conformance. |
 
 > **Engineering standard.** Code and model alike use the best, most-established methods, concepts and
 > patterns — at the right level of abstraction: proven over clever, abstractions over concretions, but
@@ -51,12 +53,12 @@ WMOOP is split across the `WMOOP` GitHub organization. Know which repo your chan
 
 | Repo | Role | Do you hand-edit it? |
 |------|------|----------------------|
-| **`wmoop.doc`** | Canonical model source (`/model/**`, authored in YAML) **and** all governance/spec docs (this file, the meta-model spec, ethics, ADRs). | **Yes — this is where you contribute the model.** |
-| **`wmoop.json`** | The **JSON Schema meta-schema** that validates the model, plus the **compiled JSON / JSON-LD export** of the whole World Model (a build artifact other repos consume). | Meta-schema: by proposal/ADR only. Compiled export: **never** — it is generated. |
-| **`wmoop.net`** (C#), **`wmoop.java`**, **`wmoop.py`**, **`wmoop.cpp`**, **`wmoop.js`** | **Generated** idiomatic bindings + per-language conformance tests + the generator templates. | Model classes: **never**. Generator *templates* and runtime glue: yes, via their own PRs. |
-| **`wmoop.db`** | **Generated** database schema/migrations from the model. | Schema: **never**. Migration tooling: yes. |
+| **`wmoop.doc`** | Canonical model source (`/model/**`, authored in YAML), the **meta-schema** (`schema/wml.schema.json`), **and** all governance/spec docs (this file, the meta-model spec, ethics, ADRs). Publishes the compiled model `wm-<ver>.json` as a Release. | **Yes — this is where you contribute the model.** (Meta-schema: by proposal/ADR only. Compiled `wm-<ver>.json`: **never** — it is generated.) |
+| **`wmoop.tools`** | The `wmoopc` compiler, per-language generators, projectors, and the conformance runner. | Tooling PRs only; not model content. |
+| **`wmoop.net`** (C#), **`wmoop.java`**, **`wmoop.py`**, **`wmoop.cpp`** | **Generated**, conformance-gated idiomatic bindings + per-language conformance tests + the generator templates. | Model classes: **never**. Generator *templates* and runtime glue: yes, via their own PRs. |
+| **`wmoop.js`** (JavaScript), **`wmoop.db`** (database schema/migrations) | **Planned** — generated like the others, not yet conformance-gated. | Schema/classes: **never**. |
 
-> The canonical **source** lives in `wmoop.doc/model/**`. The **machine contract** (JSON Schema) and the **compiled graph** live in `wmoop.json`. Treat them as two faces of the same canonical layer.
+> The canonical **source** lives in `wmoop.doc/model/**`. The **machine contract** (the JSON-Schema meta-schema, `schema/wml.schema.json`) lives alongside it in `wmoop.doc`, and the **compiled model** is published as `wm-<ver>.json` (a Release of `wmoop.doc`). See the [Normative constants](GOVERNANCE.md) table for the authoritative repo/artefact list.
 >
 > *(The exact repo-to-artifact split is fixed by [ADR-0001]; if you think it should change, open an ADR, don't improvise.)*
 
@@ -102,28 +104,32 @@ model/
 
 ## 4. Identifiers, naming, and required fields
 
-### 4.1 The ID scheme (CURIE)
+### 4.1 The ID scheme (QName)
 
-Every node has a **stable global ID** shaped as a CURIE:
+Every node has a **stable global ID** — a QName. The one normative grammar is the [Normative constants](GOVERNANCE.md) table (§1.1); it is also the `QName` datatype in `model/core/core.wml.yaml`. In short:
 
 ```
-wm:<domain>[.<subdomain>...].<LocalName>
+module:   wmoop.<domain>(.<subdomain>)*          e.g. wmoop.nature.animals
+type:     <module>/<PascalName>                  e.g. wmoop.nature.animals/Mammal
+member:   <TypeQName>#<camelName>                e.g. wmoop.nature.animals/Mammal#legCount
+instance: same grammar as its type               e.g. wmoop.space.planets/Mars
 ```
 
-| Node kind | Segment | Case of LocalName | Example |
-|-----------|---------|-------------------|---------|
-| Domain | — | lowercase | `wm:nature` |
-| Class (concept) | — | `PascalCase` | `wm:nature.animals.Mammal` |
-| Property | `prop.` | `camelCase` | `wm:nature.animals.prop.legCount` |
-| Relation | `rel.` | `camelCase` | `wm:core.rel.partOf` |
-| Role | `role.` | `PascalCase` | `wm:transport.role.Driver` |
-| Instance (L2) | `ind.` | `PascalCase`/stable | `wm:space.planets.ind.Mars` |
+| Node kind | Example |
+|-----------|---------|
+| Domain / module | `wmoop.nature.animals` |
+| Class / concept | `wmoop.nature.animals/Mammal` |
+| Property (a member) | `wmoop.nature.animals/Mammal#legCount` |
+| Relation (a member) | `wmoop.transport/Driver#operates` |
+| Role | `wmoop.transport.driving/Driver` |
+| Instance (L2) | `wmoop.space.planets/Mars` |
 
 Rules:
 
-- **IDs are immutable once merged.** You never rename an ID. To rename the *human* name, change `name`; to retire an ID, deprecate it and add an `alias`/`replacedBy`. (CI enforces this via the no-mutation gate.)
-- IDs are globally unique. Properties and relations are **first-class and reusable** — define `legCount` once, reference it from many classes.
-- Top-level domain prefixes come from a **reserved registry** (`model/_meta/domains.yaml`); adding a top-level domain requires maintainer sign-off (see the *add a domain* template).
+- **`kind` is a property of the node, not part of the id.** There are no `prop.`/`rel.`/`role.`/`ind.` segments, no `wm:` prefix, and no colon separators — those older forms are rejected.
+- **IDs are immutable once merged.** You never rename an ID. To rename the *human* name, change `name`; to retire an ID, deprecate it and add a `sameAs`/`replacedBy`. (CI enforces this via the no-mutation gate.)
+- IDs are globally unique. Properties and relations are members of their owning type, referenced by their member QName.
+- Top-level domain prefixes come from a **reserved registry** (`model/taxonomy.yaml`); adding a top-level domain requires maintainer sign-off (see the *add a domain* template).
 
 ### 4.2 Required fields on every node (I4)
 
@@ -185,7 +191,7 @@ On approval, CI regenerates the bindings for every language and the DB, and runs
 
 ### Step 6 — Merge & release
 
-Maintainers squash-merge. A release bumps the affected domain's SemVer, publishes the recompiled JSON/JSON-LD export from `wmoop.json`, and the language repos pick up the new model version.
+Maintainers squash-merge. A release bumps the affected domain's SemVer, publishes the recompiled model as `wm-<ver>.json` (a Release of `wmoop.doc`), and the language repos pick up the new model version.
 
 ---
 
@@ -197,16 +203,16 @@ Getting the *shape* right matters more than getting lots of nodes in. Use these 
 
 Ask, in order:
 
-1. **Is it a genuine, permanent *kind-of* that would satisfy Liskov** (anything true of the parent is true of the child, with no exceptions and no narrowing that breaks callers)? → use **inheritance** (`kindOf`). Keep it **shallow** (soft cap: 5 levels; deeper needs justification).
+1. **Is it a genuine, permanent *kind-of* that would satisfy Liskov** (anything true of the parent is true of the child, with no exceptions and no narrowing that breaks callers)? → use **inheritance** (`extends`). Keep it **shallow** (CI gate: depth ≤ 6, warning at 5; most real is-a chains are ≤ 4).
 2. **Is it a facet a thing *plays* or *has*, possibly temporarily, possibly across domains** (a Person *as* a Driver; a Person *as* an Employee)? → use a **role** attached by composition. **Never** `Driver : Person`.
 3. **Is it a part/whole, membership, or other association?** → use a **relation** (`partOf`, `memberOf`, `locatedIn`).
 4. **Is it a contested or multi-parent classification** (a tomato as fruit vs. vegetable; a whale's folk-vs-scientific grouping)? → use **categories/tags** and/or multiple `classifiedAs` relations with provenance, **not** a forced single inheritance tree. Mark `disputed: true` with sources on each side.
 
-> **Worked example (the founder's case).** A `Person` is modeled in `nature.people`. A `Driver` is **not** a subclass of Person. `Driver` is a **role** (`wm:transport.role.Driver`) with `appliesTo: wm:nature.people.Person`, adding meta such as `drivingLicence` and `licenceCategory`. The same Person can also play `wm:company.role.Employee`. This is composition, and it keeps the two domains independent and acyclic. See the [cross-domain role template](#74-add-a-cross-domain-link--role).
+> **Worked example (the founder's case).** A `Person` is modeled in `nature.people`. A `Driver` is **not** a subclass of Person. `Driver` is a **role** (`wmoop.transport.driving/Driver`) with `played_by: wmoop.nature.people/Person`, adding meta such as `drivingLicence` and `licenceCategory`. The same Person can also play `wmoop.org.employment/Employee`. This is composition, and it keeps the two domains independent and acyclic. See the [cross-domain role template](#74-add-a-cross-domain-link--role).
 >
-> *(Humans as a biological kind are handled separately: `wm:nature.people.Person` carries a `classifiedAs` relation to the zoological concept — multiple classification by relation, not by cramming biology and personhood into one inheritance chain.)*
+> *(Humans as a biological kind are handled separately: `wmoop.nature.people/Person` carries a `classifiedAs` relation to the zoological concept — multiple classification by relation, not by cramming biology and personhood into one inheritance chain.)*
 
-### 6.2 Liskov checklist (for every `kindOf`)
+### 6.2 Liskov checklist (for every `extends`)
 
 - The child does **not** remove or make-optional a required parent property.
 - The child does **not** narrow a property's type incompatibly, or widen a relation beyond the parent's contract.
@@ -220,6 +226,8 @@ If any fails, it's a role, a relation, or a sibling — not a subclass.
 ## 7. Fill-in templates
 
 Copy the template, fill every required field, delete the guidance comments. Each template has a blank form and a worked example. Required fields are marked `# REQUIRED`.
+
+> **⚠️ Notation note.** The worked templates below still use an **older authoring notation** (dot/CURIE ids, the `kindOf`/`appliesTo` keywords, first-class `prop.`/`rel.`/`trait.` property refs, `layer:`/`status:` fields, object-form `provenance`) — these intentionally differ from §4.1 and the live schema and are a known, deferred refresh. The **authoritative** grammar, keywords, node fields and provenance shape are the [Normative constants](GOVERNANCE.md) table (§1.1), `schema/wml.schema.json`, and the worked models in [`model/**`](model/) (e.g. `model/transport/`). A full template refresh to the live schema is tracked as follow-up; until then, prefer `model/**` as your copy source.
 
 ### 7.1 Add a class (concept)
 
@@ -496,8 +504,8 @@ A contribution is **Done** when **all** of the following are true. Every item is
 - [ ] **Sourced:** every factual claim has `kind: sourced` with a resolvable citation; definitions/conventions are explicitly marked as such.
 - [ ] **IDs:** unique, correctly shaped, immutable (no existing ID was renamed/mutated).
 - [ ] **No orphans:** every node is reachable from a domain root and every referenced ID resolves.
-- [ ] **Acyclic:** no new cycle in the domain `dependsOn` graph or the `kindOf` graph.
-- [ ] **Sound:** no Liskov violation; no cross-domain `kindOf`; cross-domain facets are roles.
+- [ ] **Acyclic:** no new cycle in the domain `dependsOn` graph or the `extends` graph.
+- [ ] **Sound:** no Liskov violation; no cross-domain `extends`; cross-domain facets are roles.
 - [ ] **No duplicates:** no near-duplicate concept of an existing node (duplicate-detection gate is green or the overlap is justified in the PR).
 - [ ] **Generates:** bindings generate for all languages and **conformance tests pass**.
 - [ ] **Versioned:** any breaking change bumps the domain MAJOR; deprecations use `status: deprecated` + `replacedBy` (nothing is hard-deleted).
@@ -513,15 +521,15 @@ Each gate below blocks merge when red. "How to fix" tells you exactly what to ch
 
 | Gate | What it checks | How to fix |
 |------|----------------|------------|
-| **Schema lint** | YAML parses; validates against the JSON Schema meta-schema (`wmoop.json`). | Match the template; remove unknown fields; fix types. |
+| **Schema lint** | YAML parses; validates against the JSON Schema meta-schema (`schema/wml.schema.json`). | Match the template; remove unknown fields; fix types. |
 | **Naming rules** | ID regex; PascalCase concepts/roles, camelCase properties/relations; file name = local ID. | Rename the file/field to the convention. |
 | **ID immutability** | No previously-merged ID was renamed or deleted. | Use an `alias`/`replacedBy` + deprecation instead of editing the ID. |
-| **Referential integrity / no-orphan** | Every `kindOf`, `ref`, `appliesTo`, `instanceOf`, `dependsOn` resolves; every node reachable from a root. | Add the missing target, or fix the typo in the reference. |
-| **Acyclic-dependency** | `dependsOn` graph and `kindOf` graph are DAGs. | Break the cycle — usually one side should be a role/relation, not a dependency. |
+| **Referential integrity / no-orphan** | Every `extends`, `ref`, `played_by`, `instanceOf`, `dependsOn` resolves; every node reachable from a root. | Add the missing target, or fix the typo in the reference. |
+| **Acyclic-dependency** | `dependsOn` graph and `extends` graph are DAGs. | Break the cycle — usually one side should be a role/relation, not a dependency. |
 | **Provenance presence** | Every node — concepts, roles, enumerations, **and every property** — has a `definition` and `provenance`; factual nodes are `sourced` with resolvable citations. | Add a citation or mark `definitional`/`convention` honestly. |
 | **Unit validity** | Quantity properties/values carry a valid UCUM `unit` + `dimension`. | Add/fix the unit code. |
 | **Duplicate detection** | No near-duplicate (same normalized name/definition) of an existing node. | Reuse the existing node, or justify the distinction in the PR. |
-| **Liskov / roles soundness** | No cross-domain `kindOf`; subtypes don't drop/narrow required properties; inheritance depth within cap. | Convert to a role/relation; restore the contract; flatten. |
+| **Liskov / roles soundness** | No cross-domain `extends`; subtypes don't drop/narrow required properties; inheritance depth within cap (≤ 6, warn at 5). | Convert to a role/relation; restore the contract; flatten. |
 | **Conformance tests** | Generated bindings compile and pass the cross-language conformance suite. | Usually a modeling error surfaced by generation — fix the model. |
 | **Generated-file drift** | No hand-edited generated binding/DB files in the diff. | Revert generated files; only edit `model/**`. |
 | **SemVer / breaking-change** | Breaking edits bump the domain MAJOR; a changelog entry exists. | Bump `version`; add the changelog note. |
@@ -531,7 +539,7 @@ Each gate below blocks merge when red. "How to fix" tells you exactly what to ch
 ## 10. Versioning, deprecation, breaking changes
 
 - Each domain carries its own **SemVer** in `domain.yaml`.
-- **Breaking** (MAJOR): removing/renaming a property, changing a datatype/unit, changing a `kindOf`, tightening cardinality. **Additive** (MINOR): new classes/properties/instances. **Fixes** (PATCH): definition/citation corrections.
+- **Breaking** (MAJOR): removing/renaming a property, changing a datatype/unit, changing an `extends` parent, tightening cardinality. **Additive** (MINOR): new classes/properties/instances. **Fixes** (PATCH): definition/citation corrections.
 - **Never hard-delete.** Set `status: deprecated`, add `replacedBy` where applicable, and let a future MAJOR remove it on a published schedule.
 - Cross-domain links are versioned against the specific domain versions they bind.
 
@@ -560,7 +568,7 @@ Full rules live in [`ETHICS.md`](./ETHICS.md) and [`CODE_OF_CONDUCT.md`](./CODE_
 
 ## 13. For educators
 
-WMOOP is designed for the classroom (e.g. an OOP course). A professor can assign a domain or sub-tree (relief landforms, administrative divisions: countries → regions → cities) and students contribute real, machine-verified modeling. The green/red validator gives students an objective, immediate Definition of Done, and their single model edit becomes correct C#, Java, Python, C++, and SQL automatically. See [`docs/educators.md`](./docs/educators.md) for a syllabus kit and example assignments.
+WMOOP is designed for the classroom (e.g. an OOP course). A professor can assign a domain or sub-tree (relief landforms, administrative divisions: countries → regions → cities) and students contribute real, machine-verified modeling. The green/red validator gives students an objective, immediate Definition of Done, and their single model edit becomes correct C#, Java, Python and C++ automatically (JavaScript and SQL are planned). See [`docs/educators.md`](./docs/educators.md) for a syllabus kit and example assignments.
 
 ---
 

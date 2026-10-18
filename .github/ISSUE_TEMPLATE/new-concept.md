@@ -7,7 +7,7 @@ labels: ["concept", "needs-triage"]
 
 ## Concept
 
-- **Proposed id:** `wm:<domain>/<Name>`  <!-- e.g. wm:nature/animals/Bat -->
+- **Proposed id:** `wmoop.<domain>/<Name>`  <!-- e.g. wmoop.nature.animals/Bat -->
 - **Human name:**
 - **Definition:** <!-- one clear sentence -->
 

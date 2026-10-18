@@ -25,9 +25,9 @@ from and conformance-tested against** what lives here.
 
 ---
 
-## The six architectural invariants
+## The eight architectural invariants
 
-Everything in WMOOP follows six non-negotiable rules. They are what keep the model coherent,
+Everything in WMOOP follows eight non-negotiable rules. They are what keep the model coherent,
 scalable, and replicable across languages.
 
 1. **Schema-first.** A canonical, language-neutral model (**WML**) is the single source of truth.
@@ -46,8 +46,13 @@ scalable, and replicable across languages.
    graph; cross-domain links are declared and versioned.
 6. **Machine-checkable.** Validation is automated (CI), so humans *and* AI can contribute against a
    clear, automated Definition of Done.
+7. **Ontologically complete.** L0 represents **endurants, perdurants and abstracts** as first-class
+   categories, so even domains like **Math** and **Music** are fully modellable.
+8. **Identity lifecycle & world-stance.** Every concept keeps a stable identifier with a
+   deprecation / `sameAs` / merge policy; facts are treated **open-world**, schema conformance
+   **closed-world**.
 
-> These six are authoritative. Where individual documents cite "Invariant #n", they refer to this
+> These eight are authoritative. Where individual documents cite "Invariant #n", they refer to this
 > list.
 
 ---
@@ -114,9 +119,13 @@ A runnable implementation of exactly this is in [`wmoop.net`](https://github.com
 | `wmoop.java`, `wmoop.py`, `wmoop.cpp` | *(planned)* further language bindings, generated from the WML model. |
 | `wmoop.tools` | *(planned)* the generator + validators + conformance-test runner. |
 
-The seed domains are **Math**, **Music**, **Nature**, and **Space**, with sub-domains such as
-**Geometry** (Math), **Animals / Plants / Geography** (Nature), **Instruments** (Music), and a
-**Transport** domain for the vehicle/driver example.
+The domains WMOOP models are tracked in [`model/taxonomy.yaml`](model/taxonomy.yaml) and mapped in
+[the World Domain Map](docs/06-domain-taxonomy.md). Seeded domains (those with a module in `model/`
+today) span the Foundation (`core`) and the formal, natural, place, society, culture and technology
+clusters — including `math`, `chemistry`, `nature`, `space`, `geography`, `org`, `education`,
+`music`, `philosophy`, `transport` and `architecture`. **Geography** is its own domain
+(`wmoop.geography`), which **Transport** depends on. The flagship worked example is the Transport
+**Driver** role on a Nature **Person**.
 
 ---
 

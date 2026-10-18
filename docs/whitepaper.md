@@ -11,7 +11,7 @@
 | **Version** | 0.1 — Draft |
 | **Status** | Open for comment; normative once ratified by maintainers |
 | **Canonical source** | `wmoop.doc` (this document and the World Model it specifies) |
-| **License** | Code: Apache-2.0 (chosen). Documentation & model: CC-BY-4.0 *(proposed — see Open Questions)* |
+| **License** | Code: Apache-2.0 (chosen). Documentation & model: CC-BY-4.0 (chosen) |
 
 > **Reading guide.** This paper is the *frame*: it states the vision, the problem, the contributions, the method at a high level, and how we will measure success. It deliberately does **not** reproduce the deep specifications — the meta-model grammar, the domain-authoring guide, the code-generation and conformance machinery, the ethics and governance charter, and the per-domain reference models. Each of those is a self-contained section and is cited here by forward pointer: *(see §M — Meta-model specification)*, *(see §D — Domain authoring guide)*, etc. Where this frame and a detailed section disagree, the invariants in §3.1 are authoritative and both must be reconciled against them.
 
@@ -92,7 +92,7 @@ This whitepaper and the specifications it frames make the following contribution
 
 ### 3.1 Design principles (the normative invariants)
 
-These six invariants are **normative**. Every detailed section and every repository MUST conform; the architecture-review process exists to test them.
+These eight invariants are **normative**. Every detailed section and every repository MUST conform; the architecture-review process exists to test them.
 
 1. **Schema-first / ontology-first.** A canonical, language-neutral declarative model — the **World Model (WM)** — is the **single source of truth**, kept in `wmoop.doc`. Per-language repos (`wmoop.net`, `wmoop.java`, `wmoop.py`, `wmoop.cpp`) are **generated from** and **conformance-tested against** it. "Write once, replicate everywhere" is **mechanical** (code generation), not manual re-writing.
 2. **Three layers.** **L0** meta-model/upper ontology (small, fixed foundational categories); **L1** domain models (declarative class/property/relation/role definitions); **L2** instances/individuals (optional reference data, e.g. the planets).
@@ -100,6 +100,8 @@ These six invariants are **normative**. Every detailed section and every reposit
 4. **Sourced, identified, measured concepts.** Every concept carries a **stable global ID**, a **human name**, a **definition**, **provenance/citation**, and (for quantities) **units**. Facts are sourced.
 5. **Versioned, acyclic domains.** Domains are versioned modules with an **explicit acyclic dependency graph**; cross-domain links are declared and versioned.
 6. **Machine-checkable.** Everything is validated in CI so that humans *and* AI contribute safely against a clear, automated **Definition of Done**.
+7. **Ontological completeness.** L0 represents **endurants, perdurants and abstracts** as first-class categories, so abstract domains such as **Math** and **Music** are modellable, not only physical objects.
+8. **Identity lifecycle & world-stance.** Every concept has a **stable ID** with a **deprecation / `sameAs` / merge policy**; the model is **open-world for facts** but **closed-world for schema conformance**.
 
 ### 3.2 The three-layer architecture
 
@@ -112,7 +114,7 @@ These six invariants are **normative**. Every detailed section and every reposit
                                   ▲ expressed in terms of
             ┌───────────────────────────────────────────────┐
   L1        │  DOMAIN MODELS (declarative)                   │  versioned modules, acyclic deps
-  "content" │  Nature(Animals, Plants, Geography),           │  — the classes, properties,
+  "content" │  Nature(Animals, Plants), Geography,           │  — the classes, properties,
             │  Math(Geometry), Music(Instruments),           │     relations and roles people
             │  Space, Transport(Vehicle→AutoVehicle→Moped)…  │     and AI contribute
             └───────────────────────────────────────────────┘
@@ -124,7 +126,7 @@ These six invariants are **normative**. Every detailed section and every reposit
 ```
 
 - **L0 is the grammar.** It is intentionally **small and stable**: a fixed set of foundational categories and relationships (concept, property, relation, role, quantity, unit, category, individual, provenance). Changing L0 is a rare, heavyweight event because everything is written in it. *(Normative grammar: §M — Meta-model specification.)*
-- **L1 is the content.** Each domain is a **versioned module** declaring classes, properties, relations and roles in L0's vocabulary. Domains may depend on other domains, but the dependency graph is **acyclic** and cross-domain links are **declared and versioned** (Invariant 5). The seed taxonomy — `Math`, `Music`, `Nature`, `Space`; `Geometry` under `Math`; `Animals`, `Plants`, `Geography` under `Nature`; `Instruments` under `Music`; plus the `Transport/Auto` domain (`Vehicle → AutoVehicle → Moped`) — lives here. *(Authoring rules: §D — Domain authoring guide.)*
+- **L1 is the content.** Each domain is a **versioned module** declaring classes, properties, relations and roles in L0's vocabulary. Domains may depend on other domains, but the dependency graph is **acyclic** and cross-domain links are **declared and versioned** (Invariant 5). The seed taxonomy is tracked in `model/taxonomy.yaml` (the living source of truth) rather than a fixed set — it currently seeds `Math` (with `Geometry`), `Music` (with `Instruments`), `Nature` (with `Animals`, `Plants`), `Geography` as its own top-level domain, `Space`, and the `Transport/Auto` domain (`Vehicle → AutoVehicle → Moped`), all of which live here. *(Authoring rules: §D — Domain authoring guide.)*
 - **L2 is the data.** Optional, cited reference *individuals* (e.g. the planets of the Solar System) that instantiate L1 classes. Kept separate so the model is useful even with no instances, and so facts about individuals are versioned and sourced independently of the schema. *(Instance conventions: §I.)*
 
 ### 3.3 Schema-first pipeline: one source, many languages
@@ -252,7 +254,7 @@ Themes (not strictly ordered):
 - **Academic & research uptake:** course kits for OOP/knowledge-engineering classes; citable releases; collaboration with domain experts; first external academic citations (M7).
 - **Ecosystem:** downstream packages, tooling, and visual browsers of the model ("navigate the metaverse-in-programming").
 
-**North star:** WMOOP is cited and reused — by developers as a dependency, by educators as coursework, by researchers as a reference, and by AI systems as structured, sourced knowledge of how the world is composed — while every one of the six invariants still holds.
+**North star:** WMOOP is cited and reused — by developers as a dependency, by educators as coursework, by researchers as a reference, and by AI systems as structured, sourced knowledge of how the world is composed — while every one of the eight invariants still holds.
 
 ---
 
@@ -268,7 +270,7 @@ Themes (not strictly ordered):
 | **Codegen complexity** | Supporting many languages idiomatically makes the generator brittle; per-language drift creeps in. | Medium / High | Conformance-first: **parity is a gated metric** (M2) and golden cases are the contract. Clear **idiom profiles** (§T) isolate per-language concerns. New languages are added only when they can hit the parity bar. |
 | **Low-quality AI contributions** | AI agents submit plausible-but-wrong, unsourced, or subtly duplicated content at scale. | High / High | AI PRs face the **same machine-checkable Definition of Done** as humans, **plus** required provenance of the AI's sources and **mandatory human review** before merge (§E). M6 tracks the *defect rate* of merged AI PRs, not just acceptance, so quality regressions are visible and the policy can tighten. |
 | **Model/code drift** | Hand-edits sneak into generated per-language repos, breaking single-source-of-truth. | Medium / High | Generated repos are **treated as build outputs**: CI fails on manual edits outside designated extension points; the WM remains the only place to change meaning (Invariant 1). |
-| **IP / licensing contamination** | Contributors paste copyrighted text as "definitions." | Medium / Medium | Sourcing standards in §E: definitions are **written, cited, and substantially original**; provenance links the source rather than copying it; license (Apache-2.0 / CC-BY proposed) is enforced on contribution. |
+| **IP / licensing contamination** | Contributors paste copyrighted text as "definitions." | Medium / Medium | Sourcing standards in §E: definitions are **written, cited, and substantially original**; provenance links the source rather than copying it; license (Apache-2.0 / CC-BY-4.0 chosen) is enforced on contribution. |
 
 ---
 
@@ -327,7 +329,7 @@ A: No. L2 is optional. A domain is useful with classes and roles alone; instance
 A: Domains are **opt-in and require a maintainer and sources**; depth is pursued only where demanded; quality metrics are paired with growth metrics so shallow bulk cannot score as progress (§4.1, §6).
 
 **Q: What's the license?**
-A: Code is **Apache-2.0**. The documentation and model are proposed under **CC-BY-4.0** (open for ratification — see Open Questions).
+A: Code is **Apache-2.0**. The documentation and model are **CC-BY-4.0** (chosen).
 
 **Q: Where do I start?**
 A: Read §M (meta-model) and §D (domain authoring guide), pick a "good first domain," and follow the contribution manual (§E). The v0 bootstrap slice (Person + Vehicle → Driver role) is the worked reference example.
@@ -340,6 +342,6 @@ A: Read §M (meta-model) and §D (domain authoring guide), pick a "good first do
 
 **How to contribute.** See the contribution and ethics manual (§E) and the domain authoring guide (§D). Every contribution must pass the machine-checkable Definition of Done (§V): stable ID, name, definition, provenance, units for quantities, acyclic dependencies, and Liskov-safe inheritance.
 
-**Document conventions.** The key words MUST, MUST NOT, SHOULD, and MAY in the normative sections are to be read as requirement levels. The six invariants in §3.1 are normative and take precedence over any conflicting prose.
+**Document conventions.** The key words MUST, MUST NOT, SHOULD, and MAY in the normative sections are to be read as requirement levels. The eight invariants in §3.1 are normative and take precedence over any conflicting prose.
 
 **References.** *(To be assembled with the detailed sections — prior-art families surveyed in §1.3: general knowledge graphs, formal/upper ontologies, web schema vocabularies, and per-language standard libraries. Full bibliography lives alongside §M.)*

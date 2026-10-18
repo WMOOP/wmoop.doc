@@ -16,7 +16,7 @@ WMOOP is one of the rare software projects where an AI agent has a **clear, dens
 3. **The output space is constrained to slots, not prose.** You fill a schema (id, name, definition, parent, properties, units, citations), not free-form code in five languages. A constrained, typed output space is dramatically easier to generate correctly and to verify — it shrinks the hallucination surface and makes every field independently checkable.
 4. **Grounding is enforced by the schema itself.** The provenance gate means a fabricated fact *cannot pass* without a citation, and referential integrity means a made-up parent class *cannot pass* without resolving. The structure turns "please be truthful" into a mechanical constraint.
 5. **Atomic units give a short feedback loop.** One concept per file, small PRs → fast validate/fix cycles, trivial diffs, trivial rollback. Ideal for iterative agent loops.
-6. **Leverage per verified contribution is enormous.** One correct model edit becomes idiomatic C#, Java, Python, C++, JS, and SQL — generated and conformance-tested. A single verified fact pays off in six repos.
+6. **Leverage per verified contribution is enormous.** One correct model edit becomes idiomatic code in the four conformance-gated bindings — C#, Java, Python, and C++ — generated and conformance-tested; JS and the DB projection are planned, not yet conformance-gated. A single verified fact pays off across every binding.
 7. **"Propose a fact" and "structure a fact" are separable.** You may be highly reliable at *structuring* (schema conformance, Liskov shape) even when *uncertain* about a fact. The uncertainty flags let you contribute structure honestly and defer the factual claim to a human — turning uncertainty into a first-class, reviewable signal instead of a hidden risk.
 
 In short: structured + validated + clear automated DoD + local reward signal = a project where an AI can contribute *and verify its own work* before asking a human to spend attention.
@@ -51,7 +51,7 @@ This is the core AI loop: **in = a well-documented source; out = exactly the WML
 5. **Fill the slots.** Stable ID (S6), name, a **concise definition in your own words** (never pasted source prose, §5), parent or role target, and **properties — each with its own `definition` and `provenance`** (the per-property rule, `docs/03-architecture.md` S5), a `unit` on every quantity, and a cardinality. Fill nothing you cannot source or justify.
 6. **Source everything, honestly typed.** Every concept, role, enumeration **and property** carries `provenance`: `kind: sourced` + a resolvable citation for a factual claim; `kind: definitional`/`convention` for a modelling or naming choice. Never dress a convention up as a fact, or a guess as a convention (§5).
 7. **Extend by _adding_, never by editing the base.** When the source attaches a new facet to an existing concept, add a role/quality in the appropriate (possibly new) domain — **do not re-open or fork the base** (`docs/03-architecture.md` §4.5). *"This source lets a `Person` act as a Student"* → add a `Student` role `played_by wmoop.nature/Person` in an education domain; `Person` is untouched.
-8. **Disclose.** Fill `contributedBy.agent`, add the `Assisted-by:` commit trailer, label the PR `ai-authored`, name a human sponsor (§4).
+8. **Disclose.** Fill `contributedBy.agent`, add the `Assisted-by:` commit trailer, label the PR `ai-generated` (or `ai-assisted` for a human+AI PR), name a human sponsor (§4).
 9. **Run the oracle and the checklist.** `wmoop validate && wmoop lint && wmoop conformance`, then the §8 checklist. **Flag uncertainty** (`confidence`, `uncertain`, `disputed`) rather than smoothing it over (§6).
 10. **Ship small and green — or ask.** Open a ≤ 5-file, all-green PR with the `ai_contribution` block (§13). If anything is unsourced or shaky, open an **issue** instead (§6).
 
@@ -83,7 +83,7 @@ contributedBy:
 Assisted-by: <model name/version>
 ```
 
-**(c) Per-PR** — apply the label **`ai-authored`** and fill the *AI contribution* section of the PR template (model, prompt/task summary, which gates you ran, confidence, and what a reviewer should double-check).
+**(c) Per-PR** — apply the authorship label from the taxonomy **`human` | `ai-assisted` | `ai-generated`** (use **`ai-generated`** for a fully AI-authored PR, **`ai-assisted`** for a human+AI collaboration) and fill the *AI contribution* section of the PR template (model, prompt/task summary, which gates you ran, confidence, and what a reviewer should double-check).
 
 Every AI PR must have an accountable **human sponsor** — a human who can answer for it. Fully anonymous autonomous PRs are not accepted.
 
@@ -143,8 +143,8 @@ Then confirm, item by item:
 - [ ] No fabricated sources, IDs, or values. I verified each source exists.
 - [ ] IDs are correctly shaped and I did **not** rename/mutate any existing ID.
 - [ ] I searched for duplicates and this concept does not already exist (list what I searched).
-- [ ] Inheritance passes the Liskov test; no cross-domain `kindOf`; cross-domain facets are roles.
-- [ ] No new cycle in `dependsOn` or `kindOf`.
+- [ ] Inheritance passes the Liskov test; no cross-domain `extends`; cross-domain facets are roles.
+- [ ] No new cycle in `dependsOn` or `extends`.
 - [ ] I touched only `model/**` — no generated files.
 - [ ] Disclosure is complete at node, commit, and PR level; a human sponsor is named.
 - [ ] Uncertainty is flagged where it exists; nothing is overstated.
@@ -159,7 +159,7 @@ Hard prohibitions. Violating these closes the PR and may revoke the agent's cont
 - **Must not invent facts, sources, citations, DOIs, URLs, IDs, or values.**
 - **Must not model sensitive or protected human attributes** (race, ethnicity, religion, sexual orientation, disability, political affiliation, health status, etc.) or encode stereotypes. Model *roles/capacities* on `Person`, never immutable or protected traits. When unsure whether an attribute is sensitive, do not add it — open an issue.
 - **Must not mass-generate unreviewed content** — no exceeding the PR cap, no automated merge, no flooding issues/PRs.
-- **Must not hand-edit generated bindings or the compiled export** in `wmoop.net/.java/.py/.cpp/.js`, `wmoop.db`, or `wmoop.json`'s compiled artifact.
+- **Must not hand-edit generated bindings or the compiled export** in `wmoop.net/.java/.py/.cpp/.js`, `wmoop.db`, or `wm-<ver>.json` (the compiled model, a Release of `wmoop.doc`).
 - **Must not touch L0 (`_meta`)** — the upper ontology is maintainer-only, via ADR.
 - **Must not rename or delete existing IDs** (deprecate + alias instead).
 - **Must not force contested classifications** into a single inheritance tree (use `disputed` + categories/relations).
@@ -210,8 +210,8 @@ So multiple agents (and humans) don't collide, each PR's AI section should inclu
 ai_contribution:
   model: "<model name/version>"
   human_sponsor: <handle>
-  task: "<one-line scope, e.g. add Cetacea sub-tree under nature.animals.Mammal>"
-  nodes_added: [wm:nature.animals.Cetacean, ...]
+  task: "<one-line scope, e.g. add Cetacea sub-tree under wmoop.nature.animals/Mammal>"
+  nodes_added: [wmoop.nature.animals/Cetacean, ...]
   nodes_changed: []
   gates_run: [validate, lint, conformance]   # and their results
   confidence: medium
@@ -226,13 +226,13 @@ This lets maintainers triage, deduplicate agent work, and route review efficient
 
 ## 14. Example end-to-end AI PR
 
-1. **Issue:** agent (sponsor: `@alice`) proposes adding `Moped` under `transport.AutoVehicle`, citing a traffic-law definition. Steward reserves nothing new (prefix exists) and says go.
-2. **Model:** agent adds `model/transport/Moped.yaml` (one file), `kindOf: wm:transport.AutoVehicle`, overrides `numberOfWheels` default to 2, cites the source, sets `confidence: high`, fills `contributedBy.agent`.
-3. **Validate:** agent runs `wmoop validate && wmoop lint && wmoop conformance` — all green. Pastes results + the `ai_contribution` block into the PR; applies label `ai-authored`; commit carries `Assisted-by:`.
+1. **Issue:** agent (sponsor: `@alice`) proposes adding `Moped` under `wmoop.transport/AutoVehicle`, citing a traffic-law definition. Steward reserves nothing new (prefix exists) and says go.
+2. **Model:** agent adds `model/transport/Moped.yaml` (one file), `extends: wmoop.transport/AutoVehicle`, overrides `numberOfWheels` default to 2, cites the source, sets `confidence: high`, fills `contributedBy.agent`.
+3. **Validate:** agent runs `wmoop validate && wmoop lint && wmoop conformance` — all green. Pastes results + the `ai_contribution` block into the PR; applies label `ai-generated`; commit carries `Assisted-by:`.
 4. **Review:** steward confirms the definition and source; approves.
-5. **Generate:** CI regenerates C#/Java/Python/C++/JS + DB; conformance passes.
-6. **Merge:** maintainer squash-merges; `transport` bumps MINOR; the compiled export in `wmoop.json` is republished.
+5. **Generate:** CI regenerates the four conformance-gated bindings — C#/Java/Python/C++ — and conformance passes; JS and the DB projection are planned, not yet conformance-gated.
+6. **Merge:** maintainer squash-merges; `transport` bumps MINOR; the compiled model `wm-<ver>.json` (a Release of `wmoop.doc`) is republished.
 
-One small, sourced, disclosed, self-verified edit — now correct in six languages. That is exactly the contribution WMOOP is built to receive from an AI.
+One small, sourced, disclosed, self-verified edit — now correct across the four conformance-gated bindings. That is exactly the contribution WMOOP is built to receive from an AI.
 
 *Model responsibly. Cite everything. Stay small. Disclose always.*

@@ -224,22 +224,22 @@ Read top to bottom; stop at the first match.
 
 ```yaml
 - stereotype: Kind
-  qname: wm:transport.vehicles:Vehicle
+  qname: wmoop.transport.vehicles/Vehicle
   abstract: true
-  properties: [ { name: wheelCount, quantityKind: wm:core:Count, unit: wm:core:one, cardinality: "1" } ]
+  properties: [ { name: wheelCount, quantityKind: wmoop.core/Count, unit: wmoop.core/one, cardinality: "1" } ]
 - stereotype: Subkind
-  qname: wm:transport.vehicles:RoadVehicle
-  specializes: wm:transport.vehicles:Vehicle
+  qname: wmoop.transport.vehicles/RoadVehicle
+  extends: wmoop.transport.vehicles/Vehicle
 - stereotype: Subkind
-  qname: wm:transport.vehicles:Motorcycle
-  specializes: wm:transport.vehicles:RoadVehicle
+  qname: wmoop.transport.vehicles/Motorcycle
+  extends: wmoop.transport.vehicles/RoadVehicle
   properties: [ { name: wheelCount, const: 2 } ]        # narrows, never contradicts
 - stereotype: Subkind
-  qname: wm:transport.vehicles:Moped
-  specializes: wm:transport.vehicles:Motorcycle
+  qname: wmoop.transport.vehicles/Moped
+  extends: wmoop.transport.vehicles/Motorcycle
   properties:
-    - { name: engineDisplacement, quantityKind: wm:core:Volume, unit: wm:core:cm3, constraints: { max: 50 } }
-    - { name: maxDesignSpeed,     quantityKind: wm:core:Speed,  unit: wm:core:km_per_h, constraints: { max: 45 } }
+    - { name: engineDisplacement, quantityKind: wmoop.core/Volume, unit: wmoop.core/cm3, constraints: { max: 50 } }
+    - { name: maxDesignSpeed,     quantityKind: wmoop.core/Speed,  unit: wmoop.core/km_per_h, constraints: { max: 45 } }
 ```
 
 **(2) Tomato — multiple classification via Category/tag, NOT inheritance.**
@@ -247,15 +247,15 @@ A tomato *is* rigidly a kind of fruiting plant/berry (botanical **`Subkind`**). 
 
 ```yaml
 - stereotype: Subkind
-  qname: wm:nature.plants:Tomato
-  specializes: wm:nature.plants:Berry          # botanical is-a (rigid, single identity)
+  qname: wmoop.nature.plants/Tomato
+  extends: wmoop.nature.plants/Berry          # botanical is-a (rigid, single identity)
   categories:                                   # orthogonal, multiple classification
-    - wm:culinary:CulinaryVegetable
-    - wm:nutrition:RichInLycopene
+    - wmoop.culinary/CulinaryVegetable
+    - wmoop.nutrition/RichInLycopene
 # Category definitions span many Kinds and carry no identity principle:
 - stereotype: Category
-  qname: wm:culinary:CulinaryVegetable
-  appliesTo: { anyOf: [ wm:nature.plants:* ] }
+  qname: wmoop.culinary/CulinaryVegetable
+  appliesTo: { anyOf: [ wmoop.nature.plants/* ] }
   definition: "Plant part used savoury in cooking; a culinary, not botanical, grouping."
   provenance: [ { source: "Nix v. Hedden, 149 U.S. 304 (1893)", kind: stipulative } ]
 ```
@@ -287,48 +287,48 @@ This is the mechanism by which WMOOP becomes a *connected* world model rather th
 ```yaml
 stereotype: Role
 id: wmid:01JABCXYZ0000000000000000
-qname: wm:transport.driving:Driver
+qname: wmoop.transport.driving/Driver
 label: Driver
 definition: "A person authorised to, and in the state of being entitled to, operate a road vehicle."
 provenance:
   - { source: "Directive 2006/126/EC on driving licences", kind: definitional }
-plays:                                   # allowed players (the 'filler' / base)
-  anyOf: [ wm:nature.people:Person ]
+played_by:                                   # allowed players (the 'filler' / base)
+  anyOf: [ wmoop.nature.people/Person ]
 relationalGround:                        # roles are relationally dependent
-  dependsOn: wm:transport.driving:DrivingAuthorisation
+  dependsOn: wmoop.transport.driving/DrivingAuthorisation
 antiRigid: true
 timeBounded: true
 properties:
   - { name: licenceNumber,    type: String, cardinality: "1", identifying: true }
-  - { name: licenceCategories, type: Enum, enum: wm:transport.driving:LicenceCategory, cardinality: "1..*" }
+  - { name: licenceCategories, type: Enum, enum: wmoop.transport.driving/LicenceCategory, cardinality: "1..*" }
   - { name: issuedOn,         type: Date, cardinality: "1" }
   - { name: expiresOn,        type: Date, cardinality: "0..1" }
-  - { name: issuingAuthority, type: Reference, target: wm:geography.admin:Jurisdiction, cardinality: "1" }
-  - { name: status,           type: Enum, enum: wm:transport.driving:LicenceStatus, cardinality: "1", default: VALID }
+  - { name: issuingAuthority, type: Reference, target: wmoop.geography.admin/Jurisdiction, cardinality: "1" }
+  - { name: status,           type: Enum, enum: wmoop.transport.driving/LicenceStatus, cardinality: "1", default: VALID }
 ```
 
 **L2 instance — one Person, three simultaneous, time-bounded roles:**
 
 ```yaml
 individual:
-  instanceOf: wm:nature.people:Person          # ONE identity principle, unchanged
+  instanceOf: wmoop.nature.people/Person          # ONE identity principle, unchanged
   id: wmid:01JADPERSONADA00000000000
   label: "Ada L."
   plays:
-    - role: wm:transport.driving:Driver
+    - role: wmoop.transport.driving/Driver
       id: wmid:01JADROLEDRV0000000000000
       licenceNumber: "RO-B-12345678"
       licenceCategories: [ B, A2 ]
       issuedOn: 2019-04-01
       expiresOn: 2029-04-01
-      issuingAuthority: wm:geography.admin:RO
+      issuingAuthority: wmoop.geography.admin/RO
       validFrom: 2019-04-01
       status: VALID
-    - role: wm:transport.ownership:VehicleOwner
+    - role: wmoop.transport.ownership/VehicleOwner
       id: wmid:01JADROLEOWN0000000000000
       owns: wmid:01JADVEHMOPED00000000000
       validFrom: 2021-06-15
-    - role: wm:org.employment:Employee
+    - role: wmoop.org.employment/Employee
       id: wmid:01JADROLEEMP0000000000000
       employer: wmid:01JADORGACME00000000000
       validFrom: 2020-01-10
@@ -404,8 +404,8 @@ The *same* shape generates mechanically into: **Java** (`interface IRole` defaul
 
 ### 5.4 Dependency direction and versioning
 
-- `wm:transport.driving` **depends on** `wm:nature.people` (it references `Person`). The reverse edge is forbidden; CI rejects a cycle.
-- The cross-domain reference is a **typed, versioned link**: `plays.anyOf: [ wm:nature.people:Person@^2 ]`. If Nature publishes `Person@3` with a breaking change, Transport keeps compiling against `^2` until it migrates — crowd-sourced domains evolve independently (Invariant 5).
+- `wmoop.transport.driving` **depends on** `wmoop.nature.people` (it references `Person`). The reverse edge is forbidden; CI rejects a cycle.
+- The cross-domain reference is a **typed, versioned link**: `played_by.anyOf: [ wmoop.nature.people/Person@^2 ]`. If Nature publishes `Person@3` with a breaking change, Transport keeps compiling against `^2` until it migrates — crowd-sourced domains evolve independently (Invariant 5).
 - A role may allow several player Kinds via `RoleMixin` (e.g., `Customer` plays `Person` **or** `Organization`); the generator emits a marker interface both Kinds implement.
 
 ---
@@ -414,12 +414,12 @@ The *same* shape generates mechanically into: **Java** (`interface IRole` defaul
 
 ### 6.1 Identity scheme
 
-Every concept and every instance carries **two identifiers** with different jobs, because a crowd-sourced, multi-language ontology must survive renames, translations, merges, and forks.
+Every concept and every instance carries **two identifiers** with different jobs, because a crowd-sourced, multi-language ontology must survive renames, translations, merges, and forks. The QName grammar is defined canonically in the **Normative Constants** table in `GOVERNANCE.md`, which is the single source of truth for the ID grammar.
 
 | Identifier | Form | Mutability | Purpose |
 |---|---|---|---|
-| **Opaque id** (`wmid`) | `wmid:` + Crockford base32 **ULID** (26 chars, time-sortable) | **immutable forever** | the true identity; all machine references resolve through it; survives any rename or re-translation |
-| **QName** (qualified name) | `wm:{domain-path}:{LocalName}` e.g. `wm:nature.animals:Dog` | stable *by policy*; change only via deprecation + alias | human-readable primary address, used in docs and code generation |
+| **Opaque id** (`wmid`) | `wmid:` + Crockford base32 **ULID** (26 chars, time-sortable) | **immutable forever** | opaque stable-identity backing (optional in v0); the QName is the working identifier and all examples use it |
+| **QName** (qualified name) | `wmoop.{domain-path}/{LocalName}` e.g. `wmoop.nature.animals/Dog` | stable *by policy*; change only via deprecation + alias | human-readable primary address, used in docs and code generation |
 | **Module version** | SemVer on the domain module (`nature.animals@2.3.0`) | per release | lets references pin (`@2.3.0`) or range (`@^2`) |
 | **Label(s)** | `prefLabel` + localized `altLabel` (lang-tagged) | freely editable | display names; **never** an identity key |
 
@@ -463,11 +463,11 @@ A property on a Type is one of these **typed slots**:
 - optional modifiers: `default`, `immutable` (set once), `identifying` (contributes to natural key), `unique`, `derived: <expression>`, `ordered` (for `*` collections), `constraints` (`min`/`max`/`pattern`/`enumSubset`).
 - `definition` **and** `provenance` — **both are mandatory on every property**, not only on
   "non-obvious" ones. A structural or naming choice is still sourced honestly with
-  `kind: definitional`/`stipulative` (rather than left blank); an empirical claim uses
-  `kind: empirical` with a resolvable `source`.
+  `kind: definitional`/`convention` (rather than left blank); a sourced claim uses
+  `kind: sourced` with a resolvable `source`.
 
 **Provenance object** (required on every concept, role, enumeration **and property** definition, and
-on L2 facts): `{ source: <citation/URI>, kind: definitional | empirical | stipulative | derived, retrievedOn?: Date, confidence?: 0..1 }`. This operationalizes Invariant 4 ("facts are sourced") while allowing `definitional`/`stipulative` for naming and modelling conventions and `derived` for computed values — so *nothing is unsourced*, but a modelling choice is never dressed up as an empirical citation.
+on L2 facts): `{ source: <citation/URI>, kind: sourced | definitional | convention, retrievedOn?: Date, confidence?: 0..1 }`. This operationalizes Invariant 4 ("facts are sourced") while allowing `definitional` for definitions and `convention` for naming and modelling conventions — so *nothing is unsourced*, but a modelling choice is never dressed up as a `sourced` citation.
 
 ### 6.4 Quantities, units, and dimensional checking
 
@@ -485,12 +485,12 @@ This is how WMOOP refuses to let the world be modeled in naked `double`s.
 
 ```yaml
 - stereotype: QuantityKind
-  qname: wm:core.quantities:Speed
+  qname: wmoop.core.quantities/Speed
   dimension: { L: 1, T: -1 }                 # all others 0
-  canonicalUnit: wm:core.units:m_per_s
+  canonicalUnit: wmoop.core.units/m_per_s
 - stereotype: Unit
-  qname: wm:core.units:km_per_h
-  of: wm:core.quantities:Speed
+  qname: wmoop.core.units/km_per_h
+  of: wmoop.core.quantities/Speed
   symbol: "km/h"
   toCanonical: { factor: 0.2777778, offset: 0 }
 ```
@@ -506,7 +506,7 @@ Deep, dishonest inheritance is the single biggest risk to a crowd-sourced world 
 1. **Rigid-sortal-only.** `Subkind` is allowed only between rigid sortals sharing identity (§3). Everything anti-rigid or non-sortal uses `Phase`/`Role`/`Category`/interface. *This alone removes most bad inheritance.*
 2. **Liskov is mandatory and checkable.** A `Subkind` may only **weaken preconditions, strengthen postconditions, preserve invariants, and never remove or contradict** an inherited member. A subtype that must throw "not supported" for an inherited operation is **not** a subtype — refactor to an interface or role.
 3. **Narrow, don't contradict.** A subkind may restrict a property's range (`Moped.maxDesignSpeed ≤ 45`) but may not redefine its type, unit, or meaning, nor flip a Boolean invariant.
-4. **Depth budget ≤ 5** from a domain root to a concrete leaf. Exceeding it triggers a CI *warning* and a required justification; depth > 7 is a CI *error*. Most real "is-a-kind-of" chains in the world are 3–5 deep; longer usually hides phases, roles, or parts masquerading as subclasses.
+4. **Depth budget.** From a domain root to a concrete leaf, depth 5 triggers a CI *warning* and a required justification, and depth > 6 is a CI *error*. Most real "is-a-kind-of" chains in the world are 3–5 deep; longer usually hides phases, roles, or parts masquerading as subclasses.
 5. **Favor composition and capability.** Prefer `has-a` (part-whole), `plays` (role), `can-do` (interface/trait) to `is-a`. When tempted to subclass to add behavior, ask: *is this new behavior an essence of a new kind, or a capability?* Capability → interface/trait.
 6. **Thin, stable base types.** A base `Kind` declares only members true of **every** instance for **all time** (the rigid invariants). Optional, role-specific, phase-specific, or rarely-shared members **must not** be pushed up. This is the structural defense against the fragile base class: bases change rarely because they contain only what cannot vary.
 7. **Open for extension, closed for mutation.** New variants attach via new `Subkind`s, `Category` tags, roles, or interfaces — not by editing a published base. Published bases evolve only via SemVer-breaking releases.
@@ -573,7 +573,7 @@ I **endorse all six** invariants and do not deviate from them. I sharpen three a
 
 - **Invariant 1 (schema-first) — sharpened.** Generation must be **conformance-tested round-trip** (DoD checks 11–12), and each language repo must provide **non-clobbered extension points** (C# `partial`/extension methods, Java/Python/C++ equivalents) so hand-written idiomatic helpers coexist with generated code without manual re-authoring of the *model*. "Generated" ≠ "frozen against idiom"; it means the *conceptual model* is never hand-copied.
 - **Invariant 3 (composition/roles over inheritance) — made checkable.** Elevated from a principle to a **stereotype system** (`Kind`/`Subkind`/`Phase`/`Role`/`Category`/`RoleMixin`, §3) with **rigidity + sortality** as the discriminators, and a CI substitution gate (§7.3). "Roles over inheritance" is now a property the validator can enforce, not a reviewer's opinion.
-- **Invariant 4 (every concept sourced) — refined.** Provenance is **typed** (`definitional | empirical | stipulative | derived`) with optional `confidence`, so naming conventions and computed values are not forced to cite an external empirical source, while empirical facts must.
+- **Invariant 4 (every concept sourced) — refined.** Provenance is **typed** (`sourced | definitional | convention`) with optional `confidence`, so definitions and naming/modelling conventions are not forced to cite an external source, while `sourced` facts must.
 - **Added — Invariant 7 (ontological completeness):** L0 must represent **endurants, perdurants, and abstracts** as first-class, not physical-objects-with-properties only. (Without this, Math and Music cannot be modeled; it is implicit in the mission and is now explicit.)
 - **Added — Invariant 8 (identity lifecycle & open-world stance):** identity is an **immutable opaque `wmid` + stable QName**, with first-class **deprecation/`sameAs`/`replacedBy`** merge policy; the model is **open-world for facts** (absence of a fact ≠ its falsehood) but **closed-world for schema conformance** (the DoD checks are exhaustive and binding). A crowd-sourced ontology *will* accumulate duplicates and renames; the identity lifecycle must be designed in, not bolted on.
 

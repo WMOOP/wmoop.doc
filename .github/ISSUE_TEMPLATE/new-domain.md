@@ -7,7 +7,7 @@ labels: ["domain", "needs-triage"]
 
 ## Domain
 
-- **Proposed path:** `wm:<domain>[/<subdomain>]`  <!-- e.g. wm:geography/landforms -->
+- **Proposed path (module):** `wmoop.<domain>[.<subdomain>]`  <!-- e.g. wmoop.geography -->
 - **Scope (what it covers):**
 - **Out of scope (what it does NOT cover):**
 

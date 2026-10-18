@@ -291,21 +291,19 @@ Target XML namespace: `https://wmoop.org/wml/1`.
 
 - **`docs/03-architecture.md`** is the prose specification and rationale. This directory is its
   enforceable counterpart: if the two ever disagree, that is a bug to reconcile.
-- **`CONTRIBUTING.md` / `AI_CONTRIBUTING.md`** reference the meta-schema as the artifact called
-  `wmoop.json` ("the JSON Schema meta-schema that validates the model"). `wml.schema.json` here
-  **is** that meta-schema; `wmoop.json` additionally denotes the *compiled* model export, which is a
-  separate build artifact (not in this directory).
+- **`CONTRIBUTING.md` / `AI_CONTRIBUTING.md`** now reference this meta-schema as
+  `schema/wml.schema.json`. The *compiled* model export is a separate build artifact published as
+  `wm-<ver>.json` (a Release of `wmoop.doc`) — **not** named `wmoop.json`. The single source of truth
+  for this and every CI-enforced constant is the **Normative constants** table in `GOVERNANCE.md`.
 - **`.claude/skills/wml-contribute`** points authors at the oracle; `validate_wml.py` is a runnable
   stand-in for the `wmoop validate` step until the full `wmoopc` CLI lands in `wmoop.tools`.
 
-> **Known drift to reconcile (not changed here).** `CONTRIBUTING.md` §7's copy-paste templates use
-> an **older notation** (`wm:transport.role.Driver`, `appliesTo:`, `layer:`/`status:`, object-form
-> `provenance: { kind, sources }`) that does **not** match the live model or
-> `docs/03-architecture.md`. The nine seeded files in `model/**` and
-> [`model/_template/DOMAIN_TEMPLATE.wml.yaml`](../model/_template/DOMAIN_TEMPLATE.wml.yaml) all use
-> the notation this schema validates (`wmoop.transport/Driver`, `played_by:`, list-form
-> `provenance:`). The schema here is aligned to the live model on purpose; updating the
-> `CONTRIBUTING.md` §7 templates to match is a separate, doc-only follow-up.
+> **Drift status.** `CONTRIBUTING.md` §4.1 and its prose now use the canonical grammar and keywords
+> (`wmoop.transport/Driver`, `extends`, `played_by:`, list-form `provenance:`), matching the live
+> model in `model/**` and this schema. The **one remaining** item is `CONTRIBUTING.md` §7's
+> copy-paste templates, which still use the older notation (dot ids, `kindOf`/`appliesTo`,
+> `layer:`/`status:`, object-form `provenance`) under an explicit in-section banner; refreshing those
+> templates to the live schema is a separate, doc-only follow-up.
 
 ---
 

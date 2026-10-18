@@ -14,7 +14,7 @@ This document specifies **how a WMOOP domain is written once and becomes idiomat
 
 Plus the **org repo topology, naming, and versioning** that carries a model change from source to every binding (deliverable **d**), and an **end-to-end replication walkthrough with a side-by-side parity proof** (deliverable **e**).
 
-Everything here is bound by the six Core Architectural Invariants. The mapping is made explicit in §6; where a design choice exists specifically to satisfy an invariant, it is flagged inline as `[INV-n]`.
+Everything here is bound by the eight Core Architectural Invariants. The mapping is made explicit in §6; where a design choice exists specifically to satisfy an invariant, it is flagged inline as `[INV-n]`.
 
 ---
 
@@ -59,7 +59,7 @@ Before comparing candidates, we fix the requirements. A format is only a good *s
 
 **The decisive mismatches:**
 
-- **OWL/Turtle** is the most *semantically* powerful, but its open-world, non-unique-name, multiple-and-deep-subclassing model is the *opposite* of the closed-world, single-shallow-inheritance OOP target `[INV-3, INV-10]`. An OWL individual can gain and lose class membership dynamically; an OWL class is a set, not a constructor. Generating one deterministic, idiomatic class per concept from OWL requires re-imposing exactly the constraints OWL relaxes — so we would be writing WML's rules anyway, on top of a harder-to-review syntax. OWL also has no native notion of "this quantity has unit cm³ and defaults to true," and no SemVer. **It earns its place as a *projection*, not the source (§2.1).**
+- **OWL/Turtle** is the most *semantically* powerful, but its open-world, non-unique-name, multiple-and-deep-subclassing model is the *opposite* of the closed-world, single-shallow-inheritance OOP target `[INV-3, INV-8]`. An OWL individual can gain and lose class membership dynamically; an OWL class is a set, not a constructor. Generating one deterministic, idiomatic class per concept from OWL requires re-imposing exactly the constraints OWL relaxes — so we would be writing WML's rules anyway, on top of a harder-to-review syntax. OWL also has no native notion of "this quantity has unit cm³ and defaults to true," and no SemVer. **It earns its place as a *projection*, not the source (§2.1).**
 - **Protocol Buffers** has the best multi-language codegen in existence, but it is a *wire/DTO* schema: no inheritance, no abstract types, no roles, no relation semantics, no units. Modelling an ontology in proto throws away the modelling intent (R1–R6 all fail). **Kept as an optional projection for teams who want gRPC/wire DTOs.**
 - **JSON Schema** describes the *shape of JSON documents*. `allOf` is intersection, not inheritance; there is no abstract/concrete distinction, no roles, no relations-with-inverse, no provenance-as-data. It is, however, the perfect tool for two *other* jobs — validating WML's own grammar (the **meta-schema**) and validating L2 instance data — and we use it for exactly those `[INV-6]`.
 
@@ -725,6 +725,8 @@ Attaching `Driver` to a non-`Person` fails with `WM-ROLE-PLAYER-MISMATCH` in eve
 | **4 — Every concept: ID, name, definition, provenance, units** | Required by S5/S6; `unit` + `wmoop.core/Quantity` + dimension checks (§1.4–1.5, §3) |
 | **5 — Versioned modules, acyclic deps, declared cross-domain links** | `module.version` + `depends_on` DAG (S4); versioned `relation` across `wmoop.nature`↔`wmoop.transport`; model SemVer (§4.3) |
 | **6 — Machine-checkable DoD for humans and AI** | meta-schema + `wmoopc` gates (§2.4) + conformance suite + CI diff-guard (§2.3, §3) |
+| **7 — Ontological completeness (endurants, perdurants, abstracts first-class)** | WML's fixed L0 vocabulary models concepts, roles, interfaces, relations and individuals as first-class (§1.4); the full endurant/perdurant/abstract coverage that makes domains such as Math and Music modellable is specified in the meta-model (§9) |
+| **8 — Identity lifecycle & world-stance** | Stable, immutable IDs with `deprecated_alias` on rename (S6, §1.4; rename = MAJOR, §4.3); closed-world, unique-name stance matching the OOP target (§1.2); the sameAs/merge policy and open-world-for-facts rules are specified in the meta-model (§9) |
 
 ---
 

@@ -28,10 +28,10 @@ This single design choice is what lets WMOOP stay neutral, handle disagreement, 
 ```yaml
 # Illustrative shape of a sourced claim
 claim:
-  subject: wm:nature.animals.BlueWhale
+  subject: wmoop.nature.animals/BlueWhale
   predicate: classifiedAs
-  object: wm:nature.animals.Mammal
-  scheme: wm:scheme.linnaean          # which classification system (see §2.5)
+  object: wmoop.nature.animals/Mammal
+  scheme: wmoop.scheme/Linnaean          # which classification system (see §2.5)
   provenance:
     source: src:iucn-redlist           # key into SOURCES.yaml
     tier: A
@@ -99,20 +99,20 @@ Both are legitimate to model — people *do* think of whales as "big sea creatur
 ```yaml
 # Illustrative: the whale under three schemes, all retained, all sourced
 schemes:
-  - id: wm:scheme.linnaean
+  - id: wmoop.scheme/Linnaean
     name: "Linnaean taxonomy"
     authority: src:catalogue-of-life
-  - id: wm:scheme.phylogenetic
+  - id: wmoop.scheme/Phylogenetic
     name: "Phylogenetic / cladistic"
     authority: src:peer-reviewed-phylogenomics
-  - id: wm:scheme.folk
+  - id: wmoop.scheme/Folk
     name: "Common/folk classification"
     consensus: folk-model
 
 classifications:
-  - { subject: BlueWhale, under: wm:scheme.linnaean,     path: "Animalia > Chordata > Mammalia > Cetacea",            tier: A }
-  - { subject: BlueWhale, under: wm:scheme.phylogenetic, path: "... > Artiodactyla (whales nested within even-toed ungulates)", tier: A }
-  - { subject: BlueWhale, under: wm:scheme.folk,         path: "sea creature",  consensus: folk-model, status: historical-also-current, tier: C }
+  - { subject: BlueWhale, under: wmoop.scheme/Linnaean,     path: "Animalia > Chordata > Mammalia > Cetacea",            tier: A }
+  - { subject: BlueWhale, under: wmoop.scheme/Phylogenetic, path: "... > Artiodactyla (whales nested within even-toed ungulates)", tier: A }
+  - { subject: BlueWhale, under: wmoop.scheme/Folk,         path: "sea creature",  consensus: folk-model, status: historical-also-current, tier: C }
 ```
 
 Decision rule for contributors and reviewers:
@@ -152,7 +152,7 @@ Humans are the most ethically fraught subject in the model. Default to caution a
   ```yaml
   # Illustrative — a disputed territory holds claims, not a verdict
   territory:
-    id: wm:geography.<neutral-id>
+    id: wmoop.geography/<NeutralId>
     sovereigntyClaims:
       - { claimant: entityA, basis: "de-jure claim", source: src:..., asOf: "2026" }
       - { claimant: entityB, basis: "de-facto control", source: src:..., asOf: "2026" }

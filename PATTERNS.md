@@ -36,7 +36,7 @@ Every modelling fact is expressed through a small, fixed vocabulary of **meta-mo
 
 > **Composition + interfaces/traits + Roles over deep inheritance.**
 >
-> Inheritance is reserved for rigid, substitutable **is-a** and kept **shallow** (depth budget ≈ 4). Cross-domain intersection is expressed with **Role objects**: a `Person` (Nature domain) *acquires* a `Driver` role (Transport domain) — **never** `Driver : Person`.
+> Inheritance is reserved for rigid, substitutable **is-a** and kept **shallow** (depth budget ≈ 4 as the target; the CI gate is depth ≤ 6, warning at depth 5). Cross-domain intersection is expressed with **Role objects**: a `Person` (Nature domain) *acquires* a `Driver` role (Transport domain) — **never** `Driver : Person`.
 
 ### The engineering standard
 
@@ -68,7 +68,7 @@ Stated plainly so it is never lost: **behaviour lives in hand-written operations
 All C# snippets are **net8.0**, `nullable enable`, file-scoped namespaces, dependency-free (BCL only), and consistent with the shipped `Wmoop.Core` kernel:
 
 ```csharp
-public readonly struct ConceptId : IEquatable<ConceptId>        // value identity; "wm:domain/Name"
+public readonly struct ConceptId : IEquatable<ConceptId>        // value identity; "wmoop.<domain>/Name"
 public readonly struct Quantity  : IEquatable<Quantity>         // (Value, Unit) — never a bare number
 public abstract class  Entity                                   // Id : ConceptId, Name : string
 public interface       IRole      { ConceptId RoleType; Entity? Subject; }
@@ -109,7 +109,7 @@ Each principle below is stated once in general terms, then pinned to a concrete 
 
 ### 1.3 Supporting principles
 
-**Composition over inheritance.** The single most important rule. `Person` *has-a* `RoleContainer`; it does not inherit `Driver`. Deep trees are brittle and force a thing into exactly one lineage; the world is not shaped that way (a person is simultaneously a driver, an owner, an employee, a patient). Inheritance depth budget: **≈ 4** (`Vehicle → RoadVehicle → Motorcycle → Moped` is at the limit).
+**Composition over inheritance.** The single most important rule. `Person` *has-a* `RoleContainer`; it does not inherit `Driver`. Deep trees are brittle and force a thing into exactly one lineage; the world is not shaped that way (a person is simultaneously a driver, an owner, an employee, a patient). Inheritance depth budget: **≈ 4** as the target (`Vehicle → RoadVehicle → Motorcycle → Moped` is at the limit); the CI gate is depth ≤ 6, warning at depth 5.
 
 **Program to interfaces.** Callers depend on `IHasRoles`, `IRole`, `ISpecification<T>`, `IVisitor<T>` — never on a concrete generated class where an abstraction exists. This is what lets behaviour be swapped and the data be regenerated.
 
@@ -155,6 +155,8 @@ Each entry gives: **Intent**, a concrete **WMOOP use case**, the **meta-model st
 
 **Realizes.** `has_role`.
 
+**WML keyword.** In the model a role is declared with `played_by` (rendered `playedBy` in the XML projection); the `AddRole`/`HasRole`/`GetRole`/`IHasRoles` members below are the **generated** C# runtime accessors, not model keywords.
+
 ```csharp
 using Wmoop.Core;
 namespace Wmoop.Transport;
@@ -163,7 +165,7 @@ namespace Wmoop.Transport;
 // composition. Never "DriverRole : Person".
 public sealed class DriverRole : Role
 {
-    public static readonly ConceptId TypeId = new("wm:transport/role/Driver");
+    public static readonly ConceptId TypeId = new("wmoop.transport.driving/Driver");
     public override ConceptId RoleType => TypeId;
 
     public string LicenceNumber { get; }
@@ -222,8 +224,8 @@ public abstract class Place : Entity
 public sealed class Country : Place { public Country(ConceptId id, string n) : base(id, n) { } }
 public sealed class County  : Place { public County (ConceptId id, string n) : base(id, n) { } }
 public sealed class City    : Place { public City   (ConceptId id, string n) : base(id, n) { } }
-//   var ro = new Country("wm:geo/RO", "Romania").Add(new County("wm:geo/RO-CJ", "Cluj")
-//               .Add(new City("wm:geo/RO-CJ-cluj", "Cluj-Napoca")));
+//   var ro = new Country("wmoop.geography/RO", "Romania").Add(new County("wmoop.geography/RO-CJ", "Cluj")
+//               .Add(new City("wmoop.geography/RO-CJ-cluj", "Cluj-Napoca")));
 ```
 
 **When NOT to use.** When the "parts" are really **associations** with their own attributes (membership with a start date), or when leaf and composite genuinely need different client-facing contracts — forcing uniformity then leaks "I am a leaf, don't call that" exceptions.
@@ -371,8 +373,8 @@ public sealed class CountryBuilder
         return country;                                // immutable result
     }
 }
-//   new CountryBuilder("wm:geo/RO","Romania")
-//       .WithCounty("wm:geo/RO-CJ","Cluj", ("wm:geo/RO-CJ-cluj","Cluj-Napoca")).Build();
+//   new CountryBuilder("wmoop.geography/RO","Romania")
+//       .WithCounty("wmoop.geography/RO-CJ","Cluj", ("wmoop.geography/RO-CJ-cluj","Cluj-Napoca")).Build();
 ```
 
 **When NOT to use.** When a constructor with a few required parameters is already clear (`new Quantity(49, "cc")` needs no builder). A builder for a two-field value object is pure overhead.
@@ -408,7 +410,7 @@ public static class VehicleFactories                   // factory method keyed b
         _            => throw new NotSupportedException($"No factory for kind '{wmlKind}'.")
     };
 }
-//   var v = VehicleFactories.For("Moped").Create("wm:transport/moped/x","X", new(45,"km/h"));
+//   var v = VehicleFactories.For("Moped").Create("wmoop.transport/x","X", new(45,"km/h"));
 ```
 
 **When NOT to use.** When there is a single concrete type and no family to vary — a plain constructor or the Builder is simpler. Do not introduce a factory to hide a `new` that has no polymorphic choice behind it.
@@ -417,7 +419,7 @@ public static class VehicleFactories                   // factory method keyed b
 
 **Intent.** **Registry:** a well-known place to find instances by key. **Flyweight:** share one immutable instance for every logically-equal value instead of duplicating it, to cut memory and make identity comparisons cheap.
 
-**WMOOP use case.** Concept *definitions* (name, definition, provenance for `wm:transport/Moped`) are identical across millions of L2 individuals — intern them once. An L2 `ConceptRegistry` holds canonical individuals so references resolve to the same object.
+**WMOOP use case.** Concept *definitions* (name, definition, provenance for `wmoop.transport/Moped`) are identical across millions of L2 individuals — intern them once. An L2 `ConceptRegistry` holds canonical individuals so references resolve to the same object.
 
 **Realizes.** `instance_of` resolution; backs `has_quality` definitions shared across instances.
 
@@ -443,7 +445,7 @@ public sealed class ConceptRegistry                     // Registry + Flyweight 
         _interned.TryGetValue(id, out var d) ? d : null;   // Null Object is a cleaner alt — §2.12
     public IReadOnlyCollection<ConceptDefinition> All => _interned.Values;
 }
-//   Two individuals of wm:transport/Moped share one ConceptDefinition — not a copy each.
+//   Two individuals of wmoop.transport/Moped share one ConceptDefinition — not a copy each.
 ```
 
 **When NOT to use.** When instances are **mutable** or few — interning mutable objects aliases state and causes spooky action at a distance; a registry of a handful of objects is premature. Flyweight only pays off for high-cardinality immutable values.
@@ -468,7 +470,7 @@ public sealed class WikidataPersonAdapter : Entity
 {
     private readonly WikidataEntity _source;
     public WikidataPersonAdapter(WikidataEntity source)
-        : base(new ConceptId($"wm:nature/person/wd-{source.QId}"), source.Label)
+        : base(new ConceptId($"wmoop.nature/wd-{source.QId}"), source.Label)
         => _source = source;
 
     public string Provenance => _source.FetchedFrom ?? $"wikidata:{_source.QId}";
@@ -553,7 +555,7 @@ namespace Wmoop.Core.Registry;
 public sealed class NullConceptDefinition
 {
     public static readonly ConceptDefinition Instance =
-        new(new ConceptId("wm:core/UnknownConcept"), "Unknown", "", "unresolved");
+        new(new ConceptId("wmoop.core/UnknownConcept"), "Unknown", "", "unresolved");
     private NullConceptDefinition() { }
 }
 
@@ -642,7 +644,7 @@ public static class VehiclePrototype
     public static Moped CloneAsNew(Moped template, ConceptId freshId, string name) =>
         new(freshId, name, template.MaxSpeed, template.EngineDisplacement);
 }
-//   var clone = VehiclePrototype.CloneAsNew(piaggio, "wm:transport/moped/piaggio-2", "Piaggio #2");
+//   var clone = VehiclePrototype.CloneAsNew(piaggio, "wmoop.transport/piaggio-2", "Piaggio #2");
 //   // clone.Id != piaggio.Id — distinct individuals; but a Quantity copied inside is just equal.
 ```
 
@@ -693,7 +695,7 @@ Each is a direct violation of the prime directive or an invariant. Reviewers rej
 
 | Anti-pattern | Why it is wrong in WMOOP | Do this instead |
 |---|---|---|
-| **Deep inheritance** (depth ≫ 4) | Brittle, forces one lineage, breaks Liskov as it grows | Keep ≈ 4; push variation into Roles/Strategy/classification |
+| **Deep inheritance** (depth ≫ 4) | Brittle, forces one lineage, breaks Liskov as it grows | Keep ≈ 4 (CI gate: depth ≤ 6, warn at 5); push variation into Roles/Strategy/classification |
 | **God base class** | A fat `Entity` accreting every optional field/method; low cohesion, high coupling | Small `Entity` (Id, Name); capabilities as interfaces (`IHasRoles`), facets as roles |
 | **`Driver : Person`** | Models an anti-rigid, non-exclusive facet as a permanent kind; a person can't then be driver *and* owner | `has_role`: `person.AddRole(new DriverRole(...))` (§2.1) |
 | **Setter-driven mutable identity** | Mutating a `ConceptId` (or re-pointing a role's `Subject`) destroys L2 referential integrity | Immutable `ConceptId`; `AttachTo` internal + single-shot; new object for change |
