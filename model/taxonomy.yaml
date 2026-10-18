@@ -50,6 +50,15 @@ clusters:
     blurb: "The human body, conditions and care (endurants + perdurants)."
 
 # ---------------------------------------------------------------------------
+# The dependency diagram in the taxonomy doc (§6) draws a curated, ORDERED subset
+# of the domains - all of them at once would be unreadable. Rules, enforced by
+# `tools/gen_taxonomy.py`: every `seeded` domain must be listed, and a listed
+# domain's dependencies must be listed too (so a drawn node never hides an edge).
+# Omit this key to draw every domain.
+# ---------------------------------------------------------------------------
+dependency_graph: [core, math, nature, geography, transport, architecture, org, education, music, law, food, medicine]
+
+# ---------------------------------------------------------------------------
 # Domains are the L1 modules (`wmoop.<id>`). `depends_on` must stay ACYCLIC
 # (Invariant 5). Solid edges below are real (from a seeded module's header);
 # candidate edges are the links a domain WILL declare once it is authored.

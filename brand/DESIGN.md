@@ -100,6 +100,14 @@ Only **three** things change per repo — a **language-coloured orbit ring**, a
   <td align="center"><img src="repos/wmoop.cpp.svg" width="300"></td>
   <td align="center"><img src="repos/wmoop.tools.svg" width="300"></td>
 </tr>
+<tr>
+  <td align="center"><img src="repos/wmoop.js.svg" width="300"></td>
+  <td align="center"><img src="repos/wmoop.json.svg" width="300"></td>
+</tr>
+<tr>
+  <td align="center"><img src="repos/wmoop.db.svg" width="300"></td>
+  <td align="center"></td>
+</tr>
 </table>
 
 ### 3.1 Colours & glyphs
@@ -112,6 +120,9 @@ Only **three** things change per repo — a **language-coloured orbit ring**, a
 | `wmoop.py` | `#3776AB` + `#FFD43B` | two interlocking squares |
 | `wmoop.cpp` | `#00599C` | `C++` |
 | `wmoop.tools` | `#0D9488` teal | gear |
+| `wmoop.js` | `#CA8A04` gold | yellow `JS` tile |
+| `wmoop.json` | `#E11D48` rose | `{ }` braces |
+| `wmoop.db` | `#15803D` green | database cylinder |
 
 > The glyphs are **original, simplified renderings**, not the official language
 > logos. Language names and signature colours are used nominatively, only to
@@ -287,7 +298,8 @@ brand/
 │  └─ wmoop-logo.svg              org lockup (auto light/dark)
 ├─ repos/
 │  ├─ wmoop.doc.svg   wmoop.net.svg   wmoop.java.svg
-│  └─ wmoop.py.svg    wmoop.cpp.svg   wmoop.tools.svg
+│  ├─ wmoop.py.svg    wmoop.cpp.svg   wmoop.tools.svg
+│  └─ wmoop.js.svg    wmoop.json.svg  wmoop.db.svg
 └─ template/
    └─ wmoop.repo-template.svg     blank frame + recipe
 ```
