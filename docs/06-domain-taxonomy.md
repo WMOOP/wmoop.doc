@@ -73,11 +73,11 @@ README/whitepaper seed taxonomy or v1 roadmap) · ⚪ **candidate** (proposed he
 | # | Cluster | Domains | Grounded in |
 |---|---|---|---|
 | 0 | **Foundation** | `core` 🟢 | — (realises L0) |
-| I | **Formal & Abstract** | `math` 🟡 · `computing` ⚪ · `language` ⚪ | DDC 500/000, OECD Natural/Formal, SUMO *Abstract* |
-| II | **Physical & Natural World** | `physics` ⚪ · `chemistry` ⚪ · `nature` 🟢 · `earth` ⚪ · `space` 🟡 | DDC 500, OECD Natural, LCC Q, schema.org Taxon |
+| I | **Formal & Abstract** | `math` 🟢 · `computing` ⚪ · `language` ⚪ | DDC 500/000, OECD Natural/Formal, SUMO *Abstract* |
+| II | **Physical & Natural World** | `physics` ⚪ · `chemistry` 🟢 · `nature` 🟢 · `earth` ⚪ · `space` 🟢 | DDC 500, OECD Natural, LCC Q, schema.org Taxon |
 | III | **Geography & Place** | `geography` 🟢 | LCC G, DDC 910, schema.org Place |
 | IV | **Society & Institutions** | `org` 🟢 · `education` 🟢 · `economy` ⚪ · `law` ⚪ · `politics` ⚪ | DDC 300/370, OECD Social, LCC H/J/K/L, schema.org Organization/EducationalOrganization |
-| V | **Culture & The Arts** | `music` 🟡 · `visualarts` ⚪ · `literature` ⚪ · `philosophy` ⚪ · `religion` ⚪ | DDC 100/200/400/700/800, OECD Humanities, LCC B/M/N/P |
+| V | **Culture & The Arts** | `music` 🟢 · `visualarts` ⚪ · `literature` ⚪ · `philosophy` 🟢 · `religion` ⚪ | DDC 100/200/400/700/800, OECD Humanities, LCC B/M/N/P |
 | VI | **Technology & Artifacts** | `transport` 🟢 · `architecture` 🟢 · `food` ⚪ · `tools` ⚪ · `software` ⚪ | DDC 600, OECD Engineering, LCC T, schema.org Product |
 | VII | **Health & Medicine** | `medicine` ⚪ | OECD Medical & Health, LCC R, schema.org MedicalEntity |
 
@@ -97,9 +97,10 @@ Each sub-domain lists an example concept and, where useful, its dominant L0 cate
   - *Referenced everywhere as `wmoop.core`; realised in [`model/core/core.wml.yaml`](../model/core/core.wml.yaml) (v1.0.0).*
 
 ### I · Formal & Abstract
-- **`math`** 🟡 — `math.number` (`NaturalNumber`, Abs) · `math.algebra` (`Group`, Abs) ·
-  **`math.geometry`** 🟡 (`Polygon`, Abs) · `math.analysis` · `math.logic` · `math.probability` ·
-  `math.settheory` (`Set`, Collection).
+- **`math`** 🟢 — `math.number` (`Number → {ℕ,ℤ,ℚ,ℝ}`, **Abs**; siblings, not nested inheritance) ·
+  `math.algebra` (`Group` as an `AbstractType` whose axioms are **invariants**) ·
+  **`math.geometry`** 🟢 (`GeometricShape → Polygon → Triangle/Quadrilateral`, Abs) · `math.analysis` ·
+  `math.logic` · `math.probability` · `math.settheory` (`Set`, **Collection**).
 - **`computing`** ⚪ — `computing.datastructures` (`Tree`) · `computing.algorithms` (`SortAlgorithm`,
   Perd) · `computing.information`.
 - **`language`** ⚪ — `language.phonology` (`Phoneme`, Abs) · `language.morphology` ·
@@ -108,8 +109,9 @@ Each sub-domain lists an example concept and, where useful, its dominant L0 cate
 ### II · Physical & Natural World
 - **`physics`** ⚪ — `physics.mechanics` (`Force`, Quality) · `physics.electromagnetism` ·
   `physics.thermodynamics` · `physics.particles` (`Electron`, End) · `physics.quantum`.
-- **`chemistry`** ⚪ — `chemistry.elements` (`Element`, End) · `chemistry.compounds` (`Molecule`,
-  End) · `chemistry.reactions` (`Combustion`, **Perd**).
+- **`chemistry`** 🟢 — `chemistry.elements` (`ChemicalElement`, End; H/C/O/Fe as **L2**) ·
+  `chemistry.compounds` (`ChemicalCompound`, `Molecule`; `Atom` **part_of** `Molecule`) ·
+  `chemistry.reactions` (`ChemicalReaction`, **Perd**; `Catalyst` a **Role**). Sourced to IUPAC.
 - **`nature`** 🟢 — `nature.taxonomy` (ranks as `classified_as` facts, not inheritance) ·
   **`nature.animals`** 🟡 (`Animal → Human`) · **`nature.plants`** 🟡 (`Tomato`) · `nature.fungi` ·
   `nature.microbes` · **`nature.anatomy`** 🟢 (`AnatomicalStructure → Organ`; `Heart/Brain/Lung/…`;
@@ -117,8 +119,9 @@ Each sub-domain lists an example concept and, where useful, its dominant L0 cate
   roadmap *depth on demand*) · `nature.people` (`Person`, End — the flagship role *player*).
 - **`earth`** ⚪ — `earth.landforms` (`Mountain`, End) · `earth.geology` · `earth.hydrology`
   (`River`) · `earth.atmosphere` · `earth.climate`.
-- **`space`** 🟡 — `space.solarsystem` (`Planet`, End; the 8 planets are **L2** instances) ·
-  `space.stars` · `space.galaxies` · `space.cosmology`.
+- **`space`** 🟢 — `space.solarsystem` (`CelestialBody → {Planet, DwarfPlanet, Star,
+  NaturalSatellite}`; the 8 planets + Pluto are **L2** instances from the NASA fact sheet; `DwarfPlanet`
+  is a **sibling** of `Planet` per IAU B5) · `space.stars` · `space.galaxies` · `space.cosmology`.
 
 ### III · Geography & Place
 - **`geography`** 🟢 — **`geography.admin`** 🟢 (`Country ⊃ County ⊃ City` via **part-of**, plus
@@ -140,11 +143,15 @@ Each sub-domain lists an example concept and, where useful, its dominant L0 cate
 - **`politics`** ⚪ — `politics.state` (`State`) · `politics.governance`.
 
 ### V · Culture & The Arts
-- **`music`** 🟡 — **`music.theory`** 🟡 (`PitchClass`, `Interval`, `Chord` — **Abs**/Collection) ·
-  **`music.instruments`** 🟡 (`Violin`, **End**) · `music.performance` (`NoteOccurrence`, **Perd**).
+- **`music`** 🟢 — **`music.theory`** 🟢 (`PitchClass`, `Interval`, `Scale`, `Chord` — **Abs**/Collection) ·
+  **`music.instruments`** 🟢 (Hornbostel-Sachs: `Chordophone`/`Aerophone`/…, **End**) ·
+  `music.performance` (`MusicalPerformance`, `NoteOccurrence`, **Perd**; `Performer` a **Role**).
   *The one domain that exercises all three ontological categories at once.*
-- **`visualarts`** ⚪ · **`literature`** ⚪ (`Poem`) · **`philosophy`** ⚪ · **`religion`** ⚪
-  (`Tradition`, `Myth`).
+- **`philosophy`** 🟢 — `philosophy.concepts` (`PhilosophicalConcept`, `Proposition` — **Abs**) ·
+  `philosophy.logic` (`Argument → {Deductive → Syllogism, Inductive}`) · `philosophy.branches`
+  (Aristotle's 10 `AristotelianCategory` + the 5 `Branch`es as **L2**). *Models the abstractions with
+  which we abstract the world.*
+- **`visualarts`** ⚪ · **`literature`** ⚪ (`Poem`) · **`religion`** ⚪ (`Tradition`, `Myth`).
 
 ### VI · Technology & Artifacts
 - **`transport`** 🟢 — **`transport.vehicles`** 🟢 (`Vehicle → RoadVehicle → Motorcycle → Moped`,
@@ -170,17 +177,17 @@ flowchart TB
 
   subgraph I["I · Formal & Abstract"]
     direction LR
-    math["math 🟡"]:::plan
+    math["math 🟢"]:::seed
     computing["computing ⚪"]:::cand
     language["language ⚪"]:::cand
   end
   subgraph II["II · Physical & Natural World"]
     direction LR
     physics["physics ⚪"]:::cand
-    chemistry["chemistry ⚪"]:::cand
+    chemistry["chemistry 🟢"]:::seed
     nature["nature 🟢"]:::seed
     earth["earth ⚪"]:::cand
-    space["space 🟡"]:::plan
+    space["space 🟢"]:::seed
   end
   subgraph III["III · Geography & Place"]
     geography["geography 🟢"]:::seed
@@ -195,10 +202,10 @@ flowchart TB
   end
   subgraph V["V · Culture & The Arts"]
     direction LR
-    music["music 🟡"]:::plan
+    music["music 🟢"]:::seed
     visualarts["visualarts ⚪"]:::cand
     literature["literature ⚪"]:::cand
-    philosophy["philosophy ⚪"]:::cand
+    philosophy["philosophy 🟢"]:::seed
     religion["religion ⚪"]:::cand
   end
   subgraph VI["VI · Technology & Artifacts"]
@@ -229,14 +236,17 @@ by a seeded module today; dashed edges are what a candidate domain will declare 
 ```mermaid
 flowchart LR
   core["core 🟢"]:::seed
-  math["math 🟡"]:::plan
+  math["math 🟢"]:::seed
+  chemistry["chemistry 🟢"]:::seed
   nature["nature 🟢"]:::seed
   geography["geography 🟢"]:::seed
+  space["space 🟢"]:::seed
   transport["transport 🟢"]:::seed
   architecture["architecture 🟢"]:::seed
   org["org 🟢"]:::seed
   education["education 🟢"]:::seed
-  music["music 🟡"]:::plan
+  music["music 🟢"]:::seed
+  philosophy["philosophy 🟢"]:::seed
   law["law ⚪"]:::cand
   food["food ⚪"]:::cand
   medicine["medicine ⚪"]:::cand
@@ -254,11 +264,14 @@ flowchart LR
   education --> nature
   education --> org
   education --> architecture
+  math --> core
+  chemistry --> core
+  space --> core
+  music --> core
+  music --> nature
+  philosophy --> core
 
   %% planned / candidate edges
-  math -.-> core
-  music -.-> core
-  music -.-> math
   law -.-> core
   law -.-> geography
   food -.-> core

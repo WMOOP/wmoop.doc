@@ -1,0 +1,341 @@
+module:
+  id: wmoop.music
+  version: 0.1.0
+  title: Music
+  depends_on:
+    - { module: wmoop.core,   version: "^1.0.0" }   # L0 kernel (Time quantity for note durations)
+    - { module: wmoop.nature, version: "^0.6.0" }   # for Person (the Performer role player) [INV-5]
+
+# ===========================================================================
+# wmoop.music — the one domain that exercises ALL THREE L0 ontological
+# categories at once:
+#   * ABSTRACT (category C): PitchClass, Interval, Scale, Chord, MusicalWork —
+#     structures outside space-time (a C# is the same C# in every performance).
+#   * ENDURANT (category A): MusicalInstrument and its Hornbostel-Sachs families —
+#     physical objects wholly present whenever they exist.
+#   * PERDURANT (category B): MusicalPerformance and NoteOccurrence — events that
+#     unfold in time and have temporal parts.
+# The agentive facet is a ROLE: Performer, played_by a Person (never a subclass).
+# ===========================================================================
+
+datatypes:
+  - id: wmoop.music/FrequencyHz
+    name: FrequencyHz
+    base: decimal
+    definition: >
+      A frequency in hertz (cycles per second). Modelled as a local datatype
+      rather than a wmoop.core quantity because the core kernel defines no
+      Frequency QuantityKind; the standard tuning reference is A4 = 440 Hz.
+    constraints: { minimum: 0 }
+    provenance:
+      - { source: "ISO 16:1975, Acoustics — Standard tuning frequency (Standard musical pitch)",
+          ref: "standard musical pitch A4 = 440 Hz", kind: sourced }
+
+  - id: wmoop.music/MidiNoteNumber
+    name: MidiNoteNumber
+    base: integer
+    definition: A MIDI note number 0-127; middle C (C4) is 60 and A4 (440 Hz) is 69.
+    constraints: { minimum: 0, maximum: 127 }
+    provenance:
+      - { source: "MIDI 1.0 Detailed Specification, MIDI Manufacturers Association",
+          ref: "note number range 0-127", kind: sourced }
+
+  - id: wmoop.music/Semitones
+    name: Semitones
+    base: integer
+    definition: A count of semitones (half steps), the smallest interval in twelve-tone equal temperament.
+    constraints: { minimum: 0 }
+
+concepts:
+  # --- ABSTRACT: music theory (L0 category C) -------------------------------
+  - id: wmoop.music/PitchClass
+    name: PitchClass
+    kind: concrete                               # instantiable, so the 12 chromatic classes are L2 individuals
+    definition: >
+      One of the twelve pitch classes of the chromatic scale (C, C#, D, …), each
+      the set of all pitches an whole number of octaves apart; an abstract entity
+      independent of octave or instrument.
+    provenance:
+      - { source: "Original WMOOP definition", kind: definitional,
+          note: "Twelve-tone equal temperament; the member pitch classes are enumerated as L2 individuals." }
+
+  - id: wmoop.music/Interval
+    name: Interval
+    kind: concrete
+    definition: The pitch distance between two notes, measured in semitones.
+    provenance:
+      - { source: "Original WMOOP definition", kind: definitional,
+          note: "Interval sizes in semitones are a convention of twelve-tone equal temperament." }
+    properties:
+      - id: wmoop.music/Interval#semitones
+        name: semitones
+        type: wmoop.music/Semitones
+        cardinality: "1"
+        definition: The width of the interval in semitones (e.g. 7 for a perfect fifth, 12 for an octave).
+        provenance:
+          - { source: "Original WMOOP definition", kind: definitional }
+
+  - id: wmoop.music/Scale
+    name: Scale
+    kind: concrete
+    definition: >
+      An ordered collection of pitch classes spanning an octave, from which the
+      pitch material of a passage is drawn (e.g. the major scale). A Collection of
+      pitch classes (membership, not mereological parthood).
+    provenance:
+      - { source: "Original WMOOP definition", kind: definitional,
+          note: "An L0 Collection whose members are pitch classes." }
+    relations:
+      - id: wmoop.music/Scale#hasPitchClass
+        name: hasPitchClass
+        target: wmoop.music/PitchClass
+        cardinality: "1..*"
+        definition: A pitch class that is a member of this scale.
+        provenance:
+          - { source: "Original WMOOP definition", kind: definitional }
+
+  - id: wmoop.music/Chord
+    name: Chord
+    kind: concrete
+    definition: >
+      A set of three or more pitch classes conceived as sounding together. A
+      Collection of pitch classes (an abstract harmonic object).
+    provenance:
+      - { source: "Original WMOOP definition", kind: definitional,
+          note: "An L0 Collection whose members are pitch classes; sounded simultaneously." }
+    relations:
+      - id: wmoop.music/Chord#hasPitchClass
+        name: hasPitchClass
+        target: wmoop.music/PitchClass
+        cardinality: "2..*"
+        definition: A pitch class that is a member of this chord.
+        provenance:
+          - { source: "Original WMOOP definition", kind: definitional }
+
+  - id: wmoop.music/MusicalWork
+    name: MusicalWork
+    kind: concrete
+    definition: >
+      An abstract musical composition — the work itself, as distinct from any
+      particular performance or recording of it (a C# in it is the same work's
+      note in every performance).
+    provenance:
+      - { source: "Original WMOOP definition", kind: definitional,
+          note: "The work/performance distinction: a MusicalWork is abstract (category C); its performances are perdurants (category B)." }
+    properties:
+      - id: wmoop.music/MusicalWork#title
+        name: title
+        type: string
+        cardinality: "0..1"
+        definition: The title by which the work is known.
+        provenance:
+          - { source: "Original WMOOP definition", kind: definitional }
+
+  # --- ENDURANT: instruments, classified by Hornbostel-Sachs (L0 category A) -
+  - id: wmoop.music/MusicalInstrument
+    name: MusicalInstrument
+    kind: abstract                               # the endurant backbone
+    definition: A device constructed or adapted to produce musical sound.
+    provenance:
+      - { source: "Hornbostel, E. M. von & Sachs, C. (1914), Systematik der Musikinstrumente, Zeitschrift für Ethnologie 46",
+          ref: "the classification of instruments by sound-producing mechanism", kind: sourced }
+
+  - id: wmoop.music/Idiophone
+    name: Idiophone
+    kind: concrete
+    extends: wmoop.music/MusicalInstrument       # shallow is-a (depth 2)
+    definition: An instrument that produces sound by the vibration of its own rigid body, without strings or a membrane (e.g. a xylophone, a bell).
+    provenance:
+      - { source: "Hornbostel, E. M. von & Sachs, C. (1914), Systematik der Musikinstrumente, Zeitschrift für Ethnologie 46",
+          ref: "class 1, Idiophones", kind: sourced }
+
+  - id: wmoop.music/Membranophone
+    name: Membranophone
+    kind: concrete
+    extends: wmoop.music/MusicalInstrument
+    definition: An instrument that produces sound by the vibration of a stretched membrane (e.g. a drum).
+    provenance:
+      - { source: "Hornbostel, E. M. von & Sachs, C. (1914), Systematik der Musikinstrumente, Zeitschrift für Ethnologie 46",
+          ref: "class 2, Membranophones", kind: sourced }
+
+  - id: wmoop.music/Chordophone
+    name: Chordophone
+    kind: concrete
+    extends: wmoop.music/MusicalInstrument
+    definition: An instrument that produces sound by the vibration of one or more stretched strings (e.g. a violin, a piano).
+    provenance:
+      - { source: "Hornbostel, E. M. von & Sachs, C. (1914), Systematik der Musikinstrumente, Zeitschrift für Ethnologie 46",
+          ref: "class 3, Chordophones", kind: sourced }
+
+  - id: wmoop.music/Aerophone
+    name: Aerophone
+    kind: concrete
+    extends: wmoop.music/MusicalInstrument
+    definition: An instrument that produces sound by a vibrating column or body of air (e.g. a flute, a trumpet).
+    provenance:
+      - { source: "Hornbostel, E. M. von & Sachs, C. (1914), Systematik der Musikinstrumente, Zeitschrift für Ethnologie 46",
+          ref: "class 4, Aerophones", kind: sourced }
+
+  - id: wmoop.music/Electrophone
+    name: Electrophone
+    kind: concrete
+    extends: wmoop.music/MusicalInstrument
+    definition: An instrument in which sound is generated or primarily produced by electrical or electronic means (e.g. a synthesizer).
+    provenance:
+      - { source: "Sachs, C. (1940), The History of Musical Instruments, W. W. Norton",
+          ref: "class 5, Electrophones (added to the 1914 Hornbostel-Sachs scheme)", kind: sourced }
+
+  # --- PERDURANT: performance events (L0 category B) ------------------------
+  - id: wmoop.music/MusicalPerformance
+    name: MusicalPerformance
+    kind: concrete                               # a PERDURANT: an event unfolding in time
+    definition: >
+      A particular event of performing music: a rendering, bounded in time, of a
+      musical work (or an improvisation), made up of note occurrences.
+    provenance:
+      - { source: "Original WMOOP definition", kind: definitional,
+          note: "An occurrent/event (category B) with temporal parts (its NoteOccurrences), distinct from the abstract MusicalWork it renders." }
+    relations:
+      - id: wmoop.music/MusicalPerformance#performs
+        name: performs
+        target: wmoop.music/MusicalWork
+        cardinality: "0..1"
+        inverse: wmoop.music/MusicalWork#performedIn
+        definition: The musical work this performance renders (absent for a free improvisation).
+        provenance:
+          - { source: "Original WMOOP definition", kind: definitional }
+      - id: wmoop.music/MusicalPerformance#performedOn
+        name: performedOn
+        target: wmoop.music/MusicalInstrument
+        cardinality: "0..*"
+        inverse: wmoop.music/MusicalInstrument#usedIn
+        definition: An instrument used in this performance.
+        provenance:
+          - { source: "Original WMOOP definition", kind: definitional }
+
+  - id: wmoop.music/NoteOccurrence
+    name: NoteOccurrence
+    kind: concrete                               # a PERDURANT: a single sounded note, a temporal part of a performance
+    definition: >
+      A single sounded note within a performance: the event of a pitch class
+      being sounded for a span of time. The concrete, in-time counterpart of the
+      abstract pitch class.
+    provenance:
+      - { source: "Original WMOOP definition", kind: definitional,
+          note: "Resolves the 'a note is both a type and an event' problem: PitchClass is abstract (category C); NoteOccurrence is the perdurant (category B) that sounds it." }
+    properties:
+      - id: wmoop.music/NoteOccurrence#duration
+        name: duration
+        type: wmoop.core/Time                    # a Quantity, dimension = time
+        unit: s
+        cardinality: "0..1"
+        definition: How long the note sounds.
+        provenance:
+          - { source: "Original WMOOP definition", kind: definitional }
+    relations:
+      - id: wmoop.music/NoteOccurrence#soundsPitchClass
+        name: soundsPitchClass
+        target: wmoop.music/PitchClass
+        cardinality: "1"
+        inverse: wmoop.music/PitchClass#soundedIn
+        definition: The pitch class this occurrence sounds.
+        provenance:
+          - { source: "Original WMOOP definition", kind: definitional }
+      - id: wmoop.music/NoteOccurrence#partOf
+        name: partOf
+        rel: part_of                             # mereology: a note occurrence is a temporal PART of a performance
+        target: wmoop.music/MusicalPerformance
+        cardinality: "0..1"
+        inverse: wmoop.music/MusicalPerformance#notes
+        definition: The performance this note occurrence is a part of.
+        provenance:
+          - { source: "Original WMOOP definition", kind: definitional }
+
+# ===========================================================================
+# Roles — the agentive facet, by COMPOSITION (never a subclass of Person) [S3].
+# ===========================================================================
+roles:
+  - id: wmoop.music/Performer
+    name: Performer
+    definition: The role of a person who performs music.
+    provenance:
+      - { source: "Original WMOOP definition", kind: definitional,
+          note: "An agentive, contextual facet of a Person — a role, not a kind of Person." }
+    played_by: wmoop.nature/Person
+    context:   wmoop.music
+    cardinality_per_player: "0..*"
+    relations:
+      - id: wmoop.music/Performer#performsIn
+        name: performsIn
+        target: wmoop.music/MusicalPerformance
+        cardinality: "1..*"
+        inverse: wmoop.music/MusicalPerformance#performers
+
+# ===========================================================================
+# L2 reference individuals — the twelve chromatic pitch classes, a few named
+# intervals, and one instrument per Hornbostel-Sachs family.
+# ===========================================================================
+individuals:
+  - { id: wmoop.music/PitchC,       name: "C",  instance_of: wmoop.music/PitchClass, definition: "The pitch class C (MIDI note 0, 12, …).",  provenance: [ { source: "Original WMOOP definition", kind: definitional } ] }
+  - { id: wmoop.music/PitchCSharp,  name: "C#", instance_of: wmoop.music/PitchClass, definition: "The pitch class C sharp / D flat.",        provenance: [ { source: "Original WMOOP definition", kind: definitional } ] }
+  - { id: wmoop.music/PitchD,       name: "D",  instance_of: wmoop.music/PitchClass, definition: "The pitch class D.",                        provenance: [ { source: "Original WMOOP definition", kind: definitional } ] }
+  - { id: wmoop.music/PitchDSharp,  name: "D#", instance_of: wmoop.music/PitchClass, definition: "The pitch class D sharp / E flat.",        provenance: [ { source: "Original WMOOP definition", kind: definitional } ] }
+  - { id: wmoop.music/PitchE,       name: "E",  instance_of: wmoop.music/PitchClass, definition: "The pitch class E.",                        provenance: [ { source: "Original WMOOP definition", kind: definitional } ] }
+  - { id: wmoop.music/PitchF,       name: "F",  instance_of: wmoop.music/PitchClass, definition: "The pitch class F.",                        provenance: [ { source: "Original WMOOP definition", kind: definitional } ] }
+  - { id: wmoop.music/PitchFSharp,  name: "F#", instance_of: wmoop.music/PitchClass, definition: "The pitch class F sharp / G flat.",        provenance: [ { source: "Original WMOOP definition", kind: definitional } ] }
+  - { id: wmoop.music/PitchG,       name: "G",  instance_of: wmoop.music/PitchClass, definition: "The pitch class G.",                        provenance: [ { source: "Original WMOOP definition", kind: definitional } ] }
+  - { id: wmoop.music/PitchGSharp,  name: "G#", instance_of: wmoop.music/PitchClass, definition: "The pitch class G sharp / A flat.",        provenance: [ { source: "Original WMOOP definition", kind: definitional } ] }
+  - { id: wmoop.music/PitchA,       name: "A",  instance_of: wmoop.music/PitchClass, definition: "The pitch class A; A4 is the 440 Hz tuning reference (ISO 16).", provenance: [ { source: "ISO 16:1975, Acoustics — Standard tuning frequency", ref: "A4 = 440 Hz", kind: sourced } ] }
+  - { id: wmoop.music/PitchASharp,  name: "A#", instance_of: wmoop.music/PitchClass, definition: "The pitch class A sharp / B flat.",        provenance: [ { source: "Original WMOOP definition", kind: definitional } ] }
+  - { id: wmoop.music/PitchB,       name: "B",  instance_of: wmoop.music/PitchClass, definition: "The pitch class B.",                        provenance: [ { source: "Original WMOOP definition", kind: definitional } ] }
+
+  - id: wmoop.music/PerfectUnison
+    name: PerfectUnison
+    instance_of: wmoop.music/Interval
+    definition: The interval of zero semitones — two notes of the same pitch.
+    values: { semitones: 0 }
+    provenance:
+      - { source: "Original WMOOP definition", kind: definitional }
+  - id: wmoop.music/MajorThird
+    name: MajorThird
+    instance_of: wmoop.music/Interval
+    definition: The interval of four semitones.
+    values: { semitones: 4 }
+    provenance:
+      - { source: "Original WMOOP definition", kind: definitional }
+  - id: wmoop.music/PerfectFifth
+    name: PerfectFifth
+    instance_of: wmoop.music/Interval
+    definition: The interval of seven semitones.
+    values: { semitones: 7 }
+    provenance:
+      - { source: "Original WMOOP definition", kind: definitional }
+  - id: wmoop.music/Octave
+    name: Octave
+    instance_of: wmoop.music/Interval
+    definition: The interval of twelve semitones, spanning one full pitch-class cycle.
+    values: { semitones: 12 }
+    provenance:
+      - { source: "Original WMOOP definition", kind: definitional }
+
+  - id: wmoop.music/Violin
+    name: Violin
+    instance_of: wmoop.music/Chordophone
+    definition: A four-stringed bowed chordophone of the violin family.
+    provenance:
+      - { source: "Hornbostel, E. M. von & Sachs, C. (1914), Systematik der Musikinstrumente, Zeitschrift für Ethnologie 46",
+          ref: "chordophone (strings)", kind: sourced }
+  - id: wmoop.music/Flute
+    name: Flute
+    instance_of: wmoop.music/Aerophone
+    definition: An edge-blown woodwind aerophone sounded by directing air across an opening.
+    provenance:
+      - { source: "Hornbostel, E. M. von & Sachs, C. (1914), Systematik der Musikinstrumente, Zeitschrift für Ethnologie 46",
+          ref: "aerophone (vibrating air)", kind: sourced }
+  - id: wmoop.music/SnareDrum
+    name: SnareDrum
+    instance_of: wmoop.music/Membranophone
+    definition: A membranophone with a struck head and snares that rattle against it.
+    provenance:
+      - { source: "Hornbostel, E. M. von & Sachs, C. (1914), Systematik der Musikinstrumente, Zeitschrift für Ethnologie 46",
+          ref: "membranophone (vibrating membrane)", kind: sourced }

@@ -10,6 +10,25 @@ the MAJOR version.
 ## [Unreleased]
 
 ### Added
+- **Foundation module** `wmoop.core` (`model/core/core.wml.yaml`, v1.0.0): the L0 kernel referenced by
+  every domain — `QuantityKind`s with their SI dimension 7-vector, `Unit`s with `toCanonical`
+  conversions, and the provenance/identity base types.
+- **Five new seed domains** (authored + adversarially reviewed, each sourced):
+  - `wmoop.math` — abstract objects: `Number → {ℕ,ℤ,ℚ,ℝ}` (siblings, not nested inheritance), `Set`
+    as a Collection, `GeometricShape → Polygon → Triangle/Quadrilateral`, `Group` as an AbstractType
+    whose axioms are invariants. Sourced to ISO 80000-2, Peano, Euclid, Halmos, Dummit & Foote.
+  - `wmoop.music` — the showcase of all three L0 categories: Abstract (`PitchClass`, `Interval`,
+    `Scale`, `Chord`), Endurant (Hornbostel-Sachs instrument families), Perdurant
+    (`MusicalPerformance`, `NoteOccurrence`) + the `Performer` role. Sourced to ISO 16, MIDI 1.0,
+    Hornbostel-Sachs.
+  - `wmoop.space` — `CelestialBody → {Planet, DwarfPlanet, Star, NaturalSatellite}` (DwarfPlanet a
+    sibling of Planet per IAU B5); the 8 planets + Pluto as L2 individuals from the NASA NSSDC
+    Planetary Fact Sheet.
+  - `wmoop.philosophy` — `Concept`, `Proposition`, `Argument → {Deductive → Syllogism, Inductive}`;
+    Aristotle's 10 categories and the 5 branches as L2 individuals; contested classification kept in
+    prose. Sourced to Aristotle and the SEP. Models the abstractions with which we abstract the world.
+  - `wmoop.chemistry` — `ChemicalSubstance → Element/Compound` (endurants), `Atom part_of Molecule`,
+    `ChemicalReaction` (perdurant), `Catalyst` (role); H/C/O/Fe as L2. Sourced to IUPAC.
 - **New domains — the "school" worked example**: `wmoop.education` (`model/education/`) with
   `School` (is-a `Organization`, **not** a `Building`), `Classroom`/`Laboratory` (is-a `Room`),
   `CurriculumSubject` (abstract, with L2 subjects Mathematics/Romanian/Biology/Music), `Mark`
@@ -26,8 +45,9 @@ the MAJOR version.
   a reusable domain brief.
 - **`model/_template/DOMAIN_TEMPLATE.wml.yaml`** + a 6-step "add a domain" quickstart in
   [`model/README.md`](model/README.md) to make contributing a new domain easy.
-- `model/taxonomy.yaml` updated (registry 0.1.0→0.2.0): `education` added; `architecture`, `org`,
-  `nature.anatomy` promoted to **seeded**; the two diagrams in `docs/06-domain-taxonomy.md` regenerated.
+- `model/taxonomy.yaml` updated (registry → 0.3.0): `education` added; `core`, `architecture`, `org`,
+  `nature.anatomy`, `math`, `music`, `space`, `philosophy`, `chemistry` promoted to **seeded**; the two
+  diagrams in `docs/06-domain-taxonomy.md` regenerated to match.
 - **Founding documentation set**: whitepaper, foundations & related work, the L0 meta-model,
   the WML schema format & cross-language generation design, the academic program, and an
   independent adversarial design review (`docs/`).

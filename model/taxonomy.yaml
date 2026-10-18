@@ -16,8 +16,8 @@
 #   candidate — proposed in the taxonomy doc; needs a steward + sourcing before
 #               it is added (Risk: scope explosion → opt-in, maintainer-gated)
 
-registry_version: 0.2.0
-updated: 2026-10-17
+registry_version: 0.3.0
+updated: 2026-10-18
 
 # ---------------------------------------------------------------------------
 # Clusters are ORGANISATIONAL groupings only (they are not modules and have no
@@ -69,11 +69,11 @@ domains:
   - id: math
     module: wmoop.math
     cluster: formal
-    status: planned
+    status: seeded
     steward: ~
     depends_on: [core]
     subdomains: [math.number, math.algebra, math.geometry, math.analysis, math.logic, math.probability, math.settheory]
-    note: "geometry is called out as a seed sub-domain in the README."
+    note: "Abstract objects (L0 category C): Number -> {N,Z,Q,R} (siblings; set-inclusion is NOT inheritance), Set as a Collection, GeometricShape -> Polygon -> {Triangle,Quadrilateral}, Group as an AbstractType whose axioms are invariants. Sourced to ISO 80000-2, Peano, Euclid, Halmos, Dummit & Foote."
   - id: computing
     module: wmoop.computing
     cluster: formal
@@ -100,11 +100,11 @@ domains:
   - id: chemistry
     module: wmoop.chemistry
     cluster: natural
-    status: candidate
+    status: seeded
     steward: ~
-    depends_on: [core, physics]
+    depends_on: [core]
     subdomains: [chemistry.elements, chemistry.compounds, chemistry.reactions]
-    note: "chemistry.reactions are perdurants (events), not objects."
+    note: "ChemicalSubstance -> Element/Compound (endurants); Atom part_of Molecule (mereology); ChemicalReaction is a perdurant (event); Catalyst is a role. H/C/O/Fe seeded as L2; full table is depth-on-demand. Sourced to IUPAC (Gold Book, Red Book, CIAAW). A physics dependency will be declared when thermodynamics/quantum are modelled."
   - id: nature
     module: wmoop.nature
     cluster: natural
@@ -123,11 +123,11 @@ domains:
   - id: space
     module: wmoop.space
     cluster: natural
-    status: planned
+    status: seeded
     steward: ~
     depends_on: [core]
     subdomains: [space.solarsystem, space.stars, space.galaxies, space.cosmology]
-    note: "The 8 planets are L2 reference instances of space.solarsystem."
+    note: "CelestialBody -> {Planet, DwarfPlanet, Star, NaturalSatellite} (DwarfPlanet is a SIBLING of Planet per IAU B5, not a subkind). The 8 planets + Pluto are L2 individuals with values from the NASA NSSDC Planetary Fact Sheet."
 
   # --- Geography & Place ----------------------------------------------------
   - id: geography
@@ -183,11 +183,11 @@ domains:
   - id: music
     module: wmoop.music
     cluster: culture
-    status: planned
+    status: seeded
     steward: ~
-    depends_on: [core, math]
+    depends_on: [core, nature]
     subdomains: [music.theory, music.instruments, music.performance]
-    note: "The showcase of all three ontological categories: theory (Abstract), instruments (Endurant), performance (Perdurant)."
+    note: "The showcase of all three ontological categories: theory (Abstract: PitchClass/Interval/Scale/Chord), instruments (Endurant: Hornbostel-Sachs families), performance (Perdurant: MusicalPerformance/NoteOccurrence) + the Performer role on Person. Sourced to ISO 16, MIDI 1.0, Hornbostel-Sachs."
   - id: visualarts
     module: wmoop.visualarts
     cluster: culture
@@ -205,10 +205,11 @@ domains:
   - id: philosophy
     module: wmoop.philosophy
     cluster: culture
-    status: candidate
+    status: seeded
     steward: ~
     depends_on: [core]
-    subdomains: [philosophy.branches, philosophy.concepts]
+    subdomains: [philosophy.branches, philosophy.concepts, philosophy.logic]
+    note: "Abstract structures of thought: Concept, Proposition, Argument -> {Deductive -> Syllogism, Inductive}, PhilosophicalPosition. Aristotle's 10 categories and the 5 branches are L2 individuals. Contested classification kept in prose, not forced trees. Sourced to Aristotle (Categories, Prior Analytics) and the SEP. Models the abstractions with which we abstract the world."
   - id: religion
     module: wmoop.religion
     cluster: culture

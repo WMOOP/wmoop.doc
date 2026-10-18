@@ -9,12 +9,18 @@ Per-language repositories (`wmoop.net`, and later `wmoop.java`, `wmoop.py`, `wmo
 
 ```
 model/
+├── core/          wmoop.core         — L0 kernel: QuantityKinds + SI dimensions, Units, provenance/identity
+├── math/          wmoop.math         — abstract objects: Number tower, Set, Polygon, Group (axioms-as-invariants)
 ├── nature/        wmoop.nature       — biology branch (Animal → Human → Person) + anatomy (Organ part_of Animal)
+├── chemistry/     wmoop.chemistry    — Element/Compound (endurants), Atom part_of Molecule, Reaction (perdurant), Catalyst (role)
+├── space/         wmoop.space        — CelestialBody → Planet/DwarfPlanet/…; the 8 planets as L2 individuals
 ├── transport/     wmoop.transport    — Vehicle hierarchy + the Driver/Owner roles
 ├── geography/     wmoop.geography    — administrative areas (Composite / part_of)
 ├── architecture/  wmoop.architecture — Building + Room (Room part_of Building)
 ├── org/           wmoop.org          — Organization + the Employee role
-├── education/     wmoop.education     — the "school" example (School is-a Organization; Student/Teacher/FormTutor roles)
+├── education/     wmoop.education    — the "school" example (School is-a Organization; Student/Teacher/FormTutor roles)
+├── music/         wmoop.music        — all three L0 categories: theory (Abs), instruments (End), performance (Perd)
+├── philosophy/    wmoop.philosophy   — Concept/Proposition/Argument; Aristotle's categories & branches as L2
 ├── _template/     DOMAIN_TEMPLATE    — copy-paste skeleton for a NEW domain (not a module)
 └── taxonomy.yaml  domain registry    — the full domain map (clusters, status, deps)
 ```
@@ -47,8 +53,13 @@ its `depends_on` edges — which must stay **acyclic** (Invariant 5). A module m
 | `nature` | A deliberately shallow biological lineage; intermediate ranks are carried as `classified_as` facts, not inheritance levels. Plus **anatomy**: `Organ` **`part_of`** `Animal`, `OrganSystem` as a Collection, organs sourced to Uberon/FMA. |
 | `geography` | **`part_of` composition**: `Country ⊃ County ⊃ City`. The areas *are* kinds of `AdministrativeArea` (inheritance), but their **containment** is a `part_of` relation — the exact distinction WMOOP insists on. |
 | `education` (+ `org`, `architecture`) | The **cross-domain showcase**: a `School` **is-a** `Organization` (NOT a `Building`); `Classroom`/`Laboratory` **is-a** `Room`; `Student`/`Teacher`/`FormTutor` (RO *diriginte*) are **roles** on `Person`, co-held; `CurriculumSubject` is **abstract** with L2 subjects; `Mark` **reifies** a grade. One domain exercising is-a, part-of, roles, abstract types, collections and L2 at once. |
+| `math` | **Abstract objects** (L0 category C): the number tower as *siblings* (set-inclusion is not inheritance), `Set` as a Collection, and `Group` as an AbstractType whose axioms are **invariants**. |
+| `music` | **All three L0 categories at once**: Abstract (`PitchClass`, `Chord`), Endurant (Hornbostel-Sachs instruments), Perdurant (`MusicalPerformance`, `NoteOccurrence`), plus the `Performer` role. |
+| `space` | **L2 reference individuals**: the eight planets (+ Pluto) are instances of `Planet`/`DwarfPlanet`, not subclasses — and `DwarfPlanet` is a *sibling* of `Planet` (IAU B5), not a subkind. |
+| `chemistry` | **Endurant vs Perdurant**: `Element`/`Compound` endure, `ChemicalReaction` is an event; `Atom part_of Molecule`; `Catalyst` is a contextual **role**, not a kind. |
+| `philosophy` | **Modelling the abstract itself**: concepts, propositions and arguments; contested classification kept honest in prose; Aristotle's ten categories and the five branches as L2. |
 
-The first three are mirrored by compiling, runnable C# in
+`transport`, `nature` and `geography` are mirrored by compiling, runnable C# in
 [`wmoop.net`](https://github.com/WMOOP/wmoop.net) (`Wmoop.Transport`, `Wmoop.Nature`,
 `Wmoop.Geography`), so you can read the model and the generated-shape side by side; the newer modules
 generate the same way once the pipeline runs over them.

@@ -1,0 +1,275 @@
+module:
+  id: wmoop.space
+  version: 0.1.0
+  title: Space
+  depends_on:
+    - { module: wmoop.core, version: "^1.0.0" }   # L0 kernel: QuantityKinds (Mass, Length, Time, Count) + units
+
+# ===========================================================================
+# wmoop.space — the solar system and celestial bodies (cluster: natural).
+#
+# L0 distinctions showcased here:
+#   * L2 REFERENCE INDIVIDUALS over a shallow is-a hierarchy: the eight planets
+#     are instances of Planet (not eight subclasses), each carrying sourced
+#     quantity values from the NASA NSSDC Planetary Fact Sheet.
+#   * QUANTITIES WITH UNITS: mass (kg), equatorialRadius (km), orbitalPeriod (d),
+#     numberOfMoons (one) — each typed by a wmoop.core QuantityKind + a unit.
+#
+# Two modelling choices worth stating up front:
+#   * A DwarfPlanet is NOT a kind of Planet. IAU 2006 Resolution B5 defines the
+#     two as disjoint categories (a dwarf planet has NOT cleared its orbital
+#     neighbourhood), so making DwarfPlanet extend Planet would break the is-a /
+#     Liskov contract. Both extend CelestialBody instead.
+#   * mass and equatorialRadius are universal physical quantities of ANY body, so
+#     they live on the abstract CelestialBody base; orbitalPeriod and
+#     numberOfMoons are carried by Planet. System membership is the part_of
+#     relation (mereology), and "moon orbits its primary" is a plain association
+#     — neither is inheritance.
+# ===========================================================================
+
+concepts:
+  # --- The is-a backbone ----------------------------------------------------
+  - id: wmoop.space/CelestialBody
+    name: CelestialBody
+    kind: abstract                               # taxonomic root — cannot be instantiated
+    definition: A naturally occurring physical body in outer space, such as a planet, star or moon.
+    provenance:
+      - { source: "Original WMOOP definition", kind: definitional,
+          note: "Structural root for the domain; the concrete subkinds below are grounded in IAU nomenclature." }
+    properties:
+      - id: wmoop.space/CelestialBody#mass
+        name: mass
+        type: wmoop.core/Mass                    # QuantityKind M
+        unit: kg
+        cardinality: "1"
+        required: true
+        definition: The total amount of matter in the body.
+        provenance:
+          - { source: "Original WMOOP definition", kind: definitional,
+              note: "A universal property of any celestial body; per-body values are sourced at L2 (NASA NSSDC Planetary Fact Sheet)." }
+      - id: wmoop.space/CelestialBody#equatorialRadius
+        name: equatorialRadius
+        type: wmoop.core/Length                  # QuantityKind L
+        unit: km
+        cardinality: "0..1"
+        definition: The radius of the body measured at its equator.
+        provenance:
+          - { source: "Original WMOOP definition", kind: definitional,
+              note: "Equatorial (not mean) radius; per-body values are sourced at L2 (NASA NSSDC Planetary Fact Sheet)." }
+    relations:
+      - id: wmoop.space/CelestialBody#partOfSystem
+        name: partOfSystem
+        rel: part_of                             # mereology — a body is PART OF a system, not a KIND OF one
+        target: wmoop.space/PlanetarySystem
+        cardinality: "0..1"
+        inverse: wmoop.space/PlanetarySystem#members
+    invariants:
+      - id: positive-mass
+        expr: "self.mass > 0"
+        message: "A celestial body must have a positive mass."
+
+  - id: wmoop.space/Planet
+    name: Planet
+    kind: concrete
+    extends: wmoop.space/CelestialBody           # shallow is-a (depth 2)
+    definition: >
+      A celestial body that orbits the Sun, is massive enough for its self-gravity
+      to pull it into a nearly round shape, and has cleared the neighbourhood around
+      its orbit.
+    provenance:
+      - { source: "IAU 2006 General Assembly, Resolution B5: Definition of a Planet in the Solar System",
+          ref: "Resolution B5, §1 (a)-(c)", kind: sourced }
+    properties:
+      - id: wmoop.space/Planet#orbitalPeriod
+        name: orbitalPeriod
+        type: wmoop.core/Time                    # QuantityKind T
+        unit: d
+        cardinality: "1"
+        required: true
+        definition: The time the planet takes to complete one orbit around the Sun (its sidereal period).
+        provenance:
+          - { source: "Original WMOOP definition", kind: definitional,
+              note: "Per-planet values are sourced at L2 (NASA NSSDC Planetary Fact Sheet, orbital period in days)." }
+      - id: wmoop.space/Planet#numberOfMoons
+        name: numberOfMoons
+        type: wmoop.core/Count                    # dimensionless count
+        unit: one
+        cardinality: "1"
+        required: true
+        definition: The number of confirmed natural satellites in orbit around the planet.
+        provenance:
+          - { source: "Original WMOOP definition", kind: definitional,
+              note: "Per-planet counts are sourced at L2 (NASA NSSDC Planetary Fact Sheet) and revised as new satellites are confirmed by the IAU Minor Planet Center." }
+    invariants:
+      - id: moons-nonneg
+        expr: "self.numberOfMoons >= 0"
+        message: "A planet cannot have a negative number of moons."
+
+  - id: wmoop.space/DwarfPlanet
+    name: DwarfPlanet
+    kind: concrete
+    extends: wmoop.space/CelestialBody           # sibling of Planet, NOT a subkind of it (IAU B5)
+    definition: >
+      A celestial body that orbits the Sun and is nearly round, but has NOT cleared
+      the neighbourhood around its orbit and is not a satellite.
+    provenance:
+      - { source: "IAU 2006 General Assembly, Resolution B5: Definition of a Planet in the Solar System",
+          ref: "Resolution B5, §2 (a)-(d)", kind: sourced }
+
+  - id: wmoop.space/Star
+    name: Star
+    kind: concrete
+    extends: wmoop.space/CelestialBody           # shallow is-a (depth 2)
+    definition: A celestial body that shines by its own light through sustained nuclear fusion in its core.
+    provenance:
+      - { source: "Original WMOOP definition", kind: definitional,
+          note: "Standard astronomical usage; included as a sibling subkind (e.g. the Sun of the Solar System)." }
+
+  - id: wmoop.space/NaturalSatellite
+    name: NaturalSatellite
+    kind: concrete
+    extends: wmoop.space/CelestialBody           # shallow is-a (depth 2)
+    definition: A celestial body in orbit around a planet or other non-stellar body (a moon).
+    provenance:
+      - { source: "Original WMOOP definition", kind: definitional,
+          note: "Standard astronomical usage; 'moon' is the common synonym." }
+    relations:
+      - id: wmoop.space/NaturalSatellite#orbits
+        name: orbits
+        # no `rel:` — a plain association (the satellite orbits its primary), NOT part-whole or is-a
+        target: wmoop.space/CelestialBody
+        cardinality: "1"
+        inverse: wmoop.space/CelestialBody#satellites
+
+  # --- A collection of gravitationally bound bodies -------------------------
+  - id: wmoop.space/PlanetarySystem
+    name: PlanetarySystem
+    kind: concrete
+    definition: >
+      A collection of celestial bodies — a star (or stars) together with the
+      planets, dwarf planets and smaller bodies gravitationally bound to it.
+    provenance:
+      - { source: "Original WMOOP definition", kind: definitional,
+          note: "A Collection: its members are joined by the part_of relation declared on CelestialBody, not by inheritance." }
+    properties:
+      - id: wmoop.space/PlanetarySystem#numberOfPlanets
+        name: numberOfPlanets
+        type: wmoop.core/Count
+        unit: one
+        cardinality: "0..1"
+        definition: The number of bodies in the system classified as planets.
+        provenance:
+          - { source: "Original WMOOP definition", kind: definitional,
+              note: "Per-system values are sourced at L2 (for the Solar System, the count of 8 follows IAU 2006 Resolution B5)." }
+
+# ===========================================================================
+# L2 reference individuals — the eight planets (instances of Planet, NOT
+# subclasses), Pluto (a dwarf planet) and the Solar System itself. Each value
+# is sourced to the NASA NSSDC Planetary Fact Sheet.
+# ===========================================================================
+individuals:
+  - id: wmoop.space/Mercury
+    name: Mercury
+    instance_of: wmoop.space/Planet
+    definition: The smallest planet and the closest to the Sun.
+    values: { mass: 3.30e+23, equatorialRadius: 2439.7, orbitalPeriod: 88.0, numberOfMoons: 0 }
+    provenance:
+      - { source: "NASA NSSDC Planetary Fact Sheet",
+          ref: "Mercury: mass, equatorial radius, orbital period, number of moons",
+          url: "https://nssdc.gsfc.nasa.gov/planetary/factsheet/", kind: sourced }
+
+  - id: wmoop.space/Venus
+    name: Venus
+    instance_of: wmoop.space/Planet
+    definition: The second planet from the Sun and the hottest in the Solar System.
+    values: { mass: 4.87e+24, equatorialRadius: 6051.8, orbitalPeriod: 224.7, numberOfMoons: 0 }
+    provenance:
+      - { source: "NASA NSSDC Planetary Fact Sheet",
+          ref: "Venus: mass, equatorial radius, orbital period, number of moons",
+          url: "https://nssdc.gsfc.nasa.gov/planetary/factsheet/", kind: sourced }
+
+  - id: wmoop.space/Earth
+    name: Earth
+    instance_of: wmoop.space/Planet
+    definition: The third planet from the Sun and the only known body to support life.
+    values: { mass: 5.97e+24, equatorialRadius: 6378.1, orbitalPeriod: 365.2, numberOfMoons: 1 }
+    provenance:
+      - { source: "NASA NSSDC Planetary Fact Sheet",
+          ref: "Earth: mass, equatorial radius, orbital period, number of moons",
+          url: "https://nssdc.gsfc.nasa.gov/planetary/factsheet/", kind: sourced }
+
+  - id: wmoop.space/Mars
+    name: Mars
+    instance_of: wmoop.space/Planet
+    definition: The fourth planet from the Sun, a cold desert world often called the Red Planet.
+    values: { mass: 6.42e+23, equatorialRadius: 3396.2, orbitalPeriod: 687.0, numberOfMoons: 2 }
+    provenance:
+      - { source: "NASA NSSDC Planetary Fact Sheet",
+          ref: "Mars: mass, equatorial radius, orbital period, number of moons",
+          url: "https://nssdc.gsfc.nasa.gov/planetary/factsheet/", kind: sourced }
+
+  - id: wmoop.space/Jupiter
+    name: Jupiter
+    instance_of: wmoop.space/Planet
+    definition: The fifth and largest planet in the Solar System, a gas giant.
+    values: { mass: 1.898e+27, equatorialRadius: 71492, orbitalPeriod: 4331, numberOfMoons: 95 }
+    provenance:
+      - { source: "NASA NSSDC Planetary Fact Sheet",
+          ref: "Jupiter: mass, equatorial radius, orbital period, number of moons",
+          url: "https://nssdc.gsfc.nasa.gov/planetary/factsheet/", kind: sourced }
+
+  - id: wmoop.space/Saturn
+    name: Saturn
+    instance_of: wmoop.space/Planet
+    definition: The sixth planet from the Sun, a gas giant famous for its ring system.
+    values: { mass: 5.68e+26, equatorialRadius: 60268, orbitalPeriod: 10747, numberOfMoons: 274 }
+    provenance:
+      - { source: "NASA NSSDC Planetary Fact Sheet",
+          ref: "Saturn: mass, equatorial radius, orbital period, number of moons",
+          url: "https://nssdc.gsfc.nasa.gov/planetary/factsheet/", kind: sourced }
+
+  - id: wmoop.space/Uranus
+    name: Uranus
+    instance_of: wmoop.space/Planet
+    definition: The seventh planet from the Sun, an ice giant that rotates on its side.
+    values: { mass: 8.68e+25, equatorialRadius: 25559, orbitalPeriod: 30589, numberOfMoons: 28 }
+    provenance:
+      - { source: "NASA NSSDC Planetary Fact Sheet",
+          ref: "Uranus: mass, equatorial radius, orbital period, number of moons",
+          url: "https://nssdc.gsfc.nasa.gov/planetary/factsheet/", kind: sourced }
+
+  - id: wmoop.space/Neptune
+    name: Neptune
+    instance_of: wmoop.space/Planet
+    definition: The eighth and most distant planet from the Sun, an ice giant.
+    values: { mass: 1.02e+26, equatorialRadius: 24764, orbitalPeriod: 59800, numberOfMoons: 16 }
+    provenance:
+      - { source: "NASA NSSDC Planetary Fact Sheet",
+          ref: "Neptune: mass, equatorial radius, orbital period, number of moons",
+          url: "https://nssdc.gsfc.nasa.gov/planetary/factsheet/", kind: sourced }
+
+  - id: wmoop.space/Pluto
+    name: Pluto
+    instance_of: wmoop.space/DwarfPlanet
+    definition: >
+      A dwarf planet in the Kuiper belt. Classified as the ninth planet from 1930
+      until 2006, when the IAU adopted the planet/dwarf-planet distinction; Pluto
+      shares its orbital neighbourhood with other Kuiper-belt objects and so is a
+      dwarf planet, not a planet. It has five known moons and an orbital period of
+      about 90,560 days.
+    values: { mass: 1.30e+22, equatorialRadius: 1188.3 }
+    provenance:
+      - { source: "NASA NSSDC Planetary Fact Sheet",
+          ref: "Pluto: mass, equatorial radius",
+          url: "https://nssdc.gsfc.nasa.gov/planetary/factsheet/", kind: sourced }
+      - { source: "IAU 2006 General Assembly, Resolution B6: Pluto",
+          ref: "Resolution B6 (Pluto is a dwarf planet by the Resolution B5 definition and the prototype of a new category of trans-Neptunian objects); B5 itself does not name Pluto", kind: sourced }
+
+  - id: wmoop.space/SolarSystem
+    name: Solar System
+    instance_of: wmoop.space/PlanetarySystem
+    definition: The planetary system of the Sun, containing the eight planets, the dwarf planets and smaller bodies bound to it.
+    values: { numberOfPlanets: 8 }
+    provenance:
+      - { source: "IAU 2006 General Assembly, Resolution B5: Definition of a Planet in the Solar System",
+          ref: "Resolution B5 (footnote 1 enumerates the eight planets; the definition excludes Pluto, which Resolution B6 classes as a dwarf planet)", kind: sourced }
