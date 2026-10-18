@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- GENERATED from model/**/*.wml.yaml by schema/yaml_to_xml.py - DO NOT EDIT.
+     The YAML is the single source of truth; regenerate with:
+       python schema/yaml_to_xml.py -->
+<module xmlns="https://wmoop.org/wml/1" id="wmoop.core" version="1.0.0" title="Core">
+  <datatypes>
+    <datatype id="wmoop.core/Wmid" name="Wmid" base="string">
+      <definition>The opaque, immutable machine identity of a node (the "ConceptId"): the literal prefix `wmid:` followed by a 26-character Crockford base32 ULID. It never changes, even across rename or re-translation; all machine references ultimately resolve through it. WML source currently addresses nodes by their QName `id`; the Wmid is the stable identity behind it.</definition>
+      <constraints pattern="^wmid:[0-9A-HJKMNP-TV-Z]{26}$" />
+      <provenance source="WMOOP meta-model (docs/02-meta-model.md §6.3, identity lifecycle)" kind="convention" note="Adopts the ULID spec (Crockford base32, 26 chars, time-sortable) as the opaque id." />
+    </datatype>
+    <datatype id="wmoop.core/QName" name="QName" base="string">
+      <definition>A stable, human-readable qualified name addressing a WMOOP node: `&lt;module&gt;` (e.g. `wmoop.core`), `&lt;module&gt;/&lt;TypeName&gt;` (e.g. `wmoop.core/Speed`), or `&lt;module&gt;/&lt;Type&gt;#&lt;member&gt;`. Stable by policy (changed only via deprecation + alias). The meta-model also renders a human alias form `wm:{domain}:{LocalName}`.</definition>
+      <constraints pattern="^wmoop\.[a-z][a-z0-9]*(\.[a-z][a-z0-9]*)*(/[A-Z][A-Za-z0-9]*(#[a-z][A-Za-z0-9]*)?)?$" />
+      <provenance source="WMOOP meta-model (docs/02-meta-model.md §6.2–6.3, naming conventions)" kind="convention" />
+    </datatype>
+    <datatype id="wmoop.core/DimensionExponent" name="DimensionExponent" base="integer">
+      <definition>The integer exponent of one SI base dimension within a QuantityKind's dimension vector (e.g. −1 for Time in Speed = L·T⁻¹). Zero means the base dimension does not appear.</definition>
+      <provenance source="ISO 80000-1:2022 Quantities and units — Part 1: General" kind="sourced" ref="dimension of a quantity" />
+    </datatype>
+  </datatypes>
+  <enumerations>
+    <enumeration id="wmoop.core/ProvenanceKind" name="ProvenanceKind">
+      <definition>The closed set of ways a provenance record may be grounded. Mirrors the `kind` of a WML provenance entry (schema/wml.schema.json) so the kernel's Provenance type is self-describing.</definition>
+      <provenance source="WMOOP meta-model (docs/02-meta-model.md §6.3, Provenance object)" kind="definitional" note="Enumerates the schema's provenanceEntry.kind values." />
+      <value id="sourced">
+        <definition>An empirical/factual claim backed by a resolvable external source (standard, paper, dataset).</definition>
+      </value>
+      <value id="definitional">
+        <definition>A modelling or definitional choice that follows by definition; no external empirical source is claimed.</definition>
+      </value>
+      <value id="convention">
+        <definition>A naming or structural convention adopted by WMOOP.</definition>
+      </value>
+    </enumeration>
+  </enumerations>
+  <concepts>
+    <concept id="wmoop.core/Provenance" name="Provenance" kind="concrete">
+      <definition>A single provenance record attached to a node, property or fact: where the claim comes from and how it is grounded. Reifies the built-in WML `provenance:` object so the kernel defines the very type the meta-level uses (Invariant 4 — nothing is unsourced).</definition>
+      <provenance source="WMOOP meta-model (docs/02-meta-model.md §6.3, Provenance object)" kind="definitional" />
+      <property id="wmoop.core/Provenance#source" name="source" type="string" cardinality="1" required="true">
+        <definition>The citation, standard, dataset or statement of origin for the claim.</definition>
+        <provenance source="WMOOP meta-model (docs/02-meta-model.md §6.3)" kind="definitional" />
+      </property>
+      <property id="wmoop.core/Provenance#kind" name="kind" type="wmoop.core/ProvenanceKind" cardinality="1" required="true">
+        <definition>How the claim is grounded (sourced / definitional / convention).</definition>
+        <provenance source="WMOOP meta-model (docs/02-meta-model.md §6.3)" kind="definitional" />
+      </property>
+      <property id="wmoop.core/Provenance#ref" name="ref" type="string" cardinality="0..1">
+        <definition>A locator within the source (clause, table, page, field).</definition>
+        <provenance source="WMOOP meta-model (docs/02-meta-model.md §6.3)" kind="definitional" />
+      </property>
+      <property id="wmoop.core/Provenance#url" name="url" type="string" cardinality="0..1">
+        <definition>A resolvable URL for the source, where one exists.</definition>
+        <provenance source="WMOOP meta-model (docs/02-meta-model.md §6.3)" kind="definitional" />
+      </property>
+      <property id="wmoop.core/Provenance#note" name="note" type="string" cardinality="0..1">
+        <definition>A short human note qualifying the claim (e.g. a scope narrowing).</definition>
+        <provenance source="WMOOP meta-model (docs/02-meta-model.md §6.3)" kind="definitional" />
+      </property>
+    </concept>
+    <concept id="wmoop.core/QuantityKind" name="QuantityKind" kind="concrete">
+      <definition>A kind of measurable quantity (Length, Mass, Speed, …) characterised by its SI Dimension: a 7-vector of integer exponents over the SI base dimensions (L, M, T, I, Θ, N, J) = (Length, Mass, Time, ElectricCurrent, Temperature, AmountOfSubstance, LuminousIntensity). A derived kind (Speed, Area, Volume) also records its dimension formula. A property measured in some kind is typed by that kind and carries a `unit:` (meta-model §6.4).</definition>
+      <provenance source="BIPM, The International System of Units (SI), 9th edition (2019)" kind="sourced" ref="base quantities and dimensions" url="https://www.bipm.org/en/publications/si-brochure" />
+      <provenance source="ISO 80000-1:2022 Quantities and units — Part 1: General" kind="sourced" ref="quantity, dimension of a quantity" />
+      <property id="wmoop.core/QuantityKind#dimL" name="dimL" type="wmoop.core/DimensionExponent" cardinality="1" default="0">
+        <definition>Exponent of base dimension L (Length) in this kind's dimension vector.</definition>
+        <provenance source="ISO 80000-1:2022" kind="sourced" />
+      </property>
+      <property id="wmoop.core/QuantityKind#dimM" name="dimM" type="wmoop.core/DimensionExponent" cardinality="1" default="0">
+        <definition>Exponent of base dimension M (Mass).</definition>
+        <provenance source="ISO 80000-1:2022" kind="sourced" />
+      </property>
+      <property id="wmoop.core/QuantityKind#dimT" name="dimT" type="wmoop.core/DimensionExponent" cardinality="1" default="0">
+        <definition>Exponent of base dimension T (Time).</definition>
+        <provenance source="ISO 80000-1:2022" kind="sourced" />
+      </property>
+      <property id="wmoop.core/QuantityKind#dimI" name="dimI" type="wmoop.core/DimensionExponent" cardinality="1" default="0">
+        <definition>Exponent of base dimension I (ElectricCurrent).</definition>
+        <provenance source="ISO 80000-1:2022" kind="sourced" />
+      </property>
+      <property id="wmoop.core/QuantityKind#dimTheta" name="dimTheta" type="wmoop.core/DimensionExponent" cardinality="1" default="0">
+        <definition>Exponent of base dimension Θ (ThermodynamicTemperature).</definition>
+        <provenance source="ISO 80000-1:2022" kind="sourced" />
+      </property>
+      <property id="wmoop.core/QuantityKind#dimN" name="dimN" type="wmoop.core/DimensionExponent" cardinality="1" default="0">
+        <definition>Exponent of base dimension N (AmountOfSubstance).</definition>
+        <provenance source="ISO 80000-1:2022" kind="sourced" />
+      </property>
+      <property id="wmoop.core/QuantityKind#dimJ" name="dimJ" type="wmoop.core/DimensionExponent" cardinality="1" default="0">
+        <definition>Exponent of base dimension J (LuminousIntensity).</definition>
+        <provenance source="ISO 80000-1:2022" kind="sourced" />
+      </property>
+      <property id="wmoop.core/QuantityKind#canonicalUnit" name="canonicalUnit" type="wmoop.core/QName" cardinality="1" required="true">
+        <definition>QName of the canonical (SI) Unit this kind's magnitudes reduce to.</definition>
+        <provenance source="WMOOP meta-model (docs/02-meta-model.md §6.4)" kind="definitional" />
+      </property>
+      <property id="wmoop.core/QuantityKind#derivation" name="derivation" type="string" cardinality="0..1">
+        <definition>For a derived kind, its dimension formula over base kinds (e.g. Speed = Length · Time⁻¹). Absent for a base kind.</definition>
+        <provenance source="WMOOP meta-model (docs/02-meta-model.md §6.4, derived QuantityKind)" kind="definitional" />
+      </property>
+    </concept>
+    <concept id="wmoop.core/Unit" name="Unit" kind="concrete">
+      <definition>A unit of measurement belonging to exactly one QuantityKind, with a linear conversion to that kind's canonical (SI) unit: canonical = factor · value + offset (the offset supports scales such as °C ↔ K). Units are first-class (meta-model §6.4, R5): a measured property names its Unit in `unit:`.</definition>
+      <provenance source="ISO 80000-1:2022 Quantities and units — Part 1: General" kind="sourced" ref="unit, coherent SI unit" />
+      <provenance source="BIPM, The International System of Units (SI), 9th edition (2019)" kind="sourced" url="https://www.bipm.org/en/publications/si-brochure" />
+      <property id="wmoop.core/Unit#symbol" name="symbol" type="string" cardinality="1" required="true">
+        <definition>The unit's written symbol as used in `unit:` fields (e.g. `m/s`, `km/h`, `m2`, `cm3`, `degC`).</definition>
+        <provenance source="ISO 80000-1:2022" kind="sourced" ref="unit symbols" />
+      </property>
+      <property id="wmoop.core/Unit#quantityKind" name="quantityKind" type="wmoop.core/QName" cardinality="1" required="true">
+        <definition>QName of the QuantityKind this unit measures.</definition>
+        <provenance source="WMOOP meta-model (docs/02-meta-model.md §6.4)" kind="definitional" />
+      </property>
+      <property id="wmoop.core/Unit#factor" name="factor" type="decimal" cardinality="1" default="1">
+        <definition>Multiplicative factor converting a value in this unit to the kind's canonical unit (`toCanonical.factor`).</definition>
+        <provenance source="WMOOP meta-model (docs/02-meta-model.md §6.4, toCanonical)" kind="definitional" />
+      </property>
+      <property id="wmoop.core/Unit#offset" name="offset" type="decimal" cardinality="1" default="0">
+        <definition>Additive offset applied after the factor when converting to the canonical unit (`toCanonical.offset`; e.g. 273.15 for °C → K).</definition>
+        <provenance source="WMOOP meta-model (docs/02-meta-model.md §6.4, toCanonical)" kind="definitional" />
+      </property>
+    </concept>
+  </concepts>
+  <individuals>
+    <individual id="wmoop.core/Count" name="Count" instanceOf="wmoop.core/QuantityKind">
+      <definition>A dimensionless cardinal count of discrete entities.</definition>
+      <value property="dimL">0</value>
+      <value property="dimM">0</value>
+      <value property="dimT">0</value>
+      <value property="dimI">0</value>
+      <value property="dimTheta">0</value>
+      <value property="dimN">0</value>
+      <value property="dimJ">0</value>
+      <value property="canonicalUnit">wmoop.core/One</value>
+      <provenance source="ISO 80000-1:2022" kind="sourced" ref="quantities of dimension one" />
+    </individual>
+    <individual id="wmoop.core/Length" name="Length" instanceOf="wmoop.core/QuantityKind">
+      <definition>Extent in one spatial dimension. SI base quantity L.</definition>
+      <value property="dimL">1</value>
+      <value property="dimM">0</value>
+      <value property="dimT">0</value>
+      <value property="dimI">0</value>
+      <value property="dimTheta">0</value>
+      <value property="dimN">0</value>
+      <value property="dimJ">0</value>
+      <value property="canonicalUnit">wmoop.core/Metre</value>
+      <provenance source="ISO 80000-3:2019 Quantities and units — Part 3: Space and time" kind="sourced" ref="length" />
+    </individual>
+    <individual id="wmoop.core/Mass" name="Mass" instanceOf="wmoop.core/QuantityKind">
+      <definition>The amount of matter in a body. SI base quantity M.</definition>
+      <value property="dimL">0</value>
+      <value property="dimM">1</value>
+      <value property="dimT">0</value>
+      <value property="dimI">0</value>
+      <value property="dimTheta">0</value>
+      <value property="dimN">0</value>
+      <value property="dimJ">0</value>
+      <value property="canonicalUnit">wmoop.core/Kilogram</value>
+      <provenance source="ISO 80000-4:2019 Quantities and units — Part 4: Mechanics" kind="sourced" ref="mass" />
+    </individual>
+    <individual id="wmoop.core/Time" name="Time" instanceOf="wmoop.core/QuantityKind">
+      <definition>Duration between events. SI base quantity T.</definition>
+      <value property="dimL">0</value>
+      <value property="dimM">0</value>
+      <value property="dimT">1</value>
+      <value property="dimI">0</value>
+      <value property="dimTheta">0</value>
+      <value property="dimN">0</value>
+      <value property="dimJ">0</value>
+      <value property="canonicalUnit">wmoop.core/Second</value>
+      <provenance source="ISO 80000-3:2019" kind="sourced" ref="time, duration" />
+    </individual>
+    <individual id="wmoop.core/Speed" name="Speed" instanceOf="wmoop.core/QuantityKind">
+      <definition>Rate of change of position; a derived kind, Length per Time.</definition>
+      <value property="dimL">1</value>
+      <value property="dimM">0</value>
+      <value property="dimT">-1</value>
+      <value property="dimI">0</value>
+      <value property="dimTheta">0</value>
+      <value property="dimN">0</value>
+      <value property="dimJ">0</value>
+      <value property="canonicalUnit">wmoop.core/MetrePerSecond</value>
+      <value property="derivation">Length · Time⁻¹</value>
+      <provenance source="ISO 80000-3:2019" kind="sourced" ref="speed" />
+    </individual>
+    <individual id="wmoop.core/Area" name="Area" instanceOf="wmoop.core/QuantityKind">
+      <definition>Extent of a two-dimensional surface; a derived kind, Length squared.</definition>
+      <value property="dimL">2</value>
+      <value property="dimM">0</value>
+      <value property="dimT">0</value>
+      <value property="dimI">0</value>
+      <value property="dimTheta">0</value>
+      <value property="dimN">0</value>
+      <value property="dimJ">0</value>
+      <value property="canonicalUnit">wmoop.core/SquareMetre</value>
+      <value property="derivation">Length²</value>
+      <provenance source="ISO 80000-3:2019" kind="sourced" ref="area" />
+    </individual>
+    <individual id="wmoop.core/Volume" name="Volume" instanceOf="wmoop.core/QuantityKind">
+      <definition>Extent of a three-dimensional region of space; a derived kind, Length cubed.</definition>
+      <value property="dimL">3</value>
+      <value property="dimM">0</value>
+      <value property="dimT">0</value>
+      <value property="dimI">0</value>
+      <value property="dimTheta">0</value>
+      <value property="dimN">0</value>
+      <value property="dimJ">0</value>
+      <value property="canonicalUnit">wmoop.core/CubicMetre</value>
+      <value property="derivation">Length³</value>
+      <provenance source="ISO 80000-3:2019" kind="sourced" ref="volume" />
+    </individual>
+    <individual id="wmoop.core/Temperature" name="Temperature" instanceOf="wmoop.core/QuantityKind">
+      <definition>Thermodynamic temperature. SI base quantity Θ.</definition>
+      <value property="dimL">0</value>
+      <value property="dimM">0</value>
+      <value property="dimT">0</value>
+      <value property="dimI">0</value>
+      <value property="dimTheta">1</value>
+      <value property="dimN">0</value>
+      <value property="dimJ">0</value>
+      <value property="canonicalUnit">wmoop.core/Kelvin</value>
+      <provenance source="ISO 80000-5:2019 Quantities and units — Part 5: Thermodynamics" kind="sourced" ref="thermodynamic temperature" />
+    </individual>
+    <individual id="wmoop.core/Angle" name="Angle" instanceOf="wmoop.core/QuantityKind">
+      <definition>Plane angle; a quantity of dimension one, distinct in kind from Count.</definition>
+      <value property="dimL">0</value>
+      <value property="dimM">0</value>
+      <value property="dimT">0</value>
+      <value property="dimI">0</value>
+      <value property="dimTheta">0</value>
+      <value property="dimN">0</value>
+      <value property="dimJ">0</value>
+      <value property="canonicalUnit">wmoop.core/Radian</value>
+      <provenance source="ISO 80000-3:2019" kind="sourced" ref="plane angle" />
+    </individual>
+    <individual id="wmoop.core/One" name="one" instanceOf="wmoop.core/Unit">
+      <definition>The unit one — the coherent unit of a quantity of dimension one (Count).</definition>
+      <value property="symbol">one</value>
+      <value property="quantityKind">wmoop.core/Count</value>
+      <value property="factor">1</value>
+      <value property="offset">0</value>
+      <provenance source="ISO 80000-1:2022" kind="sourced" ref="the unit one" />
+    </individual>
+    <individual id="wmoop.core/Metre" name="m" instanceOf="wmoop.core/Unit">
+      <definition>Metre — the SI base and canonical unit of Length.</definition>
+      <value property="symbol">m</value>
+      <value property="quantityKind">wmoop.core/Length</value>
+      <value property="factor">1</value>
+      <value property="offset">0</value>
+      <provenance source="BIPM SI Brochure, 9th ed. (2019)" kind="sourced" ref="the metre" />
+    </individual>
+    <individual id="wmoop.core/Kilogram" name="kg" instanceOf="wmoop.core/Unit">
+      <definition>Kilogram — the SI base and canonical unit of Mass.</definition>
+      <value property="symbol">kg</value>
+      <value property="quantityKind">wmoop.core/Mass</value>
+      <value property="factor">1</value>
+      <value property="offset">0</value>
+      <provenance source="BIPM SI Brochure, 9th ed. (2019)" kind="sourced" ref="the kilogram" />
+    </individual>
+    <individual id="wmoop.core/Second" name="s" instanceOf="wmoop.core/Unit">
+      <definition>Second — the SI base and canonical unit of Time.</definition>
+      <value property="symbol">s</value>
+      <value property="quantityKind">wmoop.core/Time</value>
+      <value property="factor">1</value>
+      <value property="offset">0</value>
+      <provenance source="BIPM SI Brochure, 9th ed. (2019)" kind="sourced" ref="the second" />
+    </individual>
+    <individual id="wmoop.core/MetrePerSecond" name="m_per_s" instanceOf="wmoop.core/Unit">
+      <definition>Metre per second — the coherent SI (canonical) unit of Speed.</definition>
+      <value property="symbol">m/s</value>
+      <value property="quantityKind">wmoop.core/Speed</value>
+      <value property="factor">1</value>
+      <value property="offset">0</value>
+      <provenance source="ISO 80000-3:2019" kind="sourced" ref="metre per second" />
+    </individual>
+    <individual id="wmoop.core/KilometrePerHour" name="km_per_h" instanceOf="wmoop.core/Unit">
+      <definition>Kilometre per hour — a non-coherent unit of Speed used on road vehicles.</definition>
+      <value property="symbol">km/h</value>
+      <value property="quantityKind">wmoop.core/Speed</value>
+      <value property="factor">0.2777777777777778</value>
+      <value property="offset">0</value>
+      <provenance source="ISO 80000-3:2019" kind="sourced" ref="kilometre per hour" />
+      <provenance source="Exact conversion 1 km/h = 1000 m / 3600 s = 1/3.6 m/s" kind="definitional" />
+    </individual>
+    <individual id="wmoop.core/SquareMetre" name="m2" instanceOf="wmoop.core/Unit">
+      <definition>Square metre — the coherent SI (canonical) unit of Area.</definition>
+      <value property="symbol">m2</value>
+      <value property="quantityKind">wmoop.core/Area</value>
+      <value property="factor">1</value>
+      <value property="offset">0</value>
+      <provenance source="ISO 80000-3:2019" kind="sourced" ref="square metre" />
+    </individual>
+    <individual id="wmoop.core/CubicMetre" name="m3" instanceOf="wmoop.core/Unit">
+      <definition>Cubic metre — the coherent SI (canonical) unit of Volume.</definition>
+      <value property="symbol">m3</value>
+      <value property="quantityKind">wmoop.core/Volume</value>
+      <value property="factor">1</value>
+      <value property="offset">0</value>
+      <provenance source="ISO 80000-3:2019" kind="sourced" ref="cubic metre" />
+    </individual>
+    <individual id="wmoop.core/CubicCentimetre" name="cm3" instanceOf="wmoop.core/Unit">
+      <definition>Cubic centimetre — a sub-multiple unit of Volume used for engine displacement.</definition>
+      <value property="symbol">cm3</value>
+      <value property="quantityKind">wmoop.core/Volume</value>
+      <value property="factor">1e-06</value>
+      <value property="offset">0</value>
+      <provenance source="ISO 80000-3:2019" kind="sourced" ref="cubic centimetre" />
+      <provenance source="Exact conversion 1 cm³ = 1e-6 m³" kind="definitional" />
+    </individual>
+    <individual id="wmoop.core/Kelvin" name="K" instanceOf="wmoop.core/Unit">
+      <definition>Kelvin — the SI base and canonical unit of thermodynamic Temperature.</definition>
+      <value property="symbol">K</value>
+      <value property="quantityKind">wmoop.core/Temperature</value>
+      <value property="factor">1</value>
+      <value property="offset">0</value>
+      <provenance source="BIPM SI Brochure, 9th ed. (2019)" kind="sourced" ref="the kelvin" />
+    </individual>
+    <individual id="wmoop.core/DegreeCelsius" name="degC" instanceOf="wmoop.core/Unit">
+      <definition>Degree Celsius — a unit of Temperature offset from Kelvin by 273.15.</definition>
+      <value property="symbol">degC</value>
+      <value property="quantityKind">wmoop.core/Temperature</value>
+      <value property="factor">1</value>
+      <value property="offset">273.15</value>
+      <provenance source="BIPM SI Brochure, 9th ed. (2019)" kind="sourced" ref="the degree Celsius; t/°C = T/K − 273.15" />
+    </individual>
+    <individual id="wmoop.core/Radian" name="rad" instanceOf="wmoop.core/Unit">
+      <definition>Radian — the coherent SI (canonical) unit of plane Angle.</definition>
+      <value property="symbol">rad</value>
+      <value property="quantityKind">wmoop.core/Angle</value>
+      <value property="factor">1</value>
+      <value property="offset">0</value>
+      <provenance source="BIPM SI Brochure, 9th ed. (2019)" kind="sourced" ref="the radian" />
+    </individual>
+  </individuals>
+</module>

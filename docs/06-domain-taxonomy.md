@@ -72,7 +72,7 @@ README/whitepaper seed taxonomy or v1 roadmap) · ⚪ **candidate** (proposed he
 
 | # | Cluster | Domains | Grounded in |
 |---|---|---|---|
-| 0 | **Foundation** | `core` 🟡 | — (realises L0) |
+| 0 | **Foundation** | `core` 🟢 | — (realises L0) |
 | I | **Formal & Abstract** | `math` 🟡 · `computing` ⚪ · `language` ⚪ | DDC 500/000, OECD Natural/Formal, SUMO *Abstract* |
 | II | **Physical & Natural World** | `physics` ⚪ · `chemistry` ⚪ · `nature` 🟢 · `earth` ⚪ · `space` 🟡 | DDC 500, OECD Natural, LCC Q, schema.org Taxon |
 | III | **Geography & Place** | `geography` 🟢 | LCC G, DDC 910, schema.org Place |
@@ -89,12 +89,12 @@ Each sub-domain lists an example concept and, where useful, its dominant L0 cate
 (**End**urant · **Perd**urant · **Abs**tract · **Role** · **Rel**ation).
 
 ### 0 · Foundation
-- **`core`** 🟡 — realises L0; every module depends on it.
+- **`core`** 🟢 — realises L0; every module depends on it.
   - `core.quantities` — `Length`, `Mass`, `Speed`, `Count` (Abs)
   - `core.units` — `m`, `kg`, `km_per_h`, `cm3`
   - `core.dimensions` — the SI 7-vector (L,M,T,I,Θ,N,J)
   - `core.provenance` · `core.identity` — citations, `wmid`/QName
-  - *Referenced everywhere as `wmoop.core`; the module file is still pending.*
+  - *Referenced everywhere as `wmoop.core`; realised in [`model/core/core.wml.yaml`](../model/core/core.wml.yaml) (v1.0.0).*
 
 ### I · Formal & Abstract
 - **`math`** 🟡 — `math.number` (`NaturalNumber`, Abs) · `math.algebra` (`Group`, Abs) ·
@@ -166,7 +166,7 @@ Containment view — clusters and the domains inside them. Colour = status.
 
 ```mermaid
 flowchart TB
-  core["core 🟡"]:::plan
+  core["core 🟢"]:::seed
 
   subgraph I["I · Formal & Abstract"]
     direction LR
@@ -228,7 +228,7 @@ by a seeded module today; dashed edges are what a candidate domain will declare 
 
 ```mermaid
 flowchart LR
-  core["core 🟡"]:::plan
+  core["core 🟢"]:::seed
   math["math 🟡"]:::plan
   nature["nature 🟢"]:::seed
   geography["geography 🟢"]:::seed
