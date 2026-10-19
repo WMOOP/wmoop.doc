@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- GENERATED from model/**/*.wml.yaml by schema/yaml_to_xml.py - DO NOT EDIT.
+     The YAML is the single source of truth; regenerate with:
+       python schema/yaml_to_xml.py -->
+<module xmlns="https://wmoop.org/wml/1" id="wmoop.chemistry" version="0.1.0" title="Chemistry">
+  <dependsOn module="wmoop.core" version="^1.0.0" />
+  <datatypes>
+    <datatype id="wmoop.chemistry/AtomicNumber" name="AtomicNumber" base="integer">
+      <definition>The proton number Z of a chemical element: a positive integer that uniquely identifies the element (1 for hydrogen, increasing by one across the periodic table).</definition>
+      <constraints minimum="1" />
+    </datatype>
+    <datatype id="wmoop.chemistry/StandardAtomicWeight" name="StandardAtomicWeight" base="decimal">
+      <definition>The standard atomic weight (relative atomic mass) of an element: a dimensionless ratio conventionally expressed in unified atomic mass units (u, the dalton; 1 u = 1/12 of the mass of a carbon-12 atom). Modelled as a local decimal rather than a wmoop.core Mass quantity because it is a relative, dimensionless mass, not an absolute one, so no SI dimension or unit from the core kernel applies.</definition>
+      <constraints minimum="0" />
+    </datatype>
+  </datatypes>
+  <enumerations>
+    <enumeration id="wmoop.chemistry/StateOfMatter" name="StateOfMatter">
+      <definition>The macroscopic physical state in which a substance presents under given conditions.</definition>
+      <provenance source="Original WMOOP definition" kind="definitional" note="The three classical macroscopic states; plasma and further states are depth-on-demand." />
+      <value id="SOLID">
+        <definition>Fixed shape and fixed volume; constituent particles held in a rigid arrangement.</definition>
+      </value>
+      <value id="LIQUID">
+        <definition>Fixed volume but no fixed shape; particles mobile while remaining in contact.</definition>
+      </value>
+      <value id="GAS">
+        <definition>Neither fixed shape nor fixed volume; particles widely separated and free-moving.</definition>
+      </value>
+    </enumeration>
+  </enumerations>
+  <concepts>
+    <concept id="wmoop.chemistry/ChemicalSubstance" name="ChemicalSubstance" kind="abstract">
+      <definition>A form of matter with a definite chemical composition and characteristic properties.</definition>
+      <provenance source="IUPAC. Compendium of Chemical Terminology (the 'Gold Book')" kind="sourced" ref="chemical substance" />
+      <property id="wmoop.chemistry/ChemicalSubstance#standardState" name="standardState" type="wmoop.chemistry/StateOfMatter" cardinality="0..1">
+        <definition>The physical state of the pure substance at standard ambient temperature and pressure (298.15 K, 100 kPa).</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" note="Per-substance values are sourced at L2." />
+      </property>
+      <property id="wmoop.chemistry/ChemicalSubstance#meltingPoint" name="meltingPoint" type="wmoop.core/Temperature" unit="K" cardinality="0..1">
+        <definition>The temperature at which the pure substance passes from the solid to the liquid state at standard pressure.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" note="Per-substance figures are sourced at L2." />
+      </property>
+    </concept>
+    <concept id="wmoop.chemistry/ChemicalElement" name="ChemicalElement" kind="concrete" extends="wmoop.chemistry/ChemicalSubstance">
+      <definition>A substance whose atoms all share the same number of protons and that cannot be broken down into simpler substances by chemical means.</definition>
+      <provenance source="IUPAC. Compendium of Chemical Terminology (the 'Gold Book')" kind="sourced" ref="chemical element" />
+      <property id="wmoop.chemistry/ChemicalElement#atomicNumber" name="atomicNumber" type="wmoop.chemistry/AtomicNumber" cardinality="1">
+        <definition>The number of protons in the nucleus of an atom of the element (its proton number, Z); the element's defining property.</definition>
+        <provenance source="IUPAC. Compendium of Chemical Terminology (the 'Gold Book')" kind="sourced" ref="atomic number, Z" />
+      </property>
+      <property id="wmoop.chemistry/ChemicalElement#symbol" name="symbol" type="string" cardinality="1">
+        <definition>The one- or two-letter IUPAC-approved symbol identifying the element (e.g. H, Fe).</definition>
+        <provenance source="IUPAC. Nomenclature of Inorganic Chemistry (the 'Red Book', IUPAC Recommendations 2005)" kind="sourced" ref="IR-3 Elements" />
+      </property>
+      <property id="wmoop.chemistry/ChemicalElement#standardAtomicWeight" name="standardAtomicWeight" type="wmoop.chemistry/StandardAtomicWeight" cardinality="0..1">
+        <definition>The standard atomic weight of the element, averaged over the isotopic composition of normal terrestrial material.</definition>
+        <provenance source="IUPAC Commission on Isotopic Abundances and Atomic Weights (CIAAW), Standard Atomic Weights 2021" kind="sourced" />
+      </property>
+    </concept>
+    <concept id="wmoop.chemistry/ChemicalCompound" name="ChemicalCompound" kind="concrete" extends="wmoop.chemistry/ChemicalSubstance">
+      <definition>A substance made of two or more different chemical elements chemically bonded in a fixed proportion.</definition>
+      <provenance source="IUPAC. Compendium of Chemical Terminology (the 'Gold Book')" kind="sourced" ref="chemical compound" />
+      <property id="wmoop.chemistry/ChemicalCompound#chemicalFormula" name="chemicalFormula" type="string" cardinality="0..1">
+        <definition>A formula expressing the compound's constituent elements and their proportions (e.g. H2O).</definition>
+        <provenance source="IUPAC. Nomenclature of Inorganic Chemistry (the 'Red Book', IUPAC Recommendations 2005)" kind="sourced" ref="IR-4 Formulae" />
+      </property>
+      <relation id="wmoop.chemistry/ChemicalCompound#hasConstituentElement" name="hasConstituentElement" target="wmoop.chemistry/ChemicalElement" cardinality="1..*" rel="association" inverse="wmoop.chemistry/ChemicalElement#occursIn" />
+    </concept>
+    <concept id="wmoop.chemistry/Atom" name="Atom" kind="concrete">
+      <definition>The smallest particle of a chemical element that retains that element's chemical identity.</definition>
+      <provenance source="IUPAC. Compendium of Chemical Terminology (the 'Gold Book')" kind="sourced" ref="atom" />
+      <relation id="wmoop.chemistry/Atom#element" name="element" target="wmoop.chemistry/ChemicalElement" cardinality="1" rel="association" inverse="wmoop.chemistry/ChemicalElement#atoms" />
+      <relation id="wmoop.chemistry/Atom#partOf" name="partOf" target="wmoop.chemistry/Molecule" cardinality="0..1" rel="part_of" inverse="wmoop.chemistry/Molecule#hasAtom" />
+    </concept>
+    <concept id="wmoop.chemistry/Molecule" name="Molecule" kind="concrete">
+      <definition>An electrically neutral group of two or more atoms held together by chemical bonds, the smallest unit of a molecular substance.</definition>
+      <provenance source="IUPAC. Compendium of Chemical Terminology (the 'Gold Book')" kind="sourced" ref="molecule" />
+    </concept>
+    <concept id="wmoop.chemistry/ChemicalReaction" name="ChemicalReaction" kind="concrete">
+      <definition>A process in which one or more chemical substances (reactants) are transformed into one or more different substances (products).</definition>
+      <provenance source="IUPAC. Compendium of Chemical Terminology (the 'Gold Book')" kind="sourced" ref="chemical reaction" />
+      <property id="wmoop.chemistry/ChemicalReaction#isReversible" name="isReversible" type="boolean" cardinality="0..1">
+        <definition>Whether the reaction can proceed in both the forward and reverse directions under the same conditions.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" note="Flags the Gold Book notion of a reversible reaction; per-reaction values are sourced at L2." />
+      </property>
+      <relation id="wmoop.chemistry/ChemicalReaction#hasReactant" name="hasReactant" target="wmoop.chemistry/ChemicalSubstance" cardinality="1..*" rel="association" inverse="wmoop.chemistry/ChemicalSubstance#consumedIn" />
+      <relation id="wmoop.chemistry/ChemicalReaction#hasProduct" name="hasProduct" target="wmoop.chemistry/ChemicalSubstance" cardinality="1..*" rel="association" inverse="wmoop.chemistry/ChemicalSubstance#producedIn" />
+    </concept>
+  </concepts>
+  <roles>
+    <role id="wmoop.chemistry/Catalyst" name="Catalyst" playedBy="wmoop.chemistry/ChemicalSubstance" context="wmoop.chemistry" cardinalityPerPlayer="0..1">
+      <definition>The role of a substance that increases the rate of a chemical reaction without itself being consumed by it.</definition>
+      <provenance source="IUPAC. Compendium of Chemical Terminology (the 'Gold Book')" kind="sourced" ref="catalyst" />
+      <relation id="wmoop.chemistry/Catalyst#catalyses" name="catalyses" target="wmoop.chemistry/ChemicalReaction" cardinality="1..*" rel="association" inverse="wmoop.chemistry/ChemicalReaction#catalysedBy" />
+    </role>
+  </roles>
+  <individuals>
+    <individual id="wmoop.chemistry/Hydrogen" name="Hydrogen" instanceOf="wmoop.chemistry/ChemicalElement">
+      <definition>The chemical element with atomic number 1, the lightest element.</definition>
+      <value property="atomicNumber">1</value>
+      <value property="symbol">H</value>
+      <value property="standardAtomicWeight">1.008</value>
+      <provenance source="IUPAC Periodic Table of the Elements (2021)" kind="sourced" ref="Z = 1, symbol H" />
+      <provenance source="IUPAC CIAAW, Standard Atomic Weights 2021" kind="sourced" ref="hydrogen, abridged 1.008" />
+    </individual>
+    <individual id="wmoop.chemistry/Carbon" name="Carbon" instanceOf="wmoop.chemistry/ChemicalElement">
+      <definition>The chemical element with atomic number 6, the structural basis of organic chemistry.</definition>
+      <value property="atomicNumber">6</value>
+      <value property="symbol">C</value>
+      <value property="standardAtomicWeight">12.011</value>
+      <provenance source="IUPAC Periodic Table of the Elements (2021)" kind="sourced" ref="Z = 6, symbol C" />
+      <provenance source="IUPAC CIAAW, Standard Atomic Weights 2021" kind="sourced" ref="carbon, abridged 12.011" />
+    </individual>
+    <individual id="wmoop.chemistry/Oxygen" name="Oxygen" instanceOf="wmoop.chemistry/ChemicalElement">
+      <definition>The chemical element with atomic number 8.</definition>
+      <value property="atomicNumber">8</value>
+      <value property="symbol">O</value>
+      <value property="standardAtomicWeight">15.999</value>
+      <provenance source="IUPAC Periodic Table of the Elements (2021)" kind="sourced" ref="Z = 8, symbol O" />
+      <provenance source="IUPAC CIAAW, Standard Atomic Weights 2021" kind="sourced" ref="oxygen, abridged 15.999" />
+    </individual>
+    <individual id="wmoop.chemistry/Iron" name="Iron" instanceOf="wmoop.chemistry/ChemicalElement">
+      <definition>The chemical element with atomic number 26, a transition metal (Latin ferrum).</definition>
+      <value property="atomicNumber">26</value>
+      <value property="symbol">Fe</value>
+      <value property="standardAtomicWeight">55.845</value>
+      <provenance source="IUPAC Periodic Table of the Elements (2021)" kind="sourced" ref="Z = 26, symbol Fe" />
+      <provenance source="IUPAC CIAAW, Standard Atomic Weights 2021" kind="sourced" ref="iron, 55.845(2)" />
+    </individual>
+  </individuals>
+</module>
