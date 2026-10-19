@@ -53,12 +53,13 @@ WMOOP is split across the `WMOOP` GitHub organization. Know which repo your chan
 
 | Repo | Role | Do you hand-edit it? |
 |------|------|----------------------|
-| **`wmoop.doc`** | Canonical model source (`/model/**`, authored in YAML), the **meta-schema** (`schema/wml.schema.json`), **and** all governance/spec docs (this file, the meta-model spec, ethics, ADRs). Publishes the compiled model `wm-<ver>.json` as a Release. | **Yes — this is where you contribute the model.** (Meta-schema: by proposal/ADR only. Compiled `wm-<ver>.json`: **never** — it is generated.) |
+| **`wmoop.doc`** | Canonical model source (`/model/**`, authored in YAML), **synced mirrors** of the meta-schema (`schema/wml.schema.json` + `wml.xsd`; canonical in the `wmoop.json` repo), **and** all governance/spec docs (this file, the meta-model spec, ethics, ADRs). Publishes the compiled model `wm-<ver>.json` as a Release. | **Yes — this is where you contribute the model.** (Meta-schema mirror: synced from `wmoop.json`. Compiled `wm-<ver>.json`: **never** — it is generated.) |
+| **`wmoop.json`** | **Canonical** home of the JSON-Schema **meta-schema** (the WML grammar); mirrored into `wmoop.doc/schema` and each binding. | Meta-schema: by proposal/ADR only. |
 | **`wmoop.tools`** | The `wmoopc` compiler, per-language generators, projectors, and the conformance runner. | Tooling PRs only; not model content. |
 | **`wmoop.net`** (C#), **`wmoop.java`**, **`wmoop.py`**, **`wmoop.cpp`** | **Generated**, conformance-gated idiomatic bindings + per-language conformance tests + the generator templates. | Model classes: **never**. Generator *templates* and runtime glue: yes, via their own PRs. |
 | **`wmoop.js`** (JavaScript), **`wmoop.db`** (database schema/migrations) | **Planned** — generated like the others, not yet conformance-gated. | Schema/classes: **never**. |
 
-> The canonical **source** lives in `wmoop.doc/model/**`. The **machine contract** (the JSON-Schema meta-schema, `schema/wml.schema.json`) lives alongside it in `wmoop.doc`, and the **compiled model** is published as `wm-<ver>.json` (a Release of `wmoop.doc`). See the [Normative constants](GOVERNANCE.md) table for the authoritative repo/artefact list.
+> The canonical **source** lives in `wmoop.doc/model/**`. The **machine contract** (the JSON-Schema meta-schema) is **canonical in the `wmoop.json` repo** and mirrored at `schema/wml.schema.json` (+ `wml.xsd`) in `wmoop.doc`; the **compiled model** is published as `wm-<ver>.json` (a Release of `wmoop.doc`). See the [Normative constants](GOVERNANCE.md) table for the authoritative repo/artefact list.
 >
 > *(The exact repo-to-artifact split is fixed by [ADR-0001]; if you think it should change, open an ADR, don't improvise.)*
 
