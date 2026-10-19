@@ -498,6 +498,18 @@ This is how WMOOP refuses to let the world be modeled in naked `double`s.
   toCanonical: { factor: 0.2777778, offset: 0 }
 ```
 
+### 6.5 Open-world facts vs closed-world schema (per-slot completeness)
+
+Invariant 8 holds the model **open-world for facts** (absence of a fact ≠ its falsehood) but **closed-world for schema conformance** (the DoD checks are exhaustive). The bridge is declared **per slot**, so generated code never silently turns "not recorded" into "false".
+
+- Every **property, relation and role slot** carries a **`completeness`** mode:
+  - **`open`** (the default for L2 facts, relations and roles) — absence means **Unknown**, not "does not hold".
+  - **`closed`** — the model asserts it holds *all* values for this slot, so absence genuinely means "absent".
+- **Generated accessors over an `open` slot MUST expose three states — Present / Absent-known-complete / Unknown — and MUST NOT emit a boolean "does-not-have" that returns `false` on absence.** `HasRole<T>()`/`GetRole<T>()` over an open role slot return a tri-state (or raise `Unknown`); only `closed` slots may be queried as boolean-false-on-absence.
+- **CI gate (DoD):** reject any generator that emits an absence-as-false boolean accessor over an `open` slot — the OWA-facts-through-CWA-code anti-pattern (A10). An empty role container is **"unknown"**, not "cannot drive".
+
+> **Status.** `completeness` is a **planned additive slot field** (like the `Scheme` construct, [ADR 0001](../governance/adr/0001-classification-source-of-truth.md)); the schema enrichment, the generator/accessor rules, and updating the reference `wmoop.net` `RoleContainer` (which today returns `false` for an unrecorded role) are tracked follow-ups. Until it lands, slots are treated as **`open`** and generators MUST NOT emit absence-as-false.
+
 ---
 
 ## 7. Keeping is-a hierarchies shallow and honest
@@ -565,8 +577,9 @@ So that **humans and AI can contribute safely against an automated bar** (Invari
 **Round-trip / generation checks (Invariant 1)**
 11. Code generation succeeds for every target language from this model.
 12. **Conformance tests** generated from the WM pass in each per-language repo (`wmoop.net`, `wmoop.java`, `wmoop.py`, `wmoop.cpp`): the generated code's structure matches the model (names, hierarchy depth, role composition, units), proving no manual drift.
+13. **Open/closed-world bridge** (§6.5): no generated accessor reads absence as `false` over an `open` slot; `open` property/relation/role accessors are tri-state (Present/Absent/Unknown).
 
-An AI contributor is therefore handed an unambiguous, automatable target: *produce a declarative diff that passes checks 1–12.* No subjective taste is required to pass review for the mechanical parts; human review focuses only on definitional correctness and classification judgment.
+An AI contributor is therefore handed an unambiguous, automatable target: *produce a declarative diff that passes checks 1–13.* No subjective taste is required to pass review for the mechanical parts; human review focuses only on definitional correctness and classification judgment.
 
 ---
 
@@ -578,7 +591,7 @@ I **endorse all six** invariants and do not deviate from them. I sharpen three a
 - **Invariant 3 (composition/roles over inheritance) — made checkable.** Elevated from a principle to a **stereotype system** (`Kind`/`Subkind`/`Phase`/`Role`/`Category`/`RoleMixin`, §3) with **rigidity + sortality** as the discriminators, and a CI substitution gate (§7.3). "Roles over inheritance" is now a property the validator can enforce, not a reviewer's opinion.
 - **Invariant 4 (every concept sourced) — refined.** Provenance is **typed** (`sourced | definitional | convention`) with optional `confidence`, so definitions and naming/modelling conventions are not forced to cite an external source, while `sourced` facts must.
 - **Added — Invariant 7 (ontological completeness):** L0 must represent **endurants, perdurants, and abstracts** as first-class, not physical-objects-with-properties only. (Without this, Math and Music cannot be modeled; it is implicit in the mission and is now explicit.)
-- **Added — Invariant 8 (identity lifecycle & open-world stance):** identity is an **immutable opaque `wmid` + stable QName**, with first-class **deprecation/`sameAs`/`replacedBy`** merge policy; the model is **open-world for facts** (absence of a fact ≠ its falsehood) but **closed-world for schema conformance** (the DoD checks are exhaustive and binding). A crowd-sourced ontology *will* accumulate duplicates and renames; the identity lifecycle must be designed in, not bolted on.
+- **Added — Invariant 8 (identity lifecycle & open-world stance):** identity is an **immutable opaque `wmid` + stable QName**, with first-class **deprecation/`sameAs`/`replacedBy`** merge policy; the model is **open-world for facts** (absence of a fact ≠ its falsehood) but **closed-world for schema conformance** (the DoD checks are exhaustive and binding). The open↔closed bridge is declared **per slot** (`completeness: open|closed`, §6.5), so generated accessors over `open` slots expose Present/Absent/Unknown and never read absence as `false` (anti-pattern A10). A crowd-sourced ontology *will* accumulate duplicates and renames; the identity lifecycle must be designed in, not bolted on.
 
 ---
 
