@@ -1,5 +1,7 @@
 # WMOOP Adversarial Design Review
 
+> **Status note (2026-10-19).** This is a point-in-time review log, kept intact as the historical record. Several findings are now **resolved**: the cross-document contradictions (ID grammar, invariant count, depth cap, repo/language/license, …) were reconciled in the "docs: reconcile cross-document constants" change and the **Normative constants** table in [`GOVERNANCE.md`](../GOVERNANCE.md); and the D1 paradigm question (findings #2, #12, #20 below) was decided by [ADR 0001](../governance/adr/0001-classification-source-of-truth.md) in favour of the **additive scheme layer (option C)** — **not** the graph inversion (option B) this log recommends.
+
 
 ## architecture-skeptic
 

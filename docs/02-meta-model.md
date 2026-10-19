@@ -39,14 +39,14 @@ L0 is the smallest vocabulary that lets us say all six **without lying** (withou
 
 ## 2. The fixed set of foundational categories
 
-WMOOP commits to **8 foundational categories** arranged under one root, plus **one orthogonal meta-axis** (Type vs Individual) and the **Unit/Dimension apparatus** that supports category D. This set is *closed*: L1 contributors never invent a new foundational category; they specialize within these.
+WMOOP commits to **7 foundational categories** (A–F, H below) arranged under one root, plus supporting apparatus: **one orthogonal meta-axis** (Type vs Individual), the **Unit/Dimension apparatus** that supports category D, and **classification Schemes** — a first-class, versioned construct for sourced, dated classification that is a **planned additive L0 extension** (see §2.5 and [ADR 0001](../governance/adr/0001-classification-source-of-truth.md); the schema enrichment is a tracked follow-up). The set of categories is *closed*: L1 contributors never invent a new foundational category; they specialize within these.
 
 ### 2.1 Two independent axes
 
 Every modeled thing is located on **two orthogonal axes**:
 
 - **Axis 1 — Instantiation (meta-axis):** is this a **Type** (a Universal/Class: `Dog`, `Group`, `MajorChord`) or an **Individual** (a Particular/Instance: *this* dog Rex, *this* group ℤ/2ℤ, *this* performance)? This axis is not a category of thing; it cross-cuts all categories. A `Group` is an abstract **Type**; `ℤ/2ℤ` is an abstract **Individual** of it.
-- **Axis 2 — Mode of existence:** the 8 categories below.
+- **Axis 2 — Mode of existence:** the 7 categories below.
 
 Keeping these orthogonal is what lets WMOOP treat "the musical note C♯ as a type" and "the C♯ sounded at 00:03 in this recording as an event-individual" as two clearly distinct, linked things rather than a paradox (§2.4).
 
@@ -144,11 +144,13 @@ To keep L0 minimal and stable, the following are **explicitly excluded** and, wh
 - **Modality and possible worlds** (necessity/possibility as logical operators). We model dispositions pragmatically as capabilities/relations, not with modal logic.
 - **Full temporal logic / 4D worm semantics.** Perdurants exist, but L0 commits to a lightweight interval model (`validFrom`/`validTo`, `Instant`, `Duration`), not a general temporal calculus.
 - **Deontic logic** (obligations/permissions as formal operators). Licences etc. are modeled as role meta-data, not as deontic statements.
-- **Probabilistic/fuzzy membership.** Classification is crisp; uncertainty is carried as `confidence` provenance metadata, not as fuzzy set membership.
+- **Probabilistic/fuzzy membership.** Classification is **crisp *within* a scheme**, but **contested *across* schemes**: a concept may be classified under several first-class, versioned `Scheme`s at once, each a sourced, dated (`asOf`) claim ([ADR 0001](../governance/adr/0001-classification-source-of-truth.md); ETHICS §2.5). Graded/fuzzy membership *within one scheme* stays out of scope; uncertainty is carried as `confidence` provenance metadata.
 - **Belief/epistemic attitudes and provenance of *disputes*** beyond a `contested` flag + alternative-classification links (governance handles the rest).
 - **Causation as a primitive.** Expressed as typed relations between perdurants (`causes`), not a logical primitive.
 
 These exclusions are a feature: they keep the fixed set teachable to a first-year OOP student and to an AI contributor, while leaving clean extension points.
+
+> **Classification model (ADR 0001).** Identity (`wmid`) and the authored `extends` tree are the backbone and the *default* code projection; an entity's **current classification is a dated, sourced, scheme-qualified claim**, so a reclassification (e.g. Pluto: Planet→DwarfPlanet) changes a claim, never the `wmid`. Classification `Scheme`s are first-class, versioned constructs; rival schemes are retained side-by-side, never deleted (ETHICS §2.5). This is an **additive** layer over the OOP identity tree, not a source inversion — see [ADR 0001](../governance/adr/0001-classification-source-of-truth.md) and the Normative constants table in [GOVERNANCE.md](../GOVERNANCE.md).
 
 ---
 

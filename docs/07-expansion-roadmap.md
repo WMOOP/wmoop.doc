@@ -54,7 +54,7 @@ multiply-classified thing without lying.
 
 ### 2.2 Upper ontologies we triangulate
 
-WMOOP's eight L0 categories are not invented; they are triangulated from the major **upper (foundational)
+WMOOP's seven L0 categories are not invented; they are triangulated from the major **upper (foundational)
 ontologies** and then constrained to the closed-world, single-inheritance OOP target.
 
 | Upper ontology | Core idea WMOOP borrows | Lands in L0 as |
@@ -161,6 +161,13 @@ Dates are intentionally omitted; a wave advances when its items meet the DoD, no
   `literature`, `religion`, and whatever stewards bring — each a module on the frontier.
 
 Each wave only ever **adds**; nothing above re-opens a module below it.
+
+> **Near-term L0 addition (ADR 0001).** A first-class `Scheme` construct + enriched, dated, sourced
+> `classifiedUnder` claims (on concepts, individuals and roles) is a planned **additive** L0 extension
+> that realizes ETHICS §2.5 and resolves the D1 contradiction. Sequencing: the simple concept→class
+> generator ships first (reference binding, constraints enforced, conformance green); the
+> scheme-aware / depth-flattening projector is never on the v1 critical path. See
+> [`../governance/adr/0001-classification-source-of-truth.md`](../governance/adr/0001-classification-source-of-truth.md).
 
 ---
 

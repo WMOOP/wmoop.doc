@@ -40,9 +40,10 @@ concepts:
       (Chordate, Mammal, Primate, …) are carried as `classified_as` facts rather than
       as inheritance levels, so the code hierarchy stays shallow [INV-3].
     provenance:
-      - { source: "NCBI Taxonomy", ref: "taxid 9606 (Homo sapiens)", kind: sourced }
+      - { source: "NCBI Taxonomy", ref: "taxid 9606 (Homo sapiens)", kind: sourced,
+          note: "Also the authority for the classified_as taxonomic path below (ADR 0001: per-claim provenance on classified_as awaits the Scheme/claim schema enrichment)." }
     classified_as:
-      - { scheme: "NCBI Taxonomy", value: "Chordata / Mammalia / Primates / Hominidae" }
+      - { scheme: wmoop.scheme/NcbiTaxonomy, value: "Chordata / Mammalia / Primates / Hominidae" }
 
   - id: wmoop.nature/Person
     name: Person

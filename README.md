@@ -39,7 +39,7 @@ scalable, and replicable across languages.
 3. **Composition and roles over deep inheritance.** Inheritance is reserved for genuine, shallow,
    substitutable *is-a* (Liskov). Cross-cutting or cross-domain facets are **roles** attached by
    composition — a `Person` *acquires* a `Driver` role, it is never a subclass. Contested or
-   multiple classification is expressed with categories, not one forced tree.
+   multiple classification is expressed with categories and first-class, sourced classification schemes ([ADR 0001](governance/adr/0001-classification-source-of-truth.md)), not one forced tree.
 4. **Everything is sourced.** Every concept carries a stable identifier, a name, a definition, and
    **provenance** (a citation). Measurable properties carry **units** — no bare numbers.
 5. **Modular and acyclic.** Domains are versioned modules with an explicit, acyclic dependency

@@ -68,6 +68,7 @@ This governance is bound by eight **architectural invariants**. They are not up 
 | **Contribution labels** | `human \| ai-assisted \| ai-generated` |
 | **Domain status** | `seeded` (module exists in `model/`) · `candidate` (needs steward + sources). Living list: `model/taxonomy.yaml`; map: `docs/06-domain-taxonomy.md`. |
 | **Geography** | Its own top-level domain (`wmoop.geography`); Transport depends on it — not a sub-domain of Nature. |
+| **Classification** | Classification `Scheme`s are first-class, versioned constructs (**planned** additive L0 construct, ADR 0001 — schema enrichment pending); a `classified_as`/`classifiedUnder` claim carries provenance + rank + `asOf` (dated) + tier + status and attaches to concepts, individuals and roles. `extends`/`instance_of` give identity + the **default** code projection (one scheme per domain, chosen by a sourced ADR); rival schemes are retained as annotations, never deleted. Additive layer over the OOP tree, not a source inversion — see [ADR 0001](governance/adr/0001-classification-source-of-truth.md). |
 
 ---
 

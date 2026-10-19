@@ -121,6 +121,8 @@ Decision rule for contributors and reviewers:
 
 This covers cladistics vs Linnaean vs common usage in biology, and generalises: ICD vs DSM in medicine, competing music-theory systems, competing geological or astronomical classifications, and so on.
 
+> **Realization & status (ADR 0001).** This rule **will be** realized by an **additive** first-class `Scheme` L0 construct plus sourced, dated `classifiedUnder` claims layered over the OOP identity tree — **not** by inverting the source to a graph. (The construct is accepted in direction but **not yet in the schema**; the enrichment is a tracked follow-up.) The generated class library still materializes one **default** scheme per domain (a sourced governance choice); rival schemes ship as queryable annotations, never deleted. See [ADR 0001](governance/adr/0001-classification-source-of-truth.md) and the Normative constants table in [GOVERNANCE.md](GOVERNANCE.md).
+
 ---
 
 ### 3. Sensitive domains and red lines

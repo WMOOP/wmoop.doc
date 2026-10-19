@@ -86,7 +86,7 @@ Why YAML-authored + JSON-compiled, rather than "just JSON" or "just YAML":
 
 ### 1.4 The WML meta-model (L0 constructs)
 
-WML offers exactly these top-level declarations. This small, fixed vocabulary *is* the upper ontology `[INV-2]`:
+WML offers these top-level declarations today. This small, fixed vocabulary *is* the upper ontology `[INV-2]`. (A first-class, versioned `scheme` construct for sourced, dated classification is a planned **additive** extension — see [ADR 0001](../governance/adr/0001-classification-source-of-truth.md); until it lands, classification rides on the `classified_as` field on `concept`.)
 
 | Construct | Role in the model | Generates to (OOP) |
 |---|---|---|
