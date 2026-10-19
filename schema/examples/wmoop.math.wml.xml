@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- GENERATED from model/**/*.wml.yaml by schema/yaml_to_xml.py - DO NOT EDIT.
+     The YAML is the single source of truth; regenerate with:
+       python schema/yaml_to_xml.py -->
+<module xmlns="https://wmoop.org/wml/1" id="wmoop.math" version="0.1.0" title="Mathematics">
+  <dependsOn module="wmoop.core" version="^1.0.0" />
+  <datatypes>
+    <datatype id="wmoop.math/SideCount" name="SideCount" base="integer">
+      <definition>The number of straight sides (edges) bounding a polygon; at least three.</definition>
+      <constraints minimum="3" />
+      <provenance source="Euclid, Elements, Book I, Definition 19 (rectilinear figures)" kind="sourced" ref="trilateral, quadrilateral and multilateral figures distinguished by number of sides" />
+    </datatype>
+  </datatypes>
+  <interfaces>
+    <interface id="wmoop.math/IComparable" name="IComparable">
+      <definition>Contract for a totally ordered numeric value: any two values can be ranked. compareTo returns a negative integer, zero, or a positive integer according as self is less than, equal to, or greater than the other value.</definition>
+      <operation name="compareTo" returns="integer">
+        <param name="other" type="wmoop.math/Number" />
+      </operation>
+    </interface>
+  </interfaces>
+  <concepts>
+    <concept id="wmoop.math/MathematicalObject" name="MathematicalObject" kind="abstract">
+      <definition>An abstract object of mathematics: an entity existing outside space-time and without causal powers, individuated purely by its defining properties.</definition>
+      <provenance source="WMOOP L0 stereotype — Abstract entity (category C): outside space-time, no causal powers." kind="definitional" />
+    </concept>
+    <concept id="wmoop.math/Collection" name="Collection" kind="abstract" extends="wmoop.math/MathematicalObject">
+      <definition>A "many-as-one": a single abstract object that gathers zero or more member objects into a whole. The L0 Collection stereotype, realised here for the mathematical collections (whose members are themselves mathematical objects).</definition>
+      <provenance source="WMOOP L0 stereotype — Collection (a many-as-one grouping of members)." kind="definitional" note="The many-as-one conception follows Cantor's notion of a set as a collection gathered into a whole." />
+      <property id="wmoop.math/Collection#isEmpty" name="isEmpty" type="boolean" cardinality="1">
+        <definition>Whether the collection has no members.</definition>
+        <provenance source="WMOOP modelling choice — a membership predicate over the collection." kind="definitional" />
+      </property>
+      <relation id="wmoop.math/Collection#hasMember" name="hasMember" target="wmoop.math/MathematicalObject" cardinality="0..*">
+        <definition>A member gathered by this collection — the set-membership relation (∈), which is NOT mereological parthood (an element is not a "part" of a set).</definition>
+      </relation>
+    </concept>
+    <concept id="wmoop.math/Set" name="Set" kind="concrete" extends="wmoop.math/Collection">
+      <definition>A set: a collection of distinct members, unordered and without repetition, determined entirely by which objects are its members (extensionality).</definition>
+      <provenance source="Halmos, P. R., Naive Set Theory, Van Nostrand (1960)" kind="sourced" ref="the concept of a set; the axiom of extension" />
+      <property id="wmoop.math/Set#isFinite" name="isFinite" type="boolean" cardinality="1">
+        <definition>Whether the set has finitely many members.</definition>
+        <provenance source="WMOOP modelling choice — the finite/infinite distinction as a Boolean facet." kind="definitional" note="Finiteness after Dedekind (a set is infinite iff it is equinumerous with a proper subset of itself); cf. Halmos, Naive Set Theory." />
+      </property>
+    </concept>
+    <concept id="wmoop.math/Number" name="Number" kind="abstract" extends="wmoop.math/MathematicalObject">
+      <definition>A mathematical object expressing magnitude, count, or position on the real number line. In this module "Number" ranges over the real tower (ℕ ⊂ ℤ ⊂ ℚ ⊂ ℝ), which is totally ordered — hence IComparable.</definition>
+      <provenance source="ISO 80000-2:2019, Quantities and units — Part 2: Mathematics" kind="sourced" ref="standard number sets ℕ, ℤ, ℚ, ℝ" />
+      <implements ref="wmoop.math/IComparable" />
+    </concept>
+    <concept id="wmoop.math/NaturalNumber" name="NaturalNumber" kind="concrete" extends="wmoop.math/Number">
+      <definition>A non-negative whole number 0, 1, 2, 3, … generated from zero by repeated succession (the counting numbers).</definition>
+      <provenance source="Peano, G. (1889), Arithmetices principia, nova methodo exposita" kind="sourced" ref="the Peano axioms for the natural numbers" />
+      <provenance source="ISO 80000-2:2019, Quantities and units — Part 2: Mathematics" kind="sourced" ref="the set of natural numbers ℕ" />
+    </concept>
+    <concept id="wmoop.math/Integer" name="Integer" kind="concrete" extends="wmoop.math/Number">
+      <definition>A whole number — zero, a positive natural number, or its negative (…, −2, −1, 0, 1, 2, …). The naturals embed in the integers (ℕ ⊂ ℤ).</definition>
+      <provenance source="ISO 80000-2:2019, Quantities and units — Part 2: Mathematics" kind="sourced" ref="the set of integers ℤ" />
+    </concept>
+    <concept id="wmoop.math/RationalNumber" name="RationalNumber" kind="concrete" extends="wmoop.math/Number">
+      <definition>A number expressible as a ratio p/q of two integers with q ≠ 0, identified up to equality of ratios. The integers embed in the rationals (ℤ ⊂ ℚ).</definition>
+      <provenance source="ISO 80000-2:2019, Quantities and units — Part 2: Mathematics" kind="sourced" ref="the set of rational numbers ℚ" />
+    </concept>
+    <concept id="wmoop.math/RealNumber" name="RealNumber" kind="concrete" extends="wmoop.math/Number">
+      <definition>A number on the continuous number line: a member of the unique complete totally ordered field, containing the rationals and their limits (ℚ ⊂ ℝ).</definition>
+      <provenance source="ISO 80000-2:2019, Quantities and units — Part 2: Mathematics" kind="sourced" ref="the set of real numbers ℝ" />
+    </concept>
+    <concept id="wmoop.math/GeometricShape" name="GeometricShape" kind="abstract" extends="wmoop.math/MathematicalObject">
+      <definition>An abstract geometric figure: that which is contained by one or more boundaries, studied up to its defining properties rather than any physical drawing of it.</definition>
+      <provenance source="Euclid, Elements, Book I, Definition 14" kind="sourced" ref="a figure is that which is contained by any boundary or boundaries" />
+    </concept>
+    <concept id="wmoop.math/Polygon" name="Polygon" kind="abstract" extends="wmoop.math/GeometricShape">
+      <definition>A plane figure bounded by a finite number of straight line segments (sides) joined end to end to form a single closed chain.</definition>
+      <provenance source="Euclid, Elements, Book I, Definition 19 (rectilinear figures)" kind="sourced" ref="figures contained by straight lines" />
+      <property id="wmoop.math/Polygon#sideCount" name="sideCount" type="wmoop.math/SideCount" cardinality="1">
+        <definition>The number of straight sides bounding the polygon (equal to its number of vertices).</definition>
+        <provenance source="Euclid, Elements, Book I, Definition 19 (rectilinear figures)" kind="sourced" ref="trilateral, quadrilateral and multilateral figures distinguished by number of sides" />
+      </property>
+      <property id="wmoop.math/Polygon#isRegular" name="isRegular" type="boolean" cardinality="1">
+        <definition>Whether the polygon is both equilateral (all sides equal) and equiangular (all interior angles equal).</definition>
+        <provenance source="WMOOP modelling choice — regularity as a Boolean facet (equilateral and equiangular)." kind="definitional" />
+      </property>
+      <invariant id="at-least-three-sides">
+        <expr>self.sideCount &gt;= 3</expr>
+        <message>A polygon has at least three sides.</message>
+      </invariant>
+    </concept>
+    <concept id="wmoop.math/Triangle" name="Triangle" kind="concrete" extends="wmoop.math/Polygon">
+      <definition>A three-sided polygon (trilateral). Its three interior angles sum to two right angles (π rad).</definition>
+      <provenance source="Euclid, Elements, Book I, Definition 19 (trilateral figures)" kind="sourced" note="The interior-angle sum of two right angles is Elements, Book I, Proposition 32." />
+      <propertyOverride property="wmoop.math/Polygon#sideCount">
+        <constraints>
+          <enum>3</enum>
+        </constraints>
+      </propertyOverride>
+      <invariant id="three-sides">
+        <expr>self.sideCount == 3</expr>
+        <message>A triangle has exactly three sides.</message>
+      </invariant>
+    </concept>
+    <concept id="wmoop.math/Quadrilateral" name="Quadrilateral" kind="concrete" extends="wmoop.math/Polygon">
+      <definition>A four-sided polygon (quadrilateral). Its four interior angles sum to four right angles (2π rad).</definition>
+      <provenance source="Euclid, Elements, Book I, Definition 19 (quadrilateral figures)" kind="sourced" note="Elements, Book I, Definition 22 names the square, oblong, rhombus and rhomboid quadrilaterals." />
+      <propertyOverride property="wmoop.math/Polygon#sideCount">
+        <constraints>
+          <enum>4</enum>
+        </constraints>
+      </propertyOverride>
+      <invariant id="four-sides">
+        <expr>self.sideCount == 4</expr>
+        <message>A quadrilateral has exactly four sides.</message>
+      </invariant>
+    </concept>
+    <concept id="wmoop.math/AlgebraicStructure" name="AlgebraicStructure" kind="abstract" extends="wmoop.math/MathematicalObject">
+      <definition>A set (the carrier) together with one or more operations on it that satisfy a fixed list of axioms. Concrete structures (groups, rings, fields, …) differ by their operations and the axioms those operations obey.</definition>
+      <provenance source="Standard abstract algebra — an algebraic structure is a carrier set with operations satisfying stated axioms." kind="definitional" note="Umbrella modelling concept; cf. Dummit &amp; Foote, Abstract Algebra, 3rd ed. (2004), Part I." />
+      <relation id="wmoop.math/AlgebraicStructure#underlyingSet" name="underlyingSet" target="wmoop.math/Set" cardinality="1">
+        <definition>The carrier set of elements on which the structure's operation(s) act.</definition>
+      </relation>
+    </concept>
+    <concept id="wmoop.math/Group" name="Group" kind="concrete" extends="wmoop.math/AlgebraicStructure">
+      <definition>An algebraic structure (G, ·): a set G with a single binary operation · that is closed, associative, has an identity element, and gives every element an inverse. Below, `·` denotes the group's binary operation and the four group axioms are stated as invariants (this is the "axioms are invariants" case).</definition>
+      <provenance source="Dummit, D. S. &amp; Foote, R. M., Abstract Algebra, 3rd ed., John Wiley &amp; Sons (2004)" kind="sourced" ref="§1.1, definition of a group" />
+      <property id="wmoop.math/Group#order" name="order" type="wmoop.core/Count" unit="one" cardinality="0..1">
+        <definition>The order of the group — the number of elements in a finite group; omitted for an infinite group.</definition>
+        <constraints minimum="1" />
+        <provenance source="Dummit, D. S. &amp; Foote, R. M., Abstract Algebra, 3rd ed. (2004)" kind="sourced" ref="§1.1, the order |G| of a group" />
+      </property>
+      <property id="wmoop.math/Group#isAbelian" name="isAbelian" type="boolean" cardinality="1">
+        <definition>Whether the group's binary operation is commutative (a · b = b · a for all a, b).</definition>
+        <provenance source="Dummit, D. S. &amp; Foote, R. M., Abstract Algebra, 3rd ed. (2004)" kind="sourced" ref="§1.1, abelian (commutative) group — after N. H. Abel" />
+      </property>
+      <invariant id="closure">
+        <expr>forall a, b in self.underlyingSet: (a · b) in self.underlyingSet</expr>
+        <message>Closure: the group is closed under its binary operation.</message>
+      </invariant>
+      <invariant id="associativity">
+        <expr>forall a, b, c in self.underlyingSet: (a · b) · c == a · (b · c)</expr>
+        <message>Associativity: the binary operation is associative.</message>
+      </invariant>
+      <invariant id="identity">
+        <expr>exists e in self.underlyingSet: forall a in self.underlyingSet: (e · a == a) and (a · e == a)</expr>
+        <message>Identity: there is an identity element e with e · a = a · e = a.</message>
+      </invariant>
+      <invariant id="inverse">
+        <expr>forall a in self.underlyingSet: exists b in self.underlyingSet: (a · b == e) and (b · a == e)</expr>
+        <message>Inverse: every element a has an inverse b with a · b = b · a = e.</message>
+      </invariant>
+    </concept>
+  </concepts>
+  <individuals>
+    <individual id="wmoop.math/EmptySet" name="EmptySet" instanceOf="wmoop.math/Set">
+      <definition>The unique set with no members (∅); it is empty and finite.</definition>
+      <value property="isEmpty">true</value>
+      <value property="isFinite">true</value>
+      <provenance source="ISO 80000-2:2019, Quantities and units — Part 2: Mathematics" kind="sourced" ref="the empty set, symbol ∅" />
+    </individual>
+    <individual id="wmoop.math/TrivialGroup" name="TrivialGroup" instanceOf="wmoop.math/Group">
+      <definition>The trivial group ({e}, ·): the one-element group whose only element is the identity; it is abelian and has order 1.</definition>
+      <value property="order">1</value>
+      <value property="isAbelian">true</value>
+      <provenance source="Dummit, D. S. &amp; Foote, R. M., Abstract Algebra, 3rd ed. (2004)" kind="sourced" ref="§1.1, the trivial group of order 1" />
+    </individual>
+  </individuals>
+</module>

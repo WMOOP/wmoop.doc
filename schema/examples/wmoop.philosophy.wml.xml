@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- GENERATED from model/**/*.wml.yaml by schema/yaml_to_xml.py - DO NOT EDIT.
+     The YAML is the single source of truth; regenerate with:
+       python schema/yaml_to_xml.py -->
+<module xmlns="https://wmoop.org/wml/1" id="wmoop.philosophy" version="0.1.0" title="Philosophy">
+  <dependsOn module="wmoop.core" version="^1.0.0" />
+  <datatypes>
+    <datatype id="wmoop.philosophy/SyllogisticFigure" name="SyllogisticFigure" base="integer">
+      <definition>The figure of a categorical syllogism (1-4): the schematic arrangement of the middle term across the two premises.</definition>
+      <constraints minimum="1" maximum="4" />
+      <provenance source="Aristotle, Prior Analytics" kind="sourced" ref="Book I, chs. 4-6 (the first three figures)" note="Aristotle sets out three figures; the fourth is a later, post-Aristotelian addition, so the bound admits 1-4." />
+    </datatype>
+  </datatypes>
+  <enumerations>
+    <enumeration id="wmoop.philosophy/CategoricalForm" name="CategoricalForm">
+      <definition>The four standard forms of a categorical proposition, classified by quantity (universal/particular) and quality (affirmative/negative).</definition>
+      <provenance source="Aristotle, Prior Analytics" kind="sourced" ref="Book I.1 (premises as universal/particular and affirmative/negative)" note="The A/E/I/O letter mnemonic is the later, medieval naming of these four forms." />
+      <value id="UNIVERSAL_AFFIRMATIVE">
+        <definition>'All S are P' (traditionally labelled A).</definition>
+      </value>
+      <value id="UNIVERSAL_NEGATIVE">
+        <definition>'No S are P' (traditionally labelled E).</definition>
+      </value>
+      <value id="PARTICULAR_AFFIRMATIVE">
+        <definition>'Some S are P' (traditionally labelled I).</definition>
+      </value>
+      <value id="PARTICULAR_NEGATIVE">
+        <definition>'Some S are not P' (traditionally labelled O).</definition>
+      </value>
+    </enumeration>
+  </enumerations>
+  <interfaces>
+    <interface id="wmoop.philosophy/ITruthBearer" name="ITruthBearer">
+      <definition>The contract of a truth-bearer: anything that can be true or false and so can stand as a premise or a conclusion. Classical bivalence is assumed here; non-classical logics that admit further or indeterminate values are a known and legitimate departure.</definition>
+      <provenance source="Original WMOOP definition" kind="definitional" note="A behaviour contract over the philosophical notion of a truth-bearer; no bivalence claim is asserted about the world." />
+      <operation name="isTrue" returns="boolean" />
+    </interface>
+  </interfaces>
+  <concepts>
+    <concept id="wmoop.philosophy/PhilosophicalConcept" name="PhilosophicalConcept" kind="abstract">
+      <definition>An abstract idea or universal that is an object of philosophical analysis (e.g. justice, causation, identity, being).</definition>
+      <provenance source="Original WMOOP definition" kind="definitional" note="An L0 category-C abstract entity and the root of the philosophy.concepts sub-domain, left as an extension point for specific concepts. WMOOP records such concepts' structure without asserting their metaphysical status; realism vs. nominalism about abstracta is itself contested." />
+    </concept>
+    <concept id="wmoop.philosophy/Proposition" name="Proposition" kind="abstract">
+      <definition>A truth-apt content that is either true or false and can be affirmed, denied, or offered as a premise or a conclusion.</definition>
+      <provenance source="Stanford Encyclopedia of Philosophy" kind="sourced" ref="entry 'Propositions'" note="Modelled as the primary bearer of truth-value. Whether propositions exist as mind-independent abstracta is contested; WMOOP commits only to their structural role." />
+      <implements ref="wmoop.philosophy/ITruthBearer" />
+      <property id="wmoop.philosophy/Proposition#content" name="content" type="string" cardinality="0..1">
+        <definition>A representative natural-language statement of the proposition. The proposition itself is language-neutral; this string is only one expression of it.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" />
+      </property>
+    </concept>
+    <concept id="wmoop.philosophy/CategoricalProposition" name="CategoricalProposition" kind="concrete" extends="wmoop.philosophy/Proposition">
+      <definition>A proposition that affirms or denies a predicate of a subject in one of the four standard forms, as used in categorical syllogisms.</definition>
+      <provenance source="Aristotle, Prior Analytics" kind="sourced" ref="Book I.1 (affirmation/denial; universal/particular)" />
+      <property id="wmoop.philosophy/CategoricalProposition#form" name="form" type="wmoop.philosophy/CategoricalForm" cardinality="1">
+        <definition>Which of the four standard categorical forms the proposition has.</definition>
+        <provenance source="Aristotle, Prior Analytics" kind="sourced" ref="Book I.1" />
+      </property>
+    </concept>
+    <concept id="wmoop.philosophy/Argument" name="Argument" kind="abstract">
+      <definition>A structured set of propositions in which one or more premises are offered in support of a conclusion.</definition>
+      <provenance source="Original WMOOP definition" kind="definitional" note="Structural characterisation (premises support a conclusion), neutral between deductive and inductive support." />
+      <property id="wmoop.philosophy/Argument#premiseCount" name="premiseCount" type="integer" cardinality="1">
+        <definition>The number of premises the argument offers (the arity of its hasPremise relation), exposed as a constrainable scalar.</definition>
+        <constraints minimum="1" />
+        <provenance source="Original WMOOP definition" kind="definitional" />
+      </property>
+      <invariant id="premise-count-positive">
+        <expr>self.premiseCount &gt;= 1</expr>
+        <message>An argument must offer at least one premise.</message>
+      </invariant>
+      <relation id="wmoop.philosophy/Argument#hasPremise" name="hasPremise" target="wmoop.philosophy/Proposition" cardinality="1..*" inverse="wmoop.philosophy/Proposition#premiseOf">
+        <definition>A proposition offered in support of the conclusion.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" />
+      </relation>
+      <relation id="wmoop.philosophy/Argument#hasConclusion" name="hasConclusion" target="wmoop.philosophy/Proposition" cardinality="1" inverse="wmoop.philosophy/Proposition#conclusionOf">
+        <definition>The proposition the premises are offered to support.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" />
+      </relation>
+    </concept>
+    <concept id="wmoop.philosophy/DeductiveArgument" name="DeductiveArgument" kind="concrete" extends="wmoop.philosophy/Argument">
+      <definition>An argument whose conclusion is claimed to follow of necessity from its premises, so that it is valid or invalid.</definition>
+      <provenance source="Aristotle, Prior Analytics" kind="sourced" ref="Book I.1, 24b18-20 (definition of deduction, sullogismos)" />
+      <property id="wmoop.philosophy/DeductiveArgument#valid" name="valid" type="boolean" cardinality="0..1">
+        <definition>Whether the argument is formally valid - its conclusion follows of necessity from its premises. A property to be assessed per argument, not asserted here.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" />
+      </property>
+    </concept>
+    <concept id="wmoop.philosophy/InductiveArgument" name="InductiveArgument" kind="concrete" extends="wmoop.philosophy/Argument">
+      <definition>An argument whose premises are offered to make the conclusion probable rather than necessary, so that it is strong or weak rather than valid.</definition>
+      <provenance source="Aristotle, Prior Analytics" kind="sourced" ref="Book II.23 (epagoge, induction)" note="The modern deductive/inductive contrast turns on necessary vs. merely probable support." />
+      <property id="wmoop.philosophy/InductiveArgument#strong" name="strong" type="boolean" cardinality="0..1">
+        <definition>Whether the premises lend the conclusion strong, as opposed to weak, support. Inductive strength is a matter of degree; this records the coarse assessment.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" />
+      </property>
+    </concept>
+    <concept id="wmoop.philosophy/Syllogism" name="Syllogism" kind="concrete" extends="wmoop.philosophy/DeductiveArgument">
+      <definition>A categorical syllogism: a deductive argument with exactly two categorical premises and a categorical conclusion, linked through a shared middle term.</definition>
+      <provenance source="Aristotle, Prior Analytics" kind="sourced" ref="Book I, chs. 1-7 (the categorical syllogism and its figures)" />
+      <property id="wmoop.philosophy/Syllogism#figure" name="figure" type="wmoop.philosophy/SyllogisticFigure" cardinality="0..1">
+        <definition>The figure (1-4) fixing the position of the middle term across the premises.</definition>
+        <provenance source="Aristotle, Prior Analytics" kind="sourced" ref="Book I, chs. 4-6" />
+      </property>
+      <propertyOverride property="wmoop.philosophy/Argument#premiseCount">
+        <constraints>
+          <enum>2</enum>
+        </constraints>
+      </propertyOverride>
+    </concept>
+    <concept id="wmoop.philosophy/PhilosophicalPosition" name="PhilosophicalPosition" kind="abstract">
+      <definition>A stance on a philosophical question, characterised by the propositions it affirms as true (for example a thesis such as realism or dualism).</definition>
+      <provenance source="Original WMOOP definition" kind="definitional" note="An extension point for specific positions. WMOOP records which theses a position affirms WITHOUT asserting that the position is correct." />
+      <relation id="wmoop.philosophy/PhilosophicalPosition#assertsThesis" name="assertsThesis" target="wmoop.philosophy/Proposition" cardinality="1..*" inverse="wmoop.philosophy/Proposition#assertedBy">
+        <definition>A proposition the position holds to be true.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" />
+      </relation>
+      <relation id="wmoop.philosophy/PhilosophicalPosition#addressesBranch" name="addressesBranch" target="wmoop.philosophy/Branch" cardinality="0..1" inverse="wmoop.philosophy/Branch#addressedBy">
+        <definition>The branch of philosophy the position belongs to.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" />
+      </relation>
+    </concept>
+    <concept id="wmoop.philosophy/AristotelianCategory" name="AristotelianCategory" kind="concrete">
+      <definition>One of the ten highest kinds (categories) under which, in Aristotle's scheme, anything that can be said of a subject falls.</definition>
+      <provenance source="Aristotle, Categories" kind="sourced" ref="ch. 4, 1b25-2a4" note="Modelled as ONE named, sourced category scheme, NOT the unique partition of being; rival schemes exist (e.g. Kant's twelve categories). `kind: concrete` so the ten categories are L2 individuals - an abstract entity enumerated by its members, as wmoop.education/CurriculumSubject is." />
+      <property id="wmoop.philosophy/AristotelianCategory#greekTerm" name="greekTerm" type="string" cardinality="0..1">
+        <definition>The transliterated Greek term Aristotle uses for the category.</definition>
+        <provenance source="Aristotle, Categories" kind="sourced" ref="ch. 4" />
+      </property>
+    </concept>
+    <concept id="wmoop.philosophy/Branch" name="Branch" kind="concrete">
+      <definition>A major field of philosophical inquiry, distinguished by the kind of question it asks.</definition>
+      <provenance source="Original WMOOP definition" kind="definitional" note="The partition of philosophy into branches is a CONVENTION, not a unique or empirical division: logic is also claimed by mathematics, and ethics and aesthetics are sometimes grouped together as axiology. `kind: concrete` so the branches are L2 individuals." />
+      <property id="wmoop.philosophy/Branch#centralQuestion" name="centralQuestion" type="string" cardinality="0..1">
+        <definition>A short statement of the central question the branch addresses.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" />
+      </property>
+    </concept>
+  </concepts>
+  <individuals>
+    <individual id="wmoop.philosophy/Substance" name="Substance" instanceOf="wmoop.philosophy/AristotelianCategory">
+      <definition>What a thing is - the category of independent beings (Aristotle's examples: man, horse).</definition>
+      <value property="greekTerm">ousia</value>
+      <provenance source="Aristotle, Categories" kind="sourced" ref="ch. 4, 1b25-2a4" />
+    </individual>
+    <individual id="wmoop.philosophy/Quantity" name="Quantity" instanceOf="wmoop.philosophy/AristotelianCategory">
+      <definition>How much or how many something is (Aristotle's examples: four-foot, five-foot).</definition>
+      <value property="greekTerm">poson</value>
+      <provenance source="Aristotle, Categories" kind="sourced" ref="ch. 4, 1b25-2a4" />
+    </individual>
+    <individual id="wmoop.philosophy/Quality" name="Quality" instanceOf="wmoop.philosophy/AristotelianCategory">
+      <definition>What sort of thing something is (Aristotle's examples: white, grammatical).</definition>
+      <value property="greekTerm">poion</value>
+      <provenance source="Aristotle, Categories" kind="sourced" ref="ch. 4, 1b25-2a4" />
+    </individual>
+    <individual id="wmoop.philosophy/Relation" name="Relation" instanceOf="wmoop.philosophy/AristotelianCategory">
+      <definition>How something stands to something else (Aristotle's examples: double, half, greater).</definition>
+      <value property="greekTerm">pros ti</value>
+      <provenance source="Aristotle, Categories" kind="sourced" ref="ch. 4, 1b25-2a4" />
+    </individual>
+    <individual id="wmoop.philosophy/Place" name="Place" instanceOf="wmoop.philosophy/AristotelianCategory">
+      <definition>Where something is (Aristotle's examples: in the Lyceum, in the market-place).</definition>
+      <value property="greekTerm">pou</value>
+      <provenance source="Aristotle, Categories" kind="sourced" ref="ch. 4, 1b25-2a4" />
+    </individual>
+    <individual id="wmoop.philosophy/Time" name="Time" instanceOf="wmoop.philosophy/AristotelianCategory">
+      <definition>When something is (Aristotle's examples: yesterday, last year). The category of 'when', distinct from the physical quantity of time.</definition>
+      <value property="greekTerm">pote</value>
+      <provenance source="Aristotle, Categories" kind="sourced" ref="ch. 4, 1b25-2a4" />
+    </individual>
+    <individual id="wmoop.philosophy/Position" name="Position" instanceOf="wmoop.philosophy/AristotelianCategory">
+      <definition>The posture in which something is placed (Aristotle's examples: is lying, is sitting).</definition>
+      <value property="greekTerm">keisthai</value>
+      <provenance source="Aristotle, Categories" kind="sourced" ref="ch. 4, 1b25-2a4" />
+    </individual>
+    <individual id="wmoop.philosophy/State" name="State" instanceOf="wmoop.philosophy/AristotelianCategory">
+      <definition>The condition of having something (Aristotle's examples: has shoes on, has armour on).</definition>
+      <value property="greekTerm">echein</value>
+      <provenance source="Aristotle, Categories" kind="sourced" ref="ch. 4, 1b25-2a4" />
+    </individual>
+    <individual id="wmoop.philosophy/Action" name="Action" instanceOf="wmoop.philosophy/AristotelianCategory">
+      <definition>The doing of something (Aristotle's examples: to cut, to burn).</definition>
+      <value property="greekTerm">poiein</value>
+      <provenance source="Aristotle, Categories" kind="sourced" ref="ch. 4, 1b25-2a4" />
+    </individual>
+    <individual id="wmoop.philosophy/Affection" name="Affection" instanceOf="wmoop.philosophy/AristotelianCategory">
+      <definition>The undergoing of something, being acted upon (Aristotle's examples: to be cut, to be burned).</definition>
+      <value property="greekTerm">paschein</value>
+      <provenance source="Aristotle, Categories" kind="sourced" ref="ch. 4, 1b25-2a4" />
+    </individual>
+    <individual id="wmoop.philosophy/Metaphysics" name="Metaphysics" instanceOf="wmoop.philosophy/Branch">
+      <definition>The study of what there is and the fundamental nature of reality: being, objects, properties, causation, time and possibility.</definition>
+      <value property="centralQuestion">What is there, and what is its fundamental nature?</value>
+      <provenance source="Stanford Encyclopedia of Philosophy" kind="sourced" ref="entry 'Metaphysics'" />
+    </individual>
+    <individual id="wmoop.philosophy/Epistemology" name="Epistemology" instanceOf="wmoop.philosophy/Branch">
+      <definition>The study of knowledge: its nature, sources, limits and justification, and the difference between knowledge and mere belief.</definition>
+      <value property="centralQuestion">What is knowledge, and what can we know?</value>
+      <provenance source="Stanford Encyclopedia of Philosophy" kind="sourced" ref="entry 'Epistemology'" />
+    </individual>
+    <individual id="wmoop.philosophy/Ethics" name="Ethics" instanceOf="wmoop.philosophy/Branch">
+      <definition>The study of right action, the good, and how one ought to live.</definition>
+      <value property="centralQuestion">What ought one to do, and what is a good life?</value>
+      <provenance source="Aristotle, Nicomachean Ethics" kind="sourced" ref="Book I (the good and the end of action)" note="One foundational treatment; the Stanford Encyclopedia of Philosophy also covers normative, meta- and applied ethics." />
+    </individual>
+    <individual id="wmoop.philosophy/Logic" name="Logic" instanceOf="wmoop.philosophy/Branch">
+      <definition>The study of valid inference and the forms of correct reasoning. Its status as a branch of philosophy, rather than of mathematics, is itself debated.</definition>
+      <value property="centralQuestion">What distinguishes a valid inference from an invalid one?</value>
+      <provenance source="Aristotle, Prior Analytics" kind="sourced" ref="Book I.1 (the deduction, sullogismos)" note="Aristotle's founding of formal logic; the field now extends far beyond the syllogistic." />
+    </individual>
+    <individual id="wmoop.philosophy/Aesthetics" name="Aesthetics" instanceOf="wmoop.philosophy/Branch">
+      <definition>The study of beauty, taste and the nature and value of art and aesthetic experience.</definition>
+      <value property="centralQuestion">What is beauty, and what is the nature of art?</value>
+      <provenance source="Stanford Encyclopedia of Philosophy" kind="sourced" ref="entry 'The Concept of the Aesthetic'" />
+    </individual>
+  </individuals>
+</module>

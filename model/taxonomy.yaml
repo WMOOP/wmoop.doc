@@ -56,7 +56,7 @@ clusters:
 # domain's dependencies must be listed too (so a drawn node never hides an edge).
 # Omit this key to draw every domain.
 # ---------------------------------------------------------------------------
-dependency_graph: [core, math, nature, geography, transport, architecture, org, education, music, law, food, medicine]
+dependency_graph: [core, math, chemistry, nature, space, geography, transport, architecture, org, education, music, philosophy, law, food, medicine]
 
 # ---------------------------------------------------------------------------
 # Domains are the L1 modules (`wmoop.<id>`). `depends_on` must stay ACYCLIC
