@@ -125,6 +125,24 @@
     </xs:restriction>
   </xs:simpleType>
 
+  <!-- source media type; mirrors provenanceEntry.type in wml.schema.json -->
+  <xs:simpleType name="provenanceType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="book"/>
+      <xs:enumeration value="paper"/>
+      <xs:enumeration value="standard"/>
+      <xs:enumeration value="dataset"/>
+      <xs:enumeration value="url"/>
+      <xs:enumeration value="report"/>
+      <xs:enumeration value="software"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- multipleOf must be > 0; mirrors constraints.multipleOf (exclusiveMinimum 0) in wml.schema.json -->
+  <xs:simpleType name="positiveDecimal">
+    <xs:restriction base="xs:decimal"><xs:minExclusive value="0"/></xs:restriction>
+  </xs:simpleType>
+
   <xs:simpleType name="relKind">
     <xs:restriction base="xs:string">
       <xs:enumeration value="association"/>
@@ -148,7 +166,7 @@
     <xs:attribute name="author" type="xs:string"/>
     <xs:attribute name="title" type="xs:string"/>
     <xs:attribute name="year" type="xs:string"/>
-    <xs:attribute name="type" type="xs:string"/>
+    <xs:attribute name="type" type="wml:provenanceType"/>
     <xs:attribute name="locator" type="xs:string"/>
   </xs:complexType>
 
@@ -161,7 +179,7 @@
     <xs:attribute name="maximum" type="xs:decimal"/>
     <xs:attribute name="exclusiveMinimum" type="xs:decimal"/>
     <xs:attribute name="exclusiveMaximum" type="xs:decimal"/>
-    <xs:attribute name="multipleOf" type="xs:decimal"/>
+    <xs:attribute name="multipleOf" type="wml:positiveDecimal"/>
     <xs:attribute name="minLength" type="xs:nonNegativeInteger"/>
     <xs:attribute name="maxLength" type="xs:nonNegativeInteger"/>
     <xs:attribute name="pattern" type="xs:string"/>

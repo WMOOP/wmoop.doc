@@ -316,7 +316,13 @@ Target XML namespace: `https://wmoop.org/wml/1`.
 - **`.claude/skills/wml-contribute`** points authors at the oracle; `validate_wml.py` is a runnable
   stand-in for the `wmoop validate` step until the full `wmoopc` CLI lands in `wmoop.tools`.
 
-> **Drift status.** `CONTRIBUTING.md` §4.1 and its prose now use the canonical grammar and keywords
+> **XSD ↔ JSON sync (S4).** `wml.xsd` and `wml.schema.json` are kept in agreement: the XSD now
+> mirrors the JSON Schema's `provenance.type` enum (`book`/`paper`/`standard`/`dataset`/`url`/`report`/`software`)
+> and its `multipleOf > 0` rule. Two differences remain **by design**: the XSD validates a *complete
+> merged module* (one `<module>` document) while the JSON validates *per-file fragments*; and per-value
+> `unit`/`source` on individual `values` is modelled in the XSD and is a planned per-value-provenance
+> enrichment on the JSON side. **Durable fix (follow-up):** generate `wml.xsd` from `wml.schema.json`
+> (a single grammar source) so the two can never drift. `CONTRIBUTING.md` §4.1 and its prose now use the canonical grammar and keywords
 > (`wmoop.transport/Driver`, `extends`, `played_by:`, list-form `provenance:`), matching the live
 > model in `model/**` and this schema. The **one remaining** item is `CONTRIBUTING.md` §7's
 > copy-paste templates, which still use the older notation (dot ids, `kindOf`/`appliesTo`,
