@@ -102,7 +102,7 @@ Each category below states: **definition**, **litmus question**, **examples**, *
 - *In the set because* this is how properties are typed *honestly* — a mass is not a `double`; it is a magnitude in a dimension, enabling unit conversion and dimensional checking (§6.4).
 
 **(E) Relation / Association — "a tie"**
-- *Def.* An entity that holds between two or more Entities. Includes **mereological** part-whole relations (`properPartOf`, `componentOf`, `memberOf`) with their algebra (transitivity, antisymmetry).
+- *Def.* An entity that holds between two or more Entities. Includes **mereological** part-whole relations — but there is **no single `part_of`**: L0 provides typed relations (`properPartOf`, `componentOf`, `portionOf`, `memberOf`, `featureOf`, …) and **declares transitivity/antisymmetry _per relation_**, never as a blanket property. (`properPartOf` is transitive + antisymmetric; `memberOf` is **not** transitive — a person is a member of a club and the club a member of a federation, yet the person is not a member of the federation.) CI MUST NOT materialize a transitive closure over a non-transitive relation. This follows the OBO Relation-Ontology discipline (§2.4).
 - *Litmus.* "Does it only make sense with ≥2 participants named?" Yes → Relation.
 - *Examples.* `orbits(Moon, Planet)`, `partOf(Wheel, Moped)`, `borders(France, Spain)`, `teaches(Professor, Course)`.
 - *In the set because* geography (adjacency, containment), biology (organ part-of organism), and astronomy (orbits) are *relational*; and because part-whole is a distinct logic from is-a and must never be confused with it.
@@ -475,15 +475,16 @@ on L2 facts): `{ source: <citation/URI>, kind: sourced | definitional | conventi
 
 This is how WMOOP refuses to let the world be modeled in naked `double`s.
 
-- A **`QuantityKind`** (e.g., `Length`, `Mass`, `Time`, `Speed`, `Count`, `Angle`) has a **`Dimension`**: a 7-vector over the SI base dimensions **(L, M, T, I, Θ, N, J)** = (Length, Mass, Time, ElectricCurrent, Temperature, AmountOfSubstance, LuminousIntensity), plus the dimensionless case `(0,0,0,0,0,0,0)` used by `Count`, `Ratio`, `Angle`.
+- A **`QuantityKind`** (e.g., `Length`, `Mass`, `Time`, `Speed`, `Count`, `Angle`) has a **`Dimension`**: a 7-vector over the SI base dimensions **(L, M, T, I, Θ, N, J)** = (Length, Mass, Time, ElectricCurrent, Temperature, AmountOfSubstance, LuminousIntensity), plus the dimensionless case `(0,0,0,0,0,0,0)`. **The `QuantityKind` — not the dimension — is the unit of compatibility:** `Count`, `Ratio`, `Angle` and `SolidAngle` are **distinct dimensionless kinds** and are mutually incompatible despite all sharing the zero vector.
 - A **`Unit`** belongs to one `QuantityKind` and declares a conversion to the kind's canonical (SI) unit: `{ factor, offset }` (offset supports °C↔K). E.g., `km_per_h` → `m_per_s` with `factor: 0.277…`.
 - A **derived `QuantityKind`** declares a dimension *formula*: `Speed = Length · Time⁻¹` → dimension `(1,0,-1,0,0,0,0)`.
 
 **CI dimensional checks (machine-enforced):**
 1. A `Quantity` property's `unit` must belong to its `quantityKind` (reject `mass` measured in `km/h`).
-2. Any `derived` expression combining quantities must be **dimensionally consistent**: the dimensions of the right-hand side must reduce to the declared left-hand dimension. (e.g., `power = force · velocity` ⇒ dimensions add correctly; otherwise CI fails the build.)
-3. Comparisons/relations between two quantities require equal dimensions (`wheelCount < maxSpeed` is rejected).
+2. Any `derived` expression combining quantities must be **dimensionally consistent**: the right-hand side must reduce to the dimension of the declared left-hand `QuantityKind`. (The *kind* of the result is **declared, not inferred** from the dimension — torque and energy share a dimension but are different kinds.) e.g. `power = force · velocity` must reduce to Power's dimension, else CI fails.
+3. Two quantities are addable/comparable **iff they share the same `QuantityKind`**; equal `Dimension` is **necessary but not sufficient** — torque (`N·m`) and energy (`J = N·m`) share the dimension `M·L²·T⁻²` yet must never be added or compared, and an `Angle` and a `Count` are both dimensionless yet incompatible. (`wheelCount < maxSpeed` is still rejected — different kinds.)
 4. The code generator emits **strong value types** (`Length`, `Mass`, `Speed` structs) in each language rather than primitives, so `var d = speed * time;` is a `Length` at compile time, and `length + mass` fails to compile — the dimensional guarantee is carried into generated code, not just the model.
+5. **Non-SI / non-ratio kinds are modelled explicitly, not forced into `{ factor, offset }`:** **currency** and **logarithmic** quantities (dB, pH) are their own `QuantityKind`s with their own (possibly time-indexed, non-ratio) conversion semantics, or are declared out of scope; **temperature** distinguishes an absolute kind (`ThermodynamicTemperature`) from a difference kind (`TemperatureDifference` / ΔT).
 
 ```yaml
 - stereotype: QuantityKind
@@ -557,9 +558,9 @@ So that **humans and AI can contribute safely against an automated bar** (Invari
 7. Every `Role` declares `plays` (allowed players) that resolve, and (if `timeBounded`) a validity model.
 
 **Semantic / quantity checks**
-8. All `derived` expressions and quantity comparisons are **dimensionally consistent** (§6.4).
+8. All `derived` expressions reduce to their declared kind's dimension, and quantity comparisons are **same-`QuantityKind`** (equal dimension being necessary, not sufficient) (§6.4).
 9. Enum references resolve; `required` properties (`min ≥ 1`) are populated on L2 instances.
-10. Provenance `kind` is valid; empirical facts carry a resolvable `source`.
+10. Provenance `kind` is valid; `sourced` facts carry a resolvable `source`.
 
 **Round-trip / generation checks (Invariant 1)**
 11. Code generation succeeds for every target language from this model.

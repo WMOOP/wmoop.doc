@@ -508,6 +508,7 @@ Error codes are part of the model (not per-language) so vectors are language-neu
 | `WM-TYPE-MISMATCH` | Value type ≠ declared type |
 | `WM-CONSTRAINT-MIN` / `-MAX` / `-ENUM` | Numeric/enum constraint violated |
 | `WM-UNIT-DIMENSION-MISMATCH` | Unit incompatible with the property's dimension |
+| `WM-QUANTITYKIND-MISMATCH` | Two quantities of different `QuantityKind`s compared/combined (equal dimension is necessary, not sufficient) |
 | `WM-INVARIANT-FAILED` | A concept `invariant` `expr` returned false |
 | `WM-RELATION-TARGET-TYPE` | Relation target of wrong type |
 | `WM-ROLE-PLAYER-MISMATCH` | Role attached to a concept that is not its `played_by` |
