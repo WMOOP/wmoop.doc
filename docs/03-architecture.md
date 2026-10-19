@@ -354,7 +354,7 @@ One source, one compiled artifact, many deterministic emitters `[INV-1]`. "Write
 
 ### 2.2 Generated vs hand-written — the generation gap
 
-The hard requirement: **structure is generated and owned by the pipeline; behaviour is hand-written and owned by humans; regeneration never destroys behaviour.** We solve it with the **generation-gap pattern** (Vlissides).
+The hard requirement: **structure and pure derivations are generated and owned by the pipeline; imperative behaviour is hand-written and owned by humans; regeneration never destroys behaviour.** Pure, total functions (derived properties, invariants, unit conversions, `area`/`canDrive`) are authored once in **WMX** — a sandboxed expression language (planned, [ADR 0002](../governance/adr/0002-behaviour-and-wmx.md)) — and generated into every binding; only I/O/side-effecting/heuristic behaviour is per-binding. We solve the structure/behaviour split with the **generation-gap pattern** (Vlissides).
 
 | Concern | GENERATED (never hand-edited) | HAND-WRITTEN (never regenerated) |
 |---|---|---|
@@ -363,7 +363,8 @@ The hard requirement: **structure is generated and owned by the pipeline; behavi
 | Validation of invariants, constraints, cardinality, units, abstractness | ✅ | |
 | Equality/hashing, canonical (de)serialization, type-chain metadata | ✅ | |
 | Conformance fixtures/adapters | ✅ | |
-| **Method bodies / domain behaviour** (e.g. `IDrive.driveTo`, unit conversions, heuristics) | | ✅ |
+| **Pure derivations** (derived properties, `invariant` exprs, unit conversions, `area`/`canDrive`) — authored once in **WMX** (planned, ADR 0002) | ✅ | |
+| **Imperative behaviour** (`IDrive.driveTo` I/O, side-effecting, heuristics) | | ✅ |
 | Language-specific helpers, extension methods, DI wiring | | ✅ |
 
 Per-language realization of the gap:
@@ -425,6 +426,7 @@ A vector is a declarative `given → expect`. Categories:
 | **Relation/inverse** | setting `operates` updates `operatedBy` |
 | **Enum parity** | `LicenceCategory.A2` ⇄ `"A2"` everywhere |
 | **Semantic equivalence** | an instance maps to the **same canonical data model** (values, structure, constraint outcomes, error codes); a shared canonicalizer at the conformance boundary compares JCS bytes, but idiomatic runtime types are **not** forced to a byte-identical wire form — byte-identical output is the contract only for the DTO/interchange projection |
+| **Behaviour (WMX)** | a WMX pure function (derived property, invariant, unit conversion, `area`/`canDrive`) returns the **same output for the same input** in every binding (input→output vectors). Imperative/hand-written behaviour is out of scope ([ADR 0002](../governance/adr/0002-behaviour-and-wmx.md)) |
 
 ### 3.3 Worked vectors
 
@@ -739,7 +741,7 @@ Attaching `Driver` to a non-`Person` fails with `WM-ROLE-PLAYER-MISMATCH` in eve
 
 1. **Role identity & lifetime at L2:** is a `Driver` role globally identified, or only relative to its player? Affects serialization and cross-domain references.
 2. **Relation storage ownership — RESOLVED (D9, meta-model §10.5):** a binary, unattributed relation is an edge on its source; any **n-ary or attributed** relation (incl. many-to-many `operates`/`operatedBy` with its own data) is a **reified association entity** that owns the relation and its attributes — uniform across languages. The reified-association construct is a planned additive schema enrichment.
-3. **Expression language for `invariants`:** adopt a tiny, sandboxed subset (CEL-like) that every language can evaluate identically, so invariants are part of conformance rather than hand-ported.
+3. **Expression language for `invariants` and pure derivations — RESOLVED (D3, [ADR 0002](../governance/adr/0002-behaviour-and-wmx.md)):** adopt **WMX**, a tiny sandboxed, total, deterministic subset every binding evaluates identically, so invariants and pure derivations are **generated and behaviour-conformance-tested**, not hand-ported. (WMX is planned — it does not exist yet.)
 4. **Module granularity — decided (§4.5):** per-domain packages (`Wmoop.Nature`, `Wmoop.Transport`, …), so each domain is independently consumable and extensible by addition; the accepted cost is more dependency edges to keep acyclic (S4). Open sub-question: whether unusually large domains later split into sub-domain packages.
 5. **C#-first on-ramp scope:** ship the `import --from csharp` lifter in v1, or start DSL-only and add on-ramps once the model stabilizes?
-6. **Behaviour conformance:** §3 pins *structure and constraints*; should a later suite also pin selected *behaviours* (e.g. unit conversions) via input/output vectors, accepting that it narrows idiomatic freedom?
+6. **Behaviour conformance — RESOLVED (D3, ADR 0002):** a `behaviour` vector category pins **WMX pure functions** via input→output vectors (unit conversions, `area`, `canDrive`); imperative, side-effecting behaviour stays per-binding and is explicitly **out** of the single-source guarantee (a declared drift surface).

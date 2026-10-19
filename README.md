@@ -32,7 +32,9 @@ scalable, and replicable across languages.
 
 1. **Schema-first.** A canonical, language-neutral model (**WML**) is the single source of truth.
    Per-language bindings are *generated* and conformance-tested — "write once, replicate
-   everywhere" is mechanical, never manual copy-paste.
+   everywhere" is mechanical for data, constraints and **pure derivations** (the latter via the
+   planned **WMX** expression language, [ADR 0002](governance/adr/0002-behaviour-and-wmx.md));
+   imperative behaviour is per-binding.
 2. **Three layers.** **L0** meta-model (a small, fixed set of foundational categories) · **L1**
    domain models (declarative classes, properties, relations, roles) · **L2** instances (reference
    individuals, e.g. the planets).
