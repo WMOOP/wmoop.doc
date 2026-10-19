@@ -179,6 +179,41 @@ Contributors do not write "category C" or "an anti-rigid sortal." They pick a **
 
 > Inheritance (`Subkind`) is permitted **only between rigid sortals that share a principle of identity**. `Phase`, `Role`, `Category`, and `RoleMixin` are **never** modeled by subclassing a `Kind`. They are partitions/attachments. This is what makes "roles over inheritance" a *checkable property*, not a style preference.
 
+### 3.1 How the stereotypes map to the live grammar (S1)
+
+The stereotypes above are an **authoring/conceptual layer**. The live schema
+(`schema/wml.schema.json`) implements **seven constructs** — `module`, `datatype`,
+`enumeration`, `interface`, `concept` (with `kind: abstract|concrete`), `role`,
+`individual` — onto which the stereotypes map. A planned additive **`stereotype`**
+annotation (on `concept`/`role`) will record the OntoUML stereotype and let
+`validate_wml.py` enforce the §7.3 substitution gate mechanically; until it lands, the
+discipline is carried by the **construct choice** plus `concept.kind`, and the gate is
+enforced by review and by `validate_wml.py` where already expressible (no cross-domain
+`extends`, every `role` declares `played_by`, …).
+
+| Stereotype | Live WML encoding | Status |
+|---|---|---|
+| `Kind` | `concept` (`kind: abstract\|concrete`), no `extends` — the identity root | ✅ construct + `kind` |
+| `Subkind` | `concept` with single, shallow `extends` | ✅ `extends` |
+| `Phase` | `concept` with `extends` + `stereotype: Phase` (anti-rigid, intrinsic state) | ⏳ needs the annotation |
+| `Role` | the `role` construct (`played_by`) | ✅ |
+| `Category` | a cross-cutting tag via `classified_as` (per scheme), or a `concept` + `stereotype: Category` | ✅ tag / ⏳ annotation |
+| `RoleMixin` | a `role` with several allowed players + `stereotype: RoleMixin` | ⏳ needs multi-`played_by` + annotation |
+| `RelationType` | a `relation` member (binary) or a reified association entity (n-ary/attributed, §10.5) | ✅ binary / ⏳ reified (D9) |
+| `QualityType` | a non-numeric `property` (primitive/datatype/enum type) | ✅ |
+| `QuantityKind` | the `wmoop.core/QuantityKind` concept + a property's `type` + `unit` | ✅ |
+| `EventType` | a `concept` + `stereotype: EventType` (perdurant) | ⏳ annotation |
+| `AbstractType` | a `concept` + `stereotype: AbstractType` | ⏳ annotation |
+| `Collection` | a `concept` + `stereotype: Collection` | ⏳ annotation |
+| `Enumeration` | the `enumeration` construct | ✅ |
+| `Individual` | the `individual` construct (`instance_of`) | ✅ |
+
+Most stereotypes already have a faithful grammar encoding; the rest (`Phase`,
+`Category`-as-class, `RoleMixin`, `EventType`, `AbstractType`, `Collection`) ride on a
+`concept`/`role` today and become machine-checkable once the `stereotype` annotation
+lands. That annotation and the §7.3 gate are a **planned additive** enrichment (like
+`Scheme` §2.5, `completeness` §6.5, and the reified association §10.5).
+
 ---
 
 ## 4. Decision rules: inheritance vs interface/trait vs composition vs role
@@ -590,7 +625,7 @@ An AI contributor is therefore handed an unambiguous, automatable target: *produ
 I **endorse all six** invariants and do not deviate from them. I sharpen three and add two, all consistent with the originals:
 
 - **Invariant 1 (schema-first) — sharpened.** Generation must be **conformance-tested round-trip** (DoD checks 11–12), and each language repo must provide **non-clobbered extension points** (C# `partial`/extension methods, Java/Python/C++ equivalents) so hand-written idiomatic helpers coexist with generated code without manual re-authoring of the *model*. "Generated" ≠ "frozen against idiom"; it means the *conceptual model* is never hand-copied.
-- **Invariant 3 (composition/roles over inheritance) — made checkable.** Elevated from a principle to a **stereotype system** (`Kind`/`Subkind`/`Phase`/`Role`/`Category`/`RoleMixin`, §3) with **rigidity + sortality** as the discriminators, and a CI substitution gate (§7.3). "Roles over inheritance" is now a property the validator can enforce, not a reviewer's opinion.
+- **Invariant 3 (composition/roles over inheritance) — made checkable.** Elevated from a principle to a **stereotype system** (`Kind`/`Subkind`/`Phase`/`Role`/`Category`/`RoleMixin`, §3) with **rigidity + sortality** as the discriminators, and a CI substitution gate (§7.3). In the live grammar (§3.1) the stereotypes map onto the seven implemented constructs; the *fully* machine-checkable gate rides on a **planned** `stereotype` annotation, so today the validator enforces what is expressible (no cross-domain `extends`; every `role` declares `played_by`) and review covers the rest. "Roles over inheritance" is a validator-enforced property for the implemented cases, not a reviewer's opinion.
 - **Invariant 4 (every concept sourced) — refined.** Provenance is **typed** (`sourced | definitional | convention`) with optional `confidence`, so definitions and naming/modelling conventions are not forced to cite an external source, while `sourced` facts must.
 - **Added — Invariant 7 (ontological completeness):** L0 must represent **endurants, perdurants, and abstracts** as first-class, not physical-objects-with-properties only. (Without this, Math and Music cannot be modeled; it is implicit in the mission and is now explicit.)
 - **Added — Invariant 8 (identity lifecycle & open-world stance):** identity is an **immutable opaque `wmid` + stable QName**, with first-class **deprecation/`sameAs`/`replacedBy`** merge policy; the model is **open-world for facts** (absence of a fact ≠ its falsehood) but **closed-world for schema conformance** (the DoD checks are exhaustive and binding). The open↔closed bridge is declared **per slot** (`completeness: open|closed`, §6.5), so generated accessors over `open` slots expose Present/Absent/Unknown and never read absence as `false` (anti-pattern A10). A crowd-sourced ontology *will* accumulate duplicates and renames; the identity lifecycle must be designed in, not bolted on.
