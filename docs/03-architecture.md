@@ -92,7 +92,7 @@ WML offers these top-level declarations today. This small, fixed vocabulary *is*
 |---|---|---|
 | `module` | Versioned namespace + dependency list `[INV-5, INV-8]` | package / namespace |
 | `datatype` | Named primitive refinement (base + constraints, optional unit) | value type / validated primitive |
-| `enumeration` | Closed value set | enum |
+| `enumeration` | Closed value set, or an open controlled vocabulary (`extensible: true`) | enum, or a string-backed extensible type |
 | `concept` | A class: `abstract` or `concrete`, single `extends`, `implements`, `properties`, `relations`, `invariants` | class |
 | `interface` | Behaviour contract (abstract operations only) | interface / trait / ABC |
 | `role` | Composable facet: `played_by`, `context`, own `properties`/`relations`, `capabilities` | role object attached by composition `[INV-3]` |
@@ -132,7 +132,11 @@ datatypes:
 enumerations:
   - id: wmoop.transport/LicenceCategory
     name: LicenceCategory
-    definition: EU driving-licence categories.
+    definition: >
+      Driving-licence categories — an OPEN controlled vocabulary (D8): licence
+      classes are jurisdiction- and time-varying, so this is not a closed native
+      enum. The values below are the current EU set (Directive 2006/126/EC);
+      other jurisdictions add their own, and adding a member is a MINOR change.
     provenance:
       - { source: "Directive 2006/126/EC of the European Parliament", ref: "Annex, Art. 4" }
     values:

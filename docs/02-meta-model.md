@@ -172,7 +172,7 @@ Contributors do not write "category C" or "an anti-rigid sortal." They pick a **
 | `EventType` | Perdurant (B) | sortal | rigid | yes | a kind of process/happening | `Journey`, `Mitosis`, `NoteOccurrence` |
 | `AbstractType` | Abstract (C) | sortal | rigid | yes | a kind of abstract structure/proposition | `Theorem`, `Polygon`, `PitchClass` |
 | `Collection` | Collection (H) | sortal | rigid | yes | a many-as-one with its own identity | `Herd`, `Constellation`, `Chord` |
-| `Enumeration` | — | — | — | — | a closed value set with stable literals | `LicenceCategory`, `BloodType` |
+| `Enumeration` | — | — | — | — | a value set: **closed** (exhaustive, stable literals → a native enum) or an **open controlled vocabulary** (`extensible: true`, for jurisdiction-/time-varying sets → a string-backed type, not a closed enum) | `BloodType` (closed); `LicenceCategory`, admin statuses (open) |
 | `Individual` | any | — | — | — | an L2 instance / reference datum | `Earth`, `ℤ/2ℤ`, *this* person |
 
 **The single most important rule in WMOOP falls straight out of this table:**
@@ -453,10 +453,12 @@ A property on a Type is one of these **typed slots**:
 | Property form | Declares | Required keys |
 |---|---|---|
 | **Datatype** | a primitive value | `type` (from the primitive set) |
-| **Enum** | a value from a closed `Enumeration` | `enum` (ref), optional `extensible: false` |
+| **Enum** | a value from an `Enumeration` — **closed** (`extensible: false`, default: exhaustive, generated as a native enum) or an **open controlled vocabulary** (`extensible: true`: a string-backed type with known members, so adding a member is MINOR/additive and consumers never assume exhaustiveness) | `enum` (ref), `extensible` |
 | **Reference** | a typed link to another concept/instance | `target` (type ref), optional `inverse` (relation name) |
 | **Quantity** | a magnitude | `quantityKind`, `unit`, optional `constraints` |
 | **Composition** | an owned part (part-whole) | `partType`, `lifecycle: dependent` |
+
+> **Closed enum vs open controlled vocabulary (D8).** Use a **closed** `Enumeration` only for a genuinely finite, stable set (`BloodType`). Jurisdiction- or time-varying sets (licence classes, administrative statuses, genres) are **open controlled vocabularies** (`extensible: true`): adding a member is a MINOR, additive change — not an API-breaking native-enum change — and nothing is forced into a closed-world native enum. The vocabulary-level `extensible` flag on the `Enumeration` is a **planned additive** field; a lint flags a jurisdiction-/time-varying set modelled as a closed enum.
 
 **Primitive datatype set (closed, v1):** `Boolean`, `Integer`, `Decimal`, `String`, `Text` (long), `LangString` (localized), `Date`, `DateTime`, `Instant`, `Duration`, `URI`, `Identifier`. (Numeric measurements never use `Decimal` directly — they use **Quantity**, §6.4.)
 
