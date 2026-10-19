@@ -228,124 +228,87 @@ If any fails, it's a role, a relation, or a sibling — not a subclass.
 
 Copy the template, fill every required field, delete the guidance comments. Each template has a blank form and a worked example. Required fields are marked `# REQUIRED`.
 
-> **⚠️ Notation note.** The worked templates below still use an **older authoring notation** (dot/CURIE ids, the `kindOf`/`appliesTo` keywords, first-class `prop.`/`rel.`/`trait.` property refs, `layer:`/`status:` fields, object-form `provenance`) — these intentionally differ from §4.1 and the live schema and are a known, deferred refresh. The **authoritative** grammar, keywords, node fields and provenance shape are the [Normative constants](GOVERNANCE.md) table (§1.1), `schema/wml.schema.json`, and the worked models in [`model/**`](model/) (e.g. `model/transport/`). A full template refresh to the live schema is tracked as follow-up; until then, prefer `model/**` as your copy source.
+> These templates follow the **live schema** (`schema/wml.schema.json`) and the [Normative constants](GOVERNANCE.md) table (§1.1): slash QNames (`wmoop.<domain>/<Name>`, members `#<camelName>`), `extends`/`played_by`, **inline** properties, list-form `provenance`, and no `layer`/`status`/`contributedBy` fields (authorship is a commit trailer + PR label — see [`AI_CONTRIBUTING.md`](./AI_CONTRIBUTING.md)). The worked models in [`model/**`](model/) (e.g. [`model/transport/`](model/transport/)) are the canonical reference — prefer copying from there.
 
 ### 7.1 Add a class (concept)
 
 **When:** a new *kind of thing* that satisfies the kind-of / Liskov test.
 
 ```yaml
-# model/<domain>/<Local>.yaml
-id: wm:<domain>.<Local>            # REQUIRED  PascalCase local name
-name: <Human Name>                 # REQUIRED
-names:                             # optional localized names
-  ro: <Nume>
-layer: L1                          # REQUIRED
-status: proposed                   # REQUIRED  proposed|reviewed|stable|deprecated
-definition: >                      # REQUIRED  precise, non-tautological
-  <one or two sentences>
-kindOf: wm:<domain>.<Parent>       # REQUIRED unless this is a domain root; single parent only
-abstract: true|false               # is this directly instantiable?
-properties:                        # property references (define properties separately, §7.2)
-  - ref: wm:<domain>.prop.<name>   #   reference a first-class property
-    required: true
-    default: <value>               #   optional
-    override:                      #   optional, Liskov-safe constraint tightening only
-      min: 0
-implements:                        # optional interfaces/traits
-  - wm:core.trait.<Trait>
-categories: [<tag>, ...]           # optional non-inheritance classification
-provenance:                        # REQUIRED
-  kind: sourced                    #   sourced | definitional | convention
-  sources:
-    - type: book                   #   book|paper|standard|dataset|url
-      title: <Title>
-      author: <Author>
-      year: <YYYY>
-      locator: <page/section/DOI/ISBN>
-      url: <optional>
-      retrieved: <YYYY-MM-DD>
-contributedBy:                     # REQUIRED  (see AI_CONTRIBUTING.md for agents)
-  human: <github-handle>
+# model/<domain>/<domain>.wml.yaml   (a module may span files; the header lives in one of them)
+concepts:
+  - id: wmoop.<domain>/<Concept>            # REQUIRED  <module>/<PascalCase>
+    name: <Concept>                         # REQUIRED  PascalCase, matches the id's local name
+    kind: abstract                          # REQUIRED  abstract | concrete
+    extends: wmoop.<domain>/<Parent>        # optional  single, shallow is-a (depth ≤ 6)
+    implements: [ wmoop.<domain>/<Interface> ]   # optional  interfaces/traits
+    definition: <one or two precise, non-tautological sentences>   # REQUIRED
+    provenance:                             # REQUIRED  a LIST of records; `source` mandatory
+      - { source: <citation>, kind: sourced }     # kind: sourced | definitional | convention
+    classified_as:                          # optional  non-inheritance tags, per scheme
+      - { scheme: wmoop.scheme/<Scheme>, value: "<value>" }
+    properties:                             # properties are declared INLINE (not first-class)
+      - id: wmoop.<domain>/<Concept>#<member>     # REQUIRED  <TypeQName>#<camelName>
+        name: <member>                      # REQUIRED  camelCase, matches the id's member
+        type: <primitive | wmoop.<domain>/<Type>> # REQUIRED  primitive, datatype/enum/concept QName
+        unit: <symbol>                      # for a measured value (R5/I4)
+        cardinality: "1"                    # REQUIRED  1 | 0..1 | 1..* | 0..* | m..n
+        definition: <what this property means>     # REQUIRED
+        provenance:                         # REQUIRED  on every property too
+          - { source: <citation>, kind: definitional }
+        constraints: { minimum: 0 }         # optional
 ```
 
-**Worked example:**
+**Worked example** (from [`model/nature/nature.wml.yaml`](model/nature/nature.wml.yaml)):
 
 ```yaml
-# model/nature/animals/Mammal.yaml
-id: wm:nature.animals.Mammal
-name: Mammal
-names: { ro: Mamifer, la: Mammalia }
-layer: L1
-status: proposed
-definition: >
-  A vertebrate animal of the class Mammalia, distinguished by mammary glands
-  that in females produce milk, hair or fur, and (typically) live birth.
-kindOf: wm:nature.animals.Vertebrate
-abstract: true
-properties:
-  - { ref: wm:nature.animals.prop.legCount, required: true, default: 4 }
-  - { ref: wm:nature.animals.prop.isWarmBlooded, required: true, default: true }
-  - { ref: wm:nature.animals.prop.hasMammaryGlands, required: true, default: true }
-categories: [vertebrate, tetrapod]
-provenance:
-  kind: sourced
-  sources:
-    - type: book
-      title: "Campbell Biology"
-      author: "Urry, L. et al."
-      year: 2021
-      locator: "Ch. 34, Mammalia"
-      retrieved: 2026-10-16
-contributedBy: { human: your-handle }
+concepts:
+  - id: wmoop.nature/Animal
+    name: Animal
+    kind: abstract
+    definition: A multicellular eukaryotic organism of the kingdom Animalia.
+    provenance:
+      - { source: "NCBI Taxonomy", ref: "taxid 33208 (Metazoa)", kind: sourced }
+    properties:
+      - id: wmoop.nature/Animal#legCount
+        name: legCount
+        type: wmoop.nature/LegCount
+        cardinality: "0..1"
+        definition: Number of legs in the organism's typical adult body plan.
+        provenance:
+          - { source: "Original WMOOP definition", kind: definitional }
 ```
 
 **Common mistakes:** parent is not a true kind-of (should be a role/relation); definition restates the name; quantity property with no unit; no source for a factual claim.
 
-### 7.2 Add a property
+### 7.2 Property shape (inline on a concept or role)
 
-**When:** a reusable attribute. Define it once as first-class; reference it from many classes.
+**Properties are not separate nodes** — each is declared **inline** under its owning `concept` or `role`, with its own `definition` and `provenance` (S5). A measured value carries a `unit` and is typed by a `QuantityKind` datatype (I4).
 
 ```yaml
-# model/<domain>/properties.yaml  (or one file per property)
-id: wm:<domain>.prop.<name>        # REQUIRED  camelCase
-name: <Human Name>                 # REQUIRED
-layer: L1                          # REQUIRED
-status: proposed                   # REQUIRED
-definition: >                      # REQUIRED
-  <what this property means>
-datatype: integer|decimal|string|boolean|enum|date|reference  # REQUIRED
-# --- for quantities only, ALL REQUIRED: ---
-quantityKind: <e.g. Length, Mass, Count>
-unit: <UCUM code, e.g. kg, km, 1>
-dimension: <e.g. M, L, 1>
-# --- for enums: ---
-enumValues: [<v1>, <v2>]
-# --- constraints (optional): ---
-constraints: { min: 0, max: null }
-cardinality: single|multi
-provenance:                        # REQUIRED
-  kind: convention                 #   units/definitions are often conventions
-contributedBy: { human: <handle> }
+    properties:
+      - id: wmoop.<domain>/<Concept>#<member>   # REQUIRED  <TypeQName>#<camelName>
+        name: <member>                          # REQUIRED  camelCase
+        type: wmoop.core/Speed                  # REQUIRED  primitive, or a datatype/enum/concept QName
+        unit: km/h                              # for a measured value
+        cardinality: "0..1"                     # REQUIRED
+        required: false                         # optional
+        default: <value>                        # optional
+        definition: <what this property means>  # REQUIRED
+        provenance:                             # REQUIRED
+          - { source: "ISO 80000-1:2022", kind: sourced }
+        constraints: { minimum: 0, maximum: 400 }   # optional
 ```
 
-**Worked example:**
+A reusable **datatype** (a named primitive refinement) is declared once at module level and referenced by `type`:
 
 ```yaml
-id: wm:nature.animals.prop.legCount
-name: Leg count
-names: { ro: Numărul de picioare }
-layer: L1
-status: proposed
-definition: The number of legs an organism has in its typical adult form.
-datatype: integer
-quantityKind: Count
-unit: "1"            # UCUM dimensionless count
-dimension: "1"
-constraints: { min: 0 }
-cardinality: single
-provenance: { kind: convention }
-contributedBy: { human: your-handle }
+datatypes:
+  - id: wmoop.<domain>/WheelCount
+    name: WheelCount
+    base: integer
+    definition: A non-negative count of road wheels on a vehicle.
+    constraints: { minimum: 0 }
 ```
 
 ### 7.3 Add a domain
@@ -353,147 +316,127 @@ contributedBy: { human: your-handle }
 **When:** a whole new top-level subject (requires an issue + maintainer sign-off for the reserved prefix).
 
 ```yaml
-# model/<domain>/domain.yaml
-id: wm:<domain>                    # REQUIRED  lowercase, from the reserved registry
-name: <Domain Name>               # REQUIRED
-layer: L1                          # REQUIRED
-version: 0.1.0                      # REQUIRED  SemVer
-status: proposed                   # REQUIRED
-definition: >                      # REQUIRED  scope of the domain
-  <what this domain covers and, importantly, what it does NOT>
-dependsOn: []                      # REQUIRED  other domains; MUST stay acyclic (I5)
-roots:                             # REQUIRED  top abstract concept(s)
-  - wm:<domain>.<Root>
-stewards: [<handle>, ...]          # REQUIRED  owners for CODEOWNERS
-provenance:                        # REQUIRED  authoritative references for the field
-  kind: sourced
-  sources: [ ... ]
-contributedBy: { human: <handle> }
+# model/<domain>/<domain>.wml.yaml
+module:
+  id: wmoop.<domain>                 # REQUIRED  lowercase dotted (e.g. wmoop.transport)
+  version: 0.1.0                      # REQUIRED  SemVer
+  title: <Domain Title>              # REQUIRED
+  depends_on:                        # other modules referenced; MUST stay acyclic (I5)
+    - { module: wmoop.core, version: "^1.0.0" }
 ```
 
-**Worked example:**
+**Worked example** (from [`model/transport/transport.wml.yaml`](model/transport/transport.wml.yaml)):
 
 ```yaml
-# model/transport/domain.yaml
-id: wm:transport
-name: Transport
-layer: L1
-version: 0.1.0
-status: proposed
-definition: >
-  Human-made conveyances and the concepts of moving people and goods.
-  Covers vehicles and transport roles; does NOT cover roads/geography
-  (see wm:nature.geography) or legal persons (see wm:nature.people).
-dependsOn: [wm:nature]            # for the Person a Driver role applies to
-roots: [wm:transport.Vehicle]
-stewards: [your-handle]
-provenance:
-  kind: definitional
-contributedBy: { human: your-handle }
+module:
+  id: wmoop.transport
+  version: 0.3.0
+  title: Transport
+  depends_on:
+    - { module: wmoop.core,   version: "^1.0.0" }
+    - { module: wmoop.nature, version: "^0.5.0" }   # for the Person a Driver role plays
 ```
 
-With `Vehicle → AutoVehicle → Moped` each added via the [class template](#71-add-a-class-concept) (`numberOfWheels` as a `prop`, Moped overriding its default to 2).
+A domain's **steward** and **status** live in [`model/taxonomy.yaml`](./model/taxonomy.yaml) / `MAINTAINERS.yaml`, not the module header. The `Vehicle → RoadVehicle → Motorcycle → Moped` chain is added as `concepts` via §7.1 (`wheelCount` inline; `Moped` narrows a parent property via `property_overrides`).
 
 > **Added or moved a domain?** Update [`model/taxonomy.yaml`](./model/taxonomy.yaml) and run `python tools/gen_taxonomy.py` to regenerate the two diagrams in [`docs/06-domain-taxonomy.md`](./docs/06-domain-taxonomy.md); CI fails if they are stale. Never edit the diagrams by hand.
 
 ### 7.4 Add a cross-domain link / role
 
-**When:** a facet one domain attaches to a concept in another (the Person-as-Driver case). This is **composition**, declared in `_crosslinks/`.
+**When:** a facet one domain attaches to a concept in another (the Person-as-Driver case). This is **composition**: a `role` with `played_by`, declared in the attaching module, never `Driver : Person`.
 
 ```yaml
-# model/<domain>/roles/<Role>.yaml
-id: wm:<domain>.role.<Role>        # REQUIRED  PascalCase
-name: <Role Name>                  # REQUIRED
-layer: L1                          # REQUIRED
-status: proposed                   # REQUIRED
-definition: >                      # REQUIRED
-  <the capacity/capability this role confers>
-appliesTo:                         # REQUIRED  the host concept(s), in another domain
-  - wm:<otherdomain>.<Host>
-addsProperties:                    # properties the role contributes
-  - ref: wm:<domain>.prop.<name>
-    required: true
-addsRelations: [ ... ]             # optional
-constraints: >                     # optional role-entry conditions
-  <e.g. host must have prop.age >= legal minimum>
-provenance: { kind: sourced, sources: [ ... ] }  # REQUIRED
-contributedBy: { human: <handle> }
+# model/<domain>/roles.wml.yaml   (a continuation fragment of the module)
+roles:
+  - id: wmoop.<domain>/<Role>              # REQUIRED  <module>/<PascalCase>
+    name: <Role>                           # REQUIRED
+    definition: <the capacity this role confers>   # REQUIRED
+    provenance:                            # REQUIRED  list
+      - { source: <citation>, kind: definitional }
+    played_by: wmoop.<otherdomain>/<Host>  # REQUIRED  the host concept (another domain)
+    context: wmoop.<domain>                # optional  the module where the role is meaningful
+    cardinality_per_player: "0..*"         # optional  how many of this role one host may hold
+    capabilities: [ wmoop.<domain>/<Interface> ]   # optional  behaviour unlocked while held
+    properties:                            # inline, as in §7.2
+      - id: wmoop.<domain>/<Role>#<member>
+        name: <member>
+        type: <type>
+        cardinality: "1"
+        definition: <...>
+        provenance:
+          - { source: <citation>, kind: sourced }
+    relations:                             # optional, with an inverse
+      - id: wmoop.<domain>/<Role>#<verb>
+        name: <verb>
+        target: wmoop.<domain>/<Target>
+        cardinality: "0..*"
+        inverse: wmoop.<domain>/<Target>#<inverseVerb>
 ```
 
-**Worked example (the founder's case):**
+**Worked example** (from [`model/transport/roles.wml.yaml`](model/transport/roles.wml.yaml), the founder's case):
 
 ```yaml
-# model/transport/roles/Driver.yaml
-id: wm:transport.role.Driver
-name: Driver
-names: { ro: Șofer }
-layer: L1
-status: proposed
-definition: >
-  A role played by a person who is licensed and operating a vehicle.
-  Driver is NOT a subtype of Person; it is a capacity a Person plays.
-appliesTo: [wm:nature.people.Person]
-addsProperties:
-  - { ref: wm:transport.prop.drivingLicenceNumber, required: true }
-  - { ref: wm:transport.prop.licenceCategory,     required: true }
-  - { ref: wm:transport.prop.licenceExpiry,        required: false }
-addsRelations:
-  - { rel: wm:transport.rel.operates, target: wm:transport.Vehicle }
-constraints: "host must satisfy the licensing-age rule of the applicable jurisdiction"
-provenance:
-  kind: sourced
-  sources:
-    - { type: standard, title: "Vienna Convention on Road Traffic", year: 1968, locator: "Art. 41" }
-contributedBy: { human: your-handle }
+roles:
+  - id: wmoop.transport/Driver
+    name: Driver
+    definition: The role of a licensed person who operates a road vehicle.
+    provenance:
+      - { source: "Directive 2006/126/EC of the European Parliament", kind: definitional }
+    played_by: wmoop.nature/Person          # the type that holds this role — never Driver : Person
+    context: wmoop.transport
+    cardinality_per_player: "0..1"
+    capabilities: [ wmoop.transport/IDrive ]
+    properties:
+      - id: wmoop.transport/Driver#licenceNumber
+        name: licenceNumber
+        type: string
+        cardinality: "1"
+        definition: The identifier printed on the holder's driving licence.
+        provenance:
+          - { source: "Directive 2006/126/EC of the European Parliament", ref: "Annex I", kind: sourced }
+    relations:
+      - id: wmoop.transport/Driver#operates
+        name: operates
+        target: wmoop.transport/RoadVehicle
+        cardinality: "0..*"
+        inverse: wmoop.transport/RoadVehicle#operatedBy
 ```
 
-**Common mistakes:** writing `kindOf: wm:nature.people.Person` (the lint will reject it); creating a dependency cycle between the two domains; forgetting that the role, not Person, owns the licence properties.
+**Common mistakes:** writing `extends: wmoop.nature/Person` (a role is not a class — the lint rejects it); a dependency cycle between the two modules; putting the licence properties on `Person` instead of the `Driver` role.
 
 ### 7.5 Add reference instances (L2)
 
 **When:** real individuals worth shipping as reference data (the planets, chemical elements, countries). Keep instances sourced and separate from the classes.
 
 ```yaml
-# model/<domain>/<group>/instances/<Name>.yaml
-id: wm:<domain>.<group>.ind.<Name> # REQUIRED  ind. segment
-name: <Human Name>                 # REQUIRED
-layer: L2                          # REQUIRED
-status: proposed                   # REQUIRED
-instanceOf: wm:<domain>.<Class>    # REQUIRED  the class it instantiates
-values:                            # property values, each with its own source if factual
-  - ref: wm:<domain>.prop.<name>
-    value: <value>
-    unit: <UCUM if quantity>
-    source: { type: dataset, title: ..., url: ..., retrieved: <YYYY-MM-DD> }
-provenance: { kind: sourced, sources: [ ... ]}   # REQUIRED
-contributedBy: { human: <handle> }
+# model/<domain>/<domain>.wml.yaml   (individuals section)
+individuals:
+  - id: wmoop.<domain>/<Name>        # REQUIRED  <module>/<PascalCase>
+    name: <Human Name>              # REQUIRED
+    instance_of: wmoop.<domain>/<Concept>   # REQUIRED  the concept it instantiates
+    definition: <optional one-liner>
+    provenance:                      # recommended  list; sources the values below
+      - { source: <dataset>, url: <...>, retrieved: <YYYY-MM-DD>, kind: sourced }
+    values:                          # property local-name (camelCase) -> value
+      <member>: <value>              # a value's unit comes from its property's `unit`
 ```
 
-**Worked example:**
+**Worked example** (an L2 reference individual):
 
 ```yaml
-# model/space/planets/instances/Mars.yaml
-id: wm:space.planets.ind.Mars
-name: Mars
-names: { ro: Marte }
-layer: L2
-status: proposed
-instanceOf: wm:space.planets.Planet
-values:
-  - ref: wm:space.planets.prop.mass
-    value: 6.417e23
-    unit: kg
-    source: { type: dataset, title: "NASA Mars Fact Sheet", url: "https://nssdc.gsfc.nasa.gov/planetary/factsheet/marsfact.html", retrieved: 2026-10-16 }
-  - ref: wm:space.planets.prop.equatorialRadius
-    value: 3396.2
-    unit: km
-    source: { type: dataset, title: "NASA Mars Fact Sheet", url: "https://nssdc.gsfc.nasa.gov/planetary/factsheet/marsfact.html", retrieved: 2026-10-16 }
-provenance:
-  kind: sourced
-  sources:
-    - { type: dataset, title: "NASA Planetary Fact Sheet", url: "https://nssdc.gsfc.nasa.gov/planetary/factsheet/", retrieved: 2026-10-16 }
-contributedBy: { human: your-handle }
+individuals:
+  - id: wmoop.space/Mars
+    name: Mars
+    instance_of: wmoop.space/Planet
+    provenance:
+      - { source: "NASA Planetary Fact Sheet",
+          url: "https://nssdc.gsfc.nasa.gov/planetary/factsheet/", retrieved: 2026-10-16, kind: sourced }
+    values:
+      mass: 6.417e23            # kg, per wmoop.space/Planet#mass's unit
+      equatorialRadius: 3396.2  # km, per the property's unit
 ```
+
+> Per-value `unit`/`source` on individual `values` is a planned enrichment; until it lands, a value's unit comes from its property's `unit` and facts are sourced via the node's `provenance`.
 
 ---
 
@@ -503,7 +446,7 @@ A contribution is **Done** when **all** of the following are true. Every item is
 
 - [ ] **Validates:** `wmoop validate` passes (schema + referential integrity).
 - [ ] **Lints:** `wmoop lint` passes (naming, style, Liskov/roles heuristics).
-- [ ] **Required fields:** every touched node — **including every property** — has `id`, `name`, `definition`, `layer`, `status`, `provenance` (and `unit`/`dimension`/`datatype` for quantities). A property with no `definition` or no `provenance` fails this gate.
+- [ ] **Required fields:** every touched node — **including every property** — has `id`, `name`, `definition`, `provenance` (and a `unit` for a measured quantity, per its `QuantityKind` datatype). A property with no `definition` or no `provenance` fails this gate.
 - [ ] **Sourced:** every factual claim has `kind: sourced` with a resolvable citation; definitions/conventions are explicitly marked as such.
 - [ ] **IDs:** unique, correctly shaped, immutable (no existing ID was renamed/mutated).
 - [ ] **No orphans:** every node is reachable from a domain root and every referenced ID resolves.
@@ -513,7 +456,7 @@ A contribution is **Done** when **all** of the following are true. Every item is
 - [ ] **Generates:** bindings generate for all languages and **conformance tests pass**.
 - [ ] **Versioned:** any breaking change bumps the domain MAJOR; deprecations use `status: deprecated` + `replacedBy` (nothing is hard-deleted).
 - [ ] **No hand-edited generated code:** the diff touches only `model/**` (and, for tooling PRs, generator templates) — never generated binding files.
-- [ ] **Attributed:** `contributedBy` is set; AI-assisted work follows `AI_CONTRIBUTING.md` disclosure.
+- [ ] **Attributed:** authorship is disclosed via the commit trailer + PR label (`human` / `ai-assisted` / `ai-generated`); AI-assisted work follows `AI_CONTRIBUTING.md`.
 - [ ] **Reviewed:** at least one domain steward approval.
 
 ---
