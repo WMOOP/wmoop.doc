@@ -37,7 +37,7 @@ Before comparing candidates, we fix the requirements. A format is only a good *s
 | R9 | **Machine-checkable**: a formal grammar + automatable semantic rules | Humans *and* AI contribute against an automated DoD `[INV-6]` |
 | R10 | **Codegen-friendly**: an unambiguous, closed-world mapping to OOP constructs in 4+ languages | The whole point of the pipeline |
 | R11 | **Low authoring ceremony, reviewable diffs** | Students, professors, AI, and devs must contribute easily |
-| R12 | **Deterministic canonical serialization** | Content-addressing and byte-identical cross-language parity (§3.2) |
+| R12 | **Deterministic canonical serialization (model) + semantic parity (instances)** | Content-addressing of the compiled `wm.json`; cross-language instances are **semantically equivalent**, byte-identical output reserved for the interchange/DTO projection (§3.2) |
 
 ### 1.2 Candidate evaluation
 
@@ -409,7 +409,7 @@ Four mechanisms make `wmoopc gen` safe to run on every model release `[INV-6]`:
 
 ### 3.1 Purpose
 
-Codegen guarantees that bindings share *structure*. Conformance guarantees they share *meaning* `[INV-1, INV-6]`: a Moped rejects a 60 cm³ engine in C#, Java, Python, and C++ identically, with the same error code, and serializes to the same bytes. The vectors live in `wmoop.doc/conformance/` and are themselves part of the versioned model.
+Codegen guarantees that bindings share *structure*. Conformance guarantees they share *meaning* `[INV-1, INV-6]`: a Moped rejects a 60 cm³ engine in C#, Java, Python, and C++ identically, with the same error code, and is **semantically equivalent** against a shared canonical data model (same values, structure, constraint outcomes and error codes). Idiomatic per-language differences (int/float, nullability, decimal, set ordering, record equality) are **first-class, not drift to eliminate**: the runtime types stay native, and a **shared canonicalizer bridges them only at the conformance boundary** — byte-identical wire output is the contract only for the interchange/DTO (Protobuf/JSON) projection. The vectors live in `wmoop.doc/conformance/` and are themselves part of the versioned model.
 
 ### 3.2 Vector format and categories
 
@@ -424,7 +424,7 @@ A vector is a declarative `given → expect`. Categories:
 | **Role semantics** | attach/detach, `played_by` enforcement, capability gating, per-player cardinality |
 | **Relation/inverse** | setting `operates` updates `operatedBy` |
 | **Enum parity** | `LicenceCategory.A2` ⇄ `"A2"` everywhere |
-| **Canonical serialization** | instance → JCS JSON is **byte-identical** across all languages (the strongest parity guarantee) |
+| **Semantic equivalence** | an instance maps to the **same canonical data model** (values, structure, constraint outcomes, error codes); a shared canonicalizer at the conformance boundary compares JCS bytes, but idiomatic runtime types are **not** forced to a byte-identical wire form — byte-identical output is the contract only for the DTO/interchange projection |
 
 ### 3.3 Worked vectors
 
@@ -475,7 +475,7 @@ expect:
 # conformance/transport/moped_canonical_serialization.case.yaml
 id: conf.transport.moped.canonical-serialization
 model_version: "0.3.0"
-description: Equivalent Mopeds serialize to byte-identical canonical JSON in every language.
+description: Equivalent Mopeds map to the same canonical data model; the shared boundary canonicalizer yields the same canonical JSON (idiomatic runtime types stay native).
 given:
   construct:
     type: wmoop.transport/Moped
@@ -497,7 +497,7 @@ hasCapability(subject, capId) -> bool
 getTypeChain(handle) -> [typeId, ...]
 isAbstract(typeId) -> bool
 getProperty(handle, propId) -> value
-serializeCanonical(handle) -> string   // MUST be JCS
+serializeCanonical(handle) -> string   // boundary canonicalizer (JCS) — NOT the idiomatic runtime serializer
 ```
 
 ### 3.5 Canonical error-code registry
@@ -715,7 +715,7 @@ Attaching `Driver` to a non-`Person` fails with `WM-ROLE-PLAYER-MISMATCH` in eve
 
 1. **One source** (`wm.json`, JCS, content-addressed) feeds every generator `[INV-1]`.
 2. **Deterministic generators** + the **CI diff-guard** keep `generated/` an exact function of the model.
-3. **The conformance suite** turns "semantically identical" into a pass/fail gate, including **byte-identical canonical serialization** and a **shared error-code registry**.
+3. **The conformance suite** turns "semantically identical" into a pass/fail gate — **semantic equivalence against a canonical data model** (byte-identical only at the conformance boundary and for the DTO projection) and a **shared error-code registry**.
 4. **The generation gap** lets behaviour differ *idiomatically* per language while structure and meaning stay locked.
 
 ---
