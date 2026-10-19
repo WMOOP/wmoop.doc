@@ -242,8 +242,8 @@ flowchart LR
   math["math 🟢"]:::seed
   chemistry["chemistry 🟢"]:::seed
   nature["nature 🟢"]:::seed
-  geography["geography 🟢"]:::seed
   space["space 🟢"]:::seed
+  geography["geography 🟢"]:::seed
   transport["transport 🟢"]:::seed
   architecture["architecture 🟢"]:::seed
   org["org 🟢"]:::seed
@@ -255,7 +255,10 @@ flowchart LR
   medicine["medicine ⚪"]:::cand
 
   %% seeded edges (from the modules' depends_on headers)
+  math --> core
+  chemistry --> core
   nature --> core
+  space --> core
   geography --> core
   transport --> core
   transport --> nature
@@ -267,9 +270,6 @@ flowchart LR
   education --> nature
   education --> org
   education --> architecture
-  math --> core
-  chemistry --> core
-  space --> core
   music --> core
   music --> nature
   philosophy --> core
