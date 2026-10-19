@@ -166,7 +166,7 @@ Contributors do not write "category C" or "an anti-rigid sortal." They pick a **
 | `Role` | Role (F) | sortal | **anti-rigid** | inherits | partition by *relational, context* classification | `Driver`, `Employee`, `CapitalCity` |
 | `Category` (Mixin) | cross-cuts | **non-sortal** | rigid-mixin | **no** | multiple classification / tags spanning several `Kind`s | `CulinaryVegetable`, `Furniture`, `RedThing` |
 | `RoleMixin` | Role, cross-cutting | non-sortal | anti-rigid | no | a role whose players are several `Kind`s | `Customer` (Person **or** Organization) |
-| `RelationType` | Relation (E) | — | — | — | association incl. part-whole; n-ary | `orbits`, `partOf`, `borders` |
+| `RelationType` | Relation (E) | — | — | — | association incl. part-whole; **binary & unattributed** stays an edge, **n-ary or attributed** reifies to an association entity (§10.5) | `orbits`, `partOf`, `borders`, `teaches` |
 | `QualityType` | Quality (D) | — | — | — | a non-numeric attribute | `color`, `bloodType` |
 | `QuantityKind` | Quantity (D) | — | — | — | a measurable quality + its Dimension | `Length`, `Mass`, `Tempo`, `Count` |
 | `EventType` | Perdurant (B) | sortal | rigid | yes | a kind of process/happening | `Journey`, `Mitosis`, `NoteOccurrence` |
@@ -601,7 +601,7 @@ I **endorse all six** invariants and do not deviate from them. I sharpen three a
 2. **Validator implementation language** and whether it ships as a reusable CLI/GitHub Action (needed for the DoD to be real on day one).
 3. **Governance of contested classifications** beyond the `contested` flag + alternative links: who adjudicates, and how `sameAs`/merge decisions are approved.
 4. **Temporal granularity for Phases/Roles** in v1 — are `Phase`s in scope for the first release, or deferred behind `Role`s and enum `status` fields?
-5. **n-ary relations and relation attributes** (a `teaches` relation that itself has a `semester`): reify all non-binary relations as entities, or allow attributed associations? (Reification is cleaner for cross-language generation.)
+5. **n-ary relations and relation attributes — RESOLVED (D9): reify.** A **binary, unattributed** relation stays a relation member (`source → target`). Any **n-ary** relation, or a binary relation that **carries its own attributes** (a `teaches` with a `semester`; `operates`/`operatedBy` ownership with dates), is **reified as a first-class association entity** — its own node with a `wmid`, named participant roles, and its own properties — so cross-language generation is uniform (one association class, not ad-hoc edge attributes). The reified-association construct is a **planned additive** schema enrichment (like `Scheme`, [ADR 0001](../governance/adr/0001-classification-source-of-truth.md)).
 6. **Internationalization** of `prefLabel`/`definition`: required languages at submission, and handling of non-Latin scripts in `altLabel`.
 7. **Generated-code escape hatches**: the exact per-language extension-point convention (so Invariant 1's "non-clobbering" is concrete for `wmoop.net` first, then mirrored).
 8. **ID minting at scale**: ULID is decentralized and sufficient, but do we also want a human-facing short-code registry for teaching (e.g., `WM-NAT-0001`) mapped to `wmid`s?

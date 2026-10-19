@@ -734,7 +734,7 @@ Attaching `Driver` to a non-`Person` fails with `WM-ROLE-PLAYER-MISMATCH` in eve
 ## 7. Open questions for founder/architecture review
 
 1. **Role identity & lifetime at L2:** is a `Driver` role globally identified, or only relative to its player? Affects serialization and cross-domain references.
-2. **Relation storage ownership:** does `operates`/`operatedBy` live on the role, the vehicle, or a separate association object? (Recommend association-owned for many-to-many; decide before many relations exist.)
+2. **Relation storage ownership — RESOLVED (D9, meta-model §10.5):** a binary, unattributed relation is an edge on its source; any **n-ary or attributed** relation (incl. many-to-many `operates`/`operatedBy` with its own data) is a **reified association entity** that owns the relation and its attributes — uniform across languages. The reified-association construct is a planned additive schema enrichment.
 3. **Expression language for `invariants`:** adopt a tiny, sandboxed subset (CEL-like) that every language can evaluate identically, so invariants are part of conformance rather than hand-ported.
 4. **Module granularity — decided (§4.5):** per-domain packages (`Wmoop.Nature`, `Wmoop.Transport`, …), so each domain is independently consumable and extensible by addition; the accepted cost is more dependency edges to keep acyclic (S4). Open sub-question: whether unusually large domains later split into sub-domain packages.
 5. **C#-first on-ramp scope:** ship the `import --from csharp` lifter in v1, or start DSL-only and add on-ramps once the model stabilizes?
