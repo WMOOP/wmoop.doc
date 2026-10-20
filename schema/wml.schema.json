@@ -13,7 +13,8 @@
     "interfaces": { "type": "array", "items": { "$ref": "#/$defs/interface" } },
     "concepts": { "type": "array", "items": { "$ref": "#/$defs/concept" } },
     "roles": { "type": "array", "items": { "$ref": "#/$defs/role" } },
-    "individuals": { "type": "array", "items": { "$ref": "#/$defs/individual" } }
+    "individuals": { "type": "array", "items": { "$ref": "#/$defs/individual" } },
+    "schemes": { "type": "array", "items": { "$ref": "#/$defs/scheme" } }
   },
 
   "$defs": {
@@ -126,12 +127,33 @@
     },
     "classifiedAsEntry": {
       "type": "object",
-      "description": "A non-inheritance classification against an external scheme (contested or perspectival membership). Does NOT create a subclass edge.",
+      "description": "A non-inheritance classification against a scheme (ADR 0001): contested or perspectival membership, never a subclass edge. `scheme` and `value` are required; the rest are sourced/dated qualifiers.",
       "required": ["scheme", "value"],
       "additionalProperties": false,
       "properties": {
         "scheme": { "$ref": "#/$defs/nonEmptyString" },
-        "value": { "$ref": "#/$defs/nonEmptyString" }
+        "value": { "$ref": "#/$defs/nonEmptyString" },
+        "path": { "type": "string", "description": "The classification path, e.g. 'Animalia > Chordata > Mammalia'." },
+        "rank": { "type": "string", "enum": ["preferred", "normal", "deprecated"], "description": "Rank among competing sourced claims (Wikidata-style)." },
+        "tier": { "type": "string", "enum": ["A", "B", "C"], "description": "Source tier (ETHICS §2.2)." },
+        "status": { "type": "string", "description": "e.g. current, historical, historical-also-current." },
+        "asOf": { "type": "string", "description": "When this classification holds/held (a date or range) — dated reclassification, e.g. Pluto." },
+        "provenance": { "$ref": "#/$defs/provenanceList" }
+      }
+    },
+    "scheme": {
+      "type": "object",
+      "description": "A first-class, versioned classification scheme (ADR 0001). Concepts/individuals/roles are classified UNDER a scheme via `classified_as`; rival schemes are retained side-by-side, never deleted.",
+      "required": ["id", "name", "definition", "provenance"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/typeQName" },
+        "name": { "$ref": "#/$defs/typeName" },
+        "definition": { "$ref": "#/$defs/nonEmptyString" },
+        "labels": { "$ref": "#/$defs/labels" },
+        "provenance": { "$ref": "#/$defs/provenanceList" },
+        "authority": { "type": "string", "description": "The authority that governs this scheme (e.g. NCBI, IAU, Catalogue of Life)." },
+        "consensus": { "type": "string", "enum": ["scientific-consensus", "scholarly-majority", "folk-model", "common-usage", "historical", "contested"] }
       }
     },
     "labels": {
@@ -360,7 +382,8 @@
         "cardinality_per_player": { "$ref": "#/$defs/cardinality" },
         "capabilities": { "type": "array", "items": { "$ref": "#/$defs/typeQName" } },
         "properties": { "type": "array", "items": { "$ref": "#/$defs/property" } },
-        "relations": { "type": "array", "items": { "$ref": "#/$defs/relation" } }
+        "relations": { "type": "array", "items": { "$ref": "#/$defs/relation" } },
+        "classified_as": { "type": "array", "items": { "$ref": "#/$defs/classifiedAsEntry" } }
       }
     },
 
@@ -381,7 +404,8 @@
           "description": "Property local-name (camelCase) to value. Factual values should be sourced via the node's `provenance` (or a future per-value source).",
           "propertyNames": { "pattern": "^[a-z][A-Za-z0-9]*$" },
           "additionalProperties": {}
-        }
+        },
+        "classified_as": { "type": "array", "items": { "$ref": "#/$defs/classifiedAsEntry" } }
       }
     }
   }

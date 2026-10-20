@@ -152,6 +152,34 @@
     </xs:restriction>
   </xs:simpleType>
 
+  <!-- classification-scheme consensus / claim rank / source tier (ADR 0001) -->
+  <xs:simpleType name="consensusKind">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="scientific-consensus"/>
+      <xs:enumeration value="scholarly-majority"/>
+      <xs:enumeration value="folk-model"/>
+      <xs:enumeration value="common-usage"/>
+      <xs:enumeration value="historical"/>
+      <xs:enumeration value="contested"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="rankKind">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="preferred"/>
+      <xs:enumeration value="normal"/>
+      <xs:enumeration value="deprecated"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="tierKind">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="A"/>
+      <xs:enumeration value="B"/>
+      <xs:enumeration value="C"/>
+    </xs:restriction>
+  </xs:simpleType>
+
   <!-- ===================== shared complex types ===================== -->
 
   <xs:complexType name="provenance">
@@ -209,8 +237,16 @@
   </xs:complexType>
 
   <xs:complexType name="classifiedAs">
+    <xs:sequence>
+      <xs:element name="provenance" type="wml:provenance" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
     <xs:attribute name="scheme" type="wml:nonEmptyString" use="required"/>
     <xs:attribute name="value" type="wml:nonEmptyString" use="required"/>
+    <xs:attribute name="path" type="xs:string"/>
+    <xs:attribute name="rank" type="wml:rankKind"/>
+    <xs:attribute name="tier" type="wml:tierKind"/>
+    <xs:attribute name="status" type="xs:string"/>
+    <xs:attribute name="asOf" type="xs:string"/>
   </xs:complexType>
 
   <xs:complexType name="dependency">
@@ -364,6 +400,7 @@
       <xs:element name="definition" type="wml:nonEmptyString"/>
       <xs:element name="labels" type="wml:labels" minOccurs="0"/>
       <xs:element name="provenance" type="wml:provenance" maxOccurs="unbounded"/>
+      <xs:element name="classifiedAs" type="wml:classifiedAs" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element name="capability" type="wml:capabilityRef" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element name="property" type="wml:property" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element name="relation" type="wml:relation" minOccurs="0" maxOccurs="unbounded"/>
@@ -381,10 +418,23 @@
       <xs:element name="labels" type="wml:labels" minOccurs="0"/>
       <xs:element name="value" type="wml:individualValue" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element name="provenance" type="wml:provenance" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="classifiedAs" type="wml:classifiedAs" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
     <xs:attribute name="id" type="wml:typeQName" use="required"/>
     <xs:attribute name="name" type="wml:nonEmptyString" use="required"/>
     <xs:attribute name="instanceOf" type="wml:typeQName" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="scheme">
+    <xs:sequence>
+      <xs:element name="definition" type="wml:nonEmptyString"/>
+      <xs:element name="labels" type="wml:labels" minOccurs="0"/>
+      <xs:element name="provenance" type="wml:provenance" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="wml:typeQName" use="required"/>
+    <xs:attribute name="name" type="wml:typeName" use="required"/>
+    <xs:attribute name="authority" type="xs:string"/>
+    <xs:attribute name="consensus" type="wml:consensusKind"/>
   </xs:complexType>
 
   <!-- ===================== the module document ===================== -->
@@ -432,6 +482,13 @@
           <xs:complexType>
             <xs:sequence>
               <xs:element name="individual" type="wml:individual" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="schemes" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="scheme" type="wml:scheme" maxOccurs="unbounded"/>
             </xs:sequence>
           </xs:complexType>
         </xs:element>
