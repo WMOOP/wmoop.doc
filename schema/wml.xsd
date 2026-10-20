@@ -448,6 +448,31 @@
     <xs:attribute name="consensus" type="wml:consensusKind"/>
   </xs:complexType>
 
+  <!-- reified association (D9, 02-meta-model §10.5): n-ary / attributed relations -->
+  <xs:complexType name="participant">
+    <xs:sequence>
+      <xs:element name="definition" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="name" type="wml:memberName" use="required"/>
+    <xs:attribute name="type" type="wml:typeRef" use="required"/>
+    <xs:attribute name="cardinality" type="wml:cardinality" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="association">
+    <xs:sequence>
+      <xs:element name="definition" type="wml:nonEmptyString"/>
+      <xs:element name="labels" type="wml:labels" minOccurs="0"/>
+      <xs:element name="provenance" type="wml:provenance" maxOccurs="unbounded"/>
+      <xs:element name="participant" type="wml:participant" minOccurs="2" maxOccurs="unbounded"/>
+      <xs:element name="property" type="wml:property" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="invariant" type="wml:invariant" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="classifiedAs" type="wml:classifiedAs" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="wml:typeQName" use="required"/>
+    <xs:attribute name="name" type="wml:typeName" use="required"/>
+    <xs:attribute name="rel" type="wml:relKind"/>
+  </xs:complexType>
+
   <!-- ===================== the module document ===================== -->
 
   <xs:element name="module">
@@ -500,6 +525,13 @@
           <xs:complexType>
             <xs:sequence>
               <xs:element name="scheme" type="wml:scheme" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="associations" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="association" type="wml:association" maxOccurs="unbounded"/>
             </xs:sequence>
           </xs:complexType>
         </xs:element>

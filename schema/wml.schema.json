@@ -14,7 +14,8 @@
     "concepts": { "type": "array", "items": { "$ref": "#/$defs/concept" } },
     "roles": { "type": "array", "items": { "$ref": "#/$defs/role" } },
     "individuals": { "type": "array", "items": { "$ref": "#/$defs/individual" } },
-    "schemes": { "type": "array", "items": { "$ref": "#/$defs/scheme" } }
+    "schemes": { "type": "array", "items": { "$ref": "#/$defs/scheme" } },
+    "associations": { "type": "array", "items": { "$ref": "#/$defs/association" } }
   },
 
   "$defs": {
@@ -416,6 +417,43 @@
           "propertyNames": { "pattern": "^[a-z][A-Za-z0-9]*$" },
           "additionalProperties": {}
         },
+        "classified_as": { "type": "array", "items": { "$ref": "#/$defs/classifiedAsEntry" } }
+      }
+    },
+
+    "participant": {
+      "type": "object",
+      "description": "A named end of a reified association (D9, §10.5). The participant's `name` is a camelCase role-end noun (e.g. `teacher`, `subject`, `whole`, `part`); `type` is the participating entity; `cardinality` is how many of this end take part in one association instance.",
+      "required": ["name", "type", "cardinality"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "$ref": "#/$defs/memberName" },
+        "type": { "$ref": "#/$defs/typeRef" },
+        "cardinality": { "$ref": "#/$defs/cardinality" },
+        "definition": { "type": "string" }
+      }
+    },
+
+    "association": {
+      "type": "object",
+      "description": "A reified, first-class association entity (D9, §10.5). A binary, unattributed relation stays a `relation` edge; any n-ary relation, or a binary relation that carries its own attributes (a `teaches` with a `semester`; ownership with dates), is modelled here as its own node with a stable identity, >=2 named participant ends, and its own properties - so cross-language generation is uniform (one association class, not ad-hoc edge attributes). `rel` carries mereology semantics when the reified relation is a part-whole. Requires definition and provenance (S5/Invariant 4).",
+      "required": ["id", "name", "definition", "provenance", "participants"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/typeQName" },
+        "name": { "$ref": "#/$defs/typeName" },
+        "rel": { "type": "string", "enum": ["association", "part_of", "aggregation", "composition"] },
+        "definition": { "$ref": "#/$defs/nonEmptyString" },
+        "labels": { "$ref": "#/$defs/labels" },
+        "provenance": { "$ref": "#/$defs/provenanceList" },
+        "participants": {
+          "type": "array",
+          "minItems": 2,
+          "description": "The named ends of the association; at least two (a relation that only makes sense with >=2 named participants - §1.3 litmus).",
+          "items": { "$ref": "#/$defs/participant" }
+        },
+        "properties": { "type": "array", "items": { "$ref": "#/$defs/property" } },
+        "invariants": { "type": "array", "items": { "$ref": "#/$defs/invariant" } },
         "classified_as": { "type": "array", "items": { "$ref": "#/$defs/classifiedAsEntry" } }
       }
     }
