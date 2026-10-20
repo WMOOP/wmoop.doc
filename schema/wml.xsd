@@ -180,6 +180,14 @@
     </xs:restriction>
   </xs:simpleType>
 
+  <!-- open/closed-world bridge per slot (D2; Invariant 8, 02-meta-model §6.5) -->
+  <xs:simpleType name="completenessKind">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="open"/>
+      <xs:enumeration value="closed"/>
+    </xs:restriction>
+  </xs:simpleType>
+
   <!-- ===================== shared complex types ===================== -->
 
   <xs:complexType name="provenance">
@@ -278,6 +286,7 @@
     <xs:attribute name="cardinality" type="wml:cardinality" use="required"/>
     <xs:attribute name="required" type="xs:boolean"/>
     <xs:attribute name="default" type="xs:string"/>
+    <xs:attribute name="completeness" type="wml:completenessKind" default="open"/>
   </xs:complexType>
 
   <xs:complexType name="relation">
@@ -291,6 +300,7 @@
     <xs:attribute name="cardinality" type="wml:cardinality" use="required"/>
     <xs:attribute name="rel" type="wml:relKind"/>
     <xs:attribute name="inverse" type="wml:memberQName"/>
+    <xs:attribute name="completeness" type="wml:completenessKind" default="open"/>
   </xs:complexType>
 
   <xs:complexType name="propertyOverride">
@@ -410,6 +420,7 @@
     <xs:attribute name="playedBy" type="wml:typeQName" use="required"/>
     <xs:attribute name="context" type="wml:moduleQName"/>
     <xs:attribute name="cardinalityPerPlayer" type="wml:cardinality"/>
+    <xs:attribute name="completeness" type="wml:completenessKind" default="open"/>
   </xs:complexType>
 
   <xs:complexType name="individual">

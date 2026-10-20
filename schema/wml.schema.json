@@ -283,9 +283,17 @@
       }
     },
 
+    "completenessMode": {
+      "type": "string",
+      "enum": ["open", "closed"],
+      "default": "open",
+      "description": "Open/closed-world bridge for this slot (Invariant 8; 02-meta-model §6.5). `open` (default): absence of a value means Unknown, not false - generated accessors MUST be tri-state (Present/Absent/Unknown) and MUST NOT emit absence-as-false (anti-pattern A10). `closed`: the model asserts all values for this slot are recorded, so absence genuinely means absent.",
+      "$comment": "D2 per-slot completeness. Default open; carried by property, relation and role slots."
+    },
+
     "property": {
       "type": "object",
-      "description": "A typed, defined, sourced attribute of a concept or role. Every property carries its own definition and provenance (S5); measurable properties carry a unit (R5).",
+      "description": "A typed, defined, sourced attribute of a concept or role. Every property carries its own definition and provenance (S5); measurable properties carry a unit (R5). The `completeness` slot declares the open/closed-world stance (D2, §6.5).",
       "required": ["id", "name", "type", "cardinality", "definition", "provenance"],
       "additionalProperties": false,
       "properties": {
@@ -299,7 +307,8 @@
         "definition": { "$ref": "#/$defs/nonEmptyString" },
         "labels": { "$ref": "#/$defs/labels" },
         "provenance": { "$ref": "#/$defs/provenanceList" },
-        "constraints": { "$ref": "#/$defs/constraints" }
+        "constraints": { "$ref": "#/$defs/constraints" },
+        "completeness": { "$ref": "#/$defs/completenessMode" }
       }
     },
 
@@ -340,7 +349,8 @@
         "cardinality": { "$ref": "#/$defs/cardinality" },
         "inverse": { "$ref": "#/$defs/memberQName" },
         "definition": { "type": "string" },
-        "provenance": { "$ref": "#/$defs/provenanceList" }
+        "provenance": { "$ref": "#/$defs/provenanceList" },
+        "completeness": { "$ref": "#/$defs/completenessMode" }
       }
     },
 
@@ -380,6 +390,7 @@
         "played_by": { "$ref": "#/$defs/typeQName" },
         "context": { "$ref": "#/$defs/moduleQName" },
         "cardinality_per_player": { "$ref": "#/$defs/cardinality" },
+        "completeness": { "$ref": "#/$defs/completenessMode" },
         "capabilities": { "type": "array", "items": { "$ref": "#/$defs/typeQName" } },
         "properties": { "type": "array", "items": { "$ref": "#/$defs/property" } },
         "relations": { "type": "array", "items": { "$ref": "#/$defs/relation" } },
