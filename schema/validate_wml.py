@@ -20,7 +20,9 @@ against the canonical model in ``model/**``:
                      referential integrity of every reference.
 
 Optionally (``--xsd`` / on by default when available) validates the WML-in-XML
-projections under ``schema/examples/*.wml.xml`` against ``schema/wml.xsd``.
+projections under ``schema/examples/*.wml.xml`` against ``schema/wml.xsd``, and
+(``--no-parity`` to skip) checks that ``wml.xsd`` and ``wml.schema.json`` - two
+serializations of one grammar - stay in agreement (S4; see check_schema_parity.py).
 
 Exit code 0 = all gates green; 1 = at least one ERROR (warnings alone do not fail
 unless ``--strict``). This is the machine-checkable Definition of Done (Invariant 6).
@@ -30,6 +32,7 @@ Usage:
     python schema/validate_wml.py model/transport # validate a subtree
     python schema/validate_wml.py --strict        # treat warnings as errors
     python schema/validate_wml.py --no-xsd        # skip the XSD projection check
+    python schema/validate_wml.py --no-parity     # skip the XSD<->JSON-Schema parity check
 """
 from __future__ import annotations
 
@@ -489,6 +492,22 @@ def validate_xsd(report: Report) -> None:
 
 
 # --------------------------------------------------------------------------- #
+# Schema-mirror parity (S4): wml.xsd and wml.schema.json are one grammar       #
+# --------------------------------------------------------------------------- #
+def validate_parity(report: Report) -> None:
+    """S4 durable fix: the JSON Schema and the XSD are two serializations of the
+    same WML grammar and must agree (enums, fields, sections). Delegates to
+    schema/check_schema_parity.py so drift in either mirror fails the DoD."""
+    try:
+        import check_schema_parity  # same directory (schema/) as this script
+    except ImportError as exc:  # pragma: no cover - defensive
+        report.warn("parity", f"check_schema_parity not importable ({exc}); S4 parity gate SKIPPED")
+        return
+    for p in check_schema_parity.check_parity():
+        report.error("schema-parity", f"[S4] {p}")
+
+
+# --------------------------------------------------------------------------- #
 # Driver                                                                       #
 # --------------------------------------------------------------------------- #
 def collect_files(targets: list[str]) -> list[Path]:
@@ -512,6 +531,8 @@ def main(argv: list[str]) -> int:
     ap.add_argument("targets", nargs="*", help="files or dirs (default: model/)")
     ap.add_argument("--strict", action="store_true", help="treat warnings as errors")
     ap.add_argument("--no-xsd", action="store_true", help="skip the XSD projection check")
+    ap.add_argument("--no-parity", action="store_true",
+                    help="skip the XSD<->JSON-Schema mirror parity check (S4)")
     ap.add_argument("--lint-agentive", action="store_true",
                     help="warn on agentive-noun concepts (-er/-or) that may be roles [S3]")
     args = ap.parse_args(argv)
@@ -541,6 +562,8 @@ def main(argv: list[str]) -> int:
     check_provenance_honesty(reg, report)
     if not args.no_xsd:
         validate_xsd(report)
+    if not args.no_parity:
+        validate_parity(report)
 
     # ------- report -------
     print(f"WML validation - {len(files)} file(s), {len(reg.modules)} module(s), "
