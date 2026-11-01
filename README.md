@@ -20,8 +20,12 @@ educators, students and developers can all extend.
 
 This repository, **`wmoop.doc`**, is the **canonical source of truth**: the meta-model, the
 domain models (the *World Model*, written in the **WML** DSL), and all the project documentation.
-Per-language repositories such as [`wmoop.net`](https://github.com/WMOOP/wmoop.net) are **generated
-from and conformance-tested against** what lives here.
+In the target architecture, per-language repositories such as
+[`wmoop.net`](https://github.com/WMOOP/wmoop.net) are **generated from and conformance-tested
+against** what lives here. Today `wmoop.net` and `wmoop.py` are hand-written references that the
+generator's output will match, and [`wmoop.tools`](https://github.com/WMOOP/wmoop.tools) already
+generates C# and Python from part of WML. The [repository topology](#repository-topology-organisation)
+gives each repo's status.
 
 ---
 
