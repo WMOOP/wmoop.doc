@@ -72,6 +72,21 @@ the MAJOR version.
 - Example WML model files for the Transport, Nature and Geography domains (`model/`).
 
 ### Changed
+- **`schema/validate_wml.py` now enforces the rules the docs describe as machine-checked**, instead
+  of passing them silently:
+  - **References and dependencies:** a reference into another module needs a declared `depends_on`
+    and a satisfied version pin. A reference into a module that does not exist is an error; a
+    typo used to pass as "external".
+  - **Units:** they resolve to the `wmoop.core` catalogue and match the property's QuantityKind.
+  - **Inverses:** each belongs to its relation's target and agrees with a declared other end.
+  - **L2 individuals:** checked against their concept (keys, types, cardinality, inherited
+    constraints, required values, simple invariants).
+  - **Schemes and associations:** registered and checked.
+  - **Overrides:** must narrow every inherited constraint.
+  - **Layout:** each module lives in one directory.
+  - **Robustness:** a malformed file is reported, not a crash.
+  - **Cross-module `extends`:** allowed along a declared dependency.
+  - **Self-test:** `schema/test_validate_wml.py` has one failing fixture per rule and runs in CI.
 - **Model data fixes found by the stricter validator:**
   - **`wmoop.core` 1.0.0 → 1.1.0:** adds the `km` (Kilometre) and `d` (Day) units, which
     `wmoop.space` already used for radii and orbital periods.
