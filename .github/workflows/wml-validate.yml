@@ -53,3 +53,28 @@ jobs:
             echo "::error::external/wmoop.json pins a commit that is not on wmoop.json main"
             exit 1
           fi
+
+  # After a green main, ask every binding to regenerate: their regen.yml moves the pins and opens
+  # a "chore(regen): ..." pull request when the model or grammar change alters anything they commit.
+  notify-bindings:
+    name: Ask the bindings to regenerate
+    needs: validate
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/create-github-app-token@v3
+        id: app-token
+        with:
+          app-id: ${{ secrets.WMOOP_BOT_APP_ID }}
+          private-key: ${{ secrets.WMOOP_BOT_PRIVATE_KEY }}
+          owner: WMOOP
+          repositories: wmoop.net,wmoop.py
+      - name: Send wmoop-upstream-updated to every binding
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          SOURCE: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+        run: |
+          for repo in wmoop.net wmoop.py; do
+            gh api "repos/WMOOP/$repo/dispatches" -f event_type=wmoop-upstream-updated -f "client_payload[source]=$SOURCE" -f "client_payload[sha]=$SHA"
+          done
