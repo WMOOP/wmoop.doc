@@ -104,6 +104,11 @@ the MAJOR version.
     "planned", and the architecture spec lists the nine constructs.
   - **Examples:** version-pin examples use `wmoop.nature ^0.7.0`.
   - **Units:** the unit rule names the `wmoop.core` catalogue instead of UCUM.
+- **README:**
+  - **Repository topology:** the table links all nine WMOOP repositories and has a status column.
+    `wmoop.json` (the canonical grammar), `wmoop.js` and `wmoop.db` were missing.
+  - **Intro:** it no longer says the language bindings are generated today; they are hand-written
+    references, and generating them from WML is the target architecture.
 
 ### Notes
 - This is **v0 (experimental)**. The WML format and tooling are not yet stable; see the

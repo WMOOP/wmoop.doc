@@ -20,8 +20,12 @@ educators, students and developers can all extend.
 
 This repository, **`wmoop.doc`**, is the **canonical source of truth**: the meta-model, the
 domain models (the *World Model*, written in the **WML** DSL), and all the project documentation.
-Per-language repositories such as [`wmoop.net`](https://github.com/WMOOP/wmoop.net) are **generated
-from and conformance-tested against** what lives here.
+In the target architecture, per-language repositories such as
+[`wmoop.net`](https://github.com/WMOOP/wmoop.net) are **generated from and conformance-tested
+against** what lives here. Today `wmoop.net` and `wmoop.py` are hand-written references that the
+generator's output will match, and [`wmoop.tools`](https://github.com/WMOOP/wmoop.tools) already
+generates C# and Python from part of WML. The [repository topology](#repository-topology-organisation)
+gives each repo's status.
 
 ---
 
@@ -114,12 +118,17 @@ A runnable implementation of exactly this is in [`wmoop.net`](https://github.com
 
 ## Repository topology (organisation)
 
-| Repo | Role |
-|------|------|
-| [`wmoop.doc`](https://github.com/WMOOP/wmoop.doc) | **This repo.** Canonical WML model + all documentation (source of truth). |
-| [`wmoop.net`](https://github.com/WMOOP/wmoop.net) | The C#/.NET binding and reference implementation. |
-| `wmoop.java`, `wmoop.py`, `wmoop.cpp` | *(planned)* further language bindings, generated from the WML model. |
-| `wmoop.tools` | *(planned)* the generator + validators + conformance-test runner. |
+| Repo | Role | Status |
+|------|------|--------|
+| [`wmoop.doc`](https://github.com/WMOOP/wmoop.doc) | **This repo.** Canonical WML model, all documentation and the validator (`schema/validate_wml.py`): the source of truth. | Active |
+| [`wmoop.json`](https://github.com/WMOOP/wmoop.json) | The canonical WML grammar: `wml.schema.json` (JSON Schema 2020-12) and `wml.xsd`. [`schema/`](schema/) here keeps synced mirrors. | Active |
+| [`wmoop.tools`](https://github.com/WMOOP/wmoop.tools) | The toolchain: WML loader, C# and Python generators, conformance tests. | Early: generates from part of WML |
+| [`wmoop.net`](https://github.com/WMOOP/wmoop.net) | The C#/.NET binding and reference implementation. | Hand-written, not yet generated |
+| [`wmoop.py`](https://github.com/WMOOP/wmoop.py) | The Python binding, at parity with `wmoop.net`. | Hand-written, not yet generated |
+| [`wmoop.java`](https://github.com/WMOOP/wmoop.java) | The Java binding. | Planned, no code yet |
+| [`wmoop.cpp`](https://github.com/WMOOP/wmoop.cpp) | The C++ binding. | Planned, no code yet |
+| [`wmoop.js`](https://github.com/WMOOP/wmoop.js) | The JavaScript binding. | Planned, not conformance-gated |
+| [`wmoop.db`](https://github.com/WMOOP/wmoop.db) | The database projection of the model. | Planned, not conformance-gated |
 
 The domains WMOOP models are tracked in [`model/taxonomy.yaml`](model/taxonomy.yaml) and mapped in
 [the World Domain Map](docs/06-domain-taxonomy.md). Seeded domains (those with a module in `model/`
