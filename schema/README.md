@@ -124,7 +124,7 @@ module:
   title: Transport               # (required)
   depends_on:                    # acyclic (S4)
     - { module: wmoop.core,   version: "^1.0.0" }
-    - { module: wmoop.nature, version: "^0.5.0" }
+    - { module: wmoop.nature, version: "^0.7.0" }
 ```
 
 ### 3.3 `datatype` — a validated primitive

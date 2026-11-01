@@ -142,7 +142,7 @@ No node merges without all of these:
 - `layer` — `L0` | `L1` | `L2`.
 - `status` — `proposed` | `reviewed` | `stable` | `deprecated`.
 - `provenance` — at least one `source`, **or** `kind: definitional` (a project-chosen convention/definition) **or** `kind: convention`. Factual claims (measured quantities, taxonomic facts) **must** be `kind: sourced`.
-- For **quantity** properties: `unit` (UCUM code), `dimension`, and `datatype`.
+- For **quantity** properties: a `type` naming a `wmoop.core` QuantityKind (e.g. `wmoop.core/Speed`) and a `unit` of that kind from the core catalogue, by symbol (`km/h`) or id (`wmoop.core/KilometrePerHour`).
 
 ---
 
@@ -204,7 +204,7 @@ Getting the *shape* right matters more than getting lots of nodes in. Use these 
 
 Ask, in order:
 
-1. **Is it a genuine, permanent *kind-of* that would satisfy Liskov** (anything true of the parent is true of the child, with no exceptions and no narrowing that breaks callers)? → use **inheritance** (`extends`). Keep it **shallow** (CI gate: depth ≤ 6, warning at 5; most real is-a chains are ≤ 4).
+1. **Is it a genuine, permanent *kind-of* that would satisfy Liskov** (anything true of the parent is true of the child, with no exceptions and no narrowing that breaks callers)? → use **inheritance** (`extends`). Keep it **shallow** (CI gate: depth ≤ 6, warning at 5–6; most real is-a chains are ≤ 4).
 2. **Is it a facet a thing *plays* or *has*, possibly temporarily, possibly across domains** (a Person *as* a Driver; a Person *as* an Employee)? → use a **role** attached by composition. **Never** `Driver : Person`.
 3. **Is it a part/whole, membership, or other association?** → use a **relation** (`partOf`, `memberOf`, `locatedIn`).
 4. **Is it a contested or multi-parent classification** (a tomato as fruit vs. vegetable; a whale's folk-vs-scientific grouping)? → use **categories/tags** and/or multiple `classifiedAs` relations with provenance, **not** a forced single inheritance tree. Mark `disputed: true` with sources on each side.
@@ -334,7 +334,7 @@ module:
   title: Transport
   depends_on:
     - { module: wmoop.core,   version: "^1.0.0" }
-    - { module: wmoop.nature, version: "^0.5.0" }   # for the Person a Driver role plays
+    - { module: wmoop.nature, version: "^0.7.0" }   # for the Person a Driver role plays
 ```
 
 A domain's **steward** and **status** live in [`model/taxonomy.yaml`](./model/taxonomy.yaml) / `MAINTAINERS.yaml`, not the module header. The `Vehicle → RoadVehicle → Motorcycle → Moped` chain is added as `concepts` via §7.1 (`wheelCount` inline; `Moped` narrows a parent property via `property_overrides`).
@@ -451,7 +451,7 @@ A contribution is **Done** when **all** of the following are true. Every item is
 - [ ] **IDs:** unique, correctly shaped, immutable (no existing ID was renamed/mutated).
 - [ ] **No orphans:** every node is reachable from a domain root and every referenced ID resolves.
 - [ ] **Acyclic:** no new cycle in the domain `dependsOn` graph or the `extends` graph.
-- [ ] **Sound:** no Liskov violation; no cross-domain `extends`; cross-domain facets are roles.
+- [ ] **Sound:** no Liskov violation; an `extends` into another module only along a declared `depends_on`; cross-domain facets are roles.
 - [ ] **No duplicates:** no near-duplicate concept of an existing node (duplicate-detection gate is green or the overlap is justified in the PR).
 - [ ] **Generates:** bindings generate for all languages and **conformance tests pass**.
 - [ ] **Versioned:** any breaking change bumps the domain MAJOR; deprecations use `status: deprecated` + `replacedBy` (nothing is hard-deleted).
@@ -470,12 +470,12 @@ Each gate below blocks merge when red. "How to fix" tells you exactly what to ch
 | **Schema lint** | YAML parses; validates against the JSON Schema meta-schema (`schema/wml.schema.json`). | Match the template; remove unknown fields; fix types. |
 | **Naming rules** | ID regex; PascalCase concepts/roles, camelCase properties/relations; file name = local ID. | Rename the file/field to the convention. |
 | **ID immutability** | No previously-merged ID was renamed or deleted. | Use an `alias`/`replacedBy` + deprecation instead of editing the ID. |
-| **Referential integrity / no-orphan** | Every `extends`, `ref`, `played_by`, `instanceOf`, `dependsOn` resolves; every node reachable from a root. | Add the missing target, or fix the typo in the reference. |
+| **Referential integrity / no-orphan** | Every `extends`, `ref`, `played_by`, `instanceOf`, `dependsOn` resolves; a reference into another module follows a declared `depends_on` whose version pin that module satisfies; every node reachable from a root. | Add the missing target or dependency, fix the typo, or update the pin. |
 | **Acyclic-dependency** | `dependsOn` graph and `extends` graph are DAGs. | Break the cycle — usually one side should be a role/relation, not a dependency. |
 | **Provenance presence** | Every node — concepts, roles, enumerations, **and every property** — has a `definition` and `provenance`; factual nodes are `sourced` with resolvable citations. | Add a citation or mark `definitional`/`convention` honestly. |
-| **Unit validity** | Quantity properties/values carry a valid UCUM `unit` + `dimension`. | Add/fix the unit code. |
+| **Unit validity** | A QuantityKind-typed property names a `unit` of that kind from the `wmoop.core` catalogue. | Fix the unit, or add the missing Unit to `model/core`. |
 | **Duplicate detection** | No near-duplicate (same normalized name/definition) of an existing node. | Reuse the existing node, or justify the distinction in the PR. |
-| **Liskov / roles soundness** | No cross-domain `extends`; subtypes don't drop/narrow required properties; inheritance depth within cap (≤ 6, warn at 5). | Convert to a role/relation; restore the contract; flatten. |
+| **Liskov / roles soundness** | No role in any `extends`; an `extends` into another module follows a declared `depends_on`; subtypes don't drop/narrow required properties; inheritance depth within cap (≤ 6, warn at 5–6). | Convert to a role/relation; declare the dependency; restore the contract; flatten. |
 | **Conformance tests** | Generated bindings compile and pass the cross-language conformance suite. | Usually a modeling error surfaced by generation — fix the model. |
 | **Generated-file drift** | No hand-edited generated binding/DB files in the diff. | Revert generated files; only edit `model/**`. |
 | **Domain-map drift** | `python tools/gen_taxonomy.py --check`: the diagrams in `docs/06-domain-taxonomy.md` match `model/taxonomy.yaml`, and each seeded domain's `depends_on` matches its module header. | Run `python tools/gen_taxonomy.py` and commit the result; fix the registry or header if it reports a mismatch. |

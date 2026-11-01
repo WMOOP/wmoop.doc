@@ -95,6 +95,15 @@ the MAJOR version.
     the new scheme and carries its own provenance.
   - **Re-pinned dependents:** `transport`, `org`, `education` and `music` now require
     `wmoop.nature ^0.7.0`.
+- **Docs aligned with the validator:**
+  - **Cross-module `extends`:** allowed only along a declared `depends_on`; cross-domain facets
+    stay roles. Updated in 02-meta-model, GOVERNANCE (new normative constant), CONTRIBUTING,
+    AI_CONTRIBUTING and the whitepaper.
+  - **Inheritance depth:** depths 5 and 6 both warn.
+  - **Constructs:** `schemes`, `associations` and `completeness` are no longer described as
+    "planned", and the architecture spec lists the nine constructs.
+  - **Examples:** version-pin examples use `wmoop.nature ^0.7.0`.
+  - **Units:** the unit rule names the `wmoop.core` catalogue instead of UCUM.
 
 ### Notes
 - This is **v0 (experimental)**. The WML format and tooling are not yet stable; see the

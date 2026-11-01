@@ -143,7 +143,7 @@ Then confirm, item by item:
 - [ ] No fabricated sources, IDs, or values. I verified each source exists.
 - [ ] IDs are correctly shaped and I did **not** rename/mutate any existing ID.
 - [ ] I searched for duplicates and this concept does not already exist (list what I searched).
-- [ ] Inheritance passes the Liskov test; no cross-domain `extends`; cross-domain facets are roles.
+- [ ] Inheritance passes the Liskov test; an `extends` into another module only along a declared `depends_on`; cross-domain facets are roles.
 - [ ] No new cycle in `dependsOn` or `extends`.
 - [ ] I touched only `model/**` — no generated files.
 - [ ] Disclosure is complete at node, commit, and PR level; a human sponsor is named.

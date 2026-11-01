@@ -86,7 +86,7 @@ Why YAML-authored + JSON-compiled, rather than "just JSON" or "just YAML":
 
 ### 1.4 The WML meta-model (L0 constructs)
 
-WML offers these top-level declarations today. This small, fixed vocabulary *is* the upper ontology `[INV-2]`. (A first-class, versioned `scheme` construct for sourced, dated classification is a planned **additive** extension — see [ADR 0001](../governance/adr/0001-classification-source-of-truth.md); until it lands, classification rides on the `classified_as` field on `concept`.)
+WML offers these top-level declarations today. This small, fixed vocabulary *is* the upper ontology `[INV-2]`. (`scheme` and `association` are the two **additive** extensions: sourced, dated classification per [ADR 0001](../governance/adr/0001-classification-source-of-truth.md), still awaiting ratification, and reified n-ary / attributed relations per D9.)
 
 | Construct | Role in the model | Generates to (OOP) |
 |---|---|---|
@@ -97,13 +97,15 @@ WML offers these top-level declarations today. This small, fixed vocabulary *is*
 | `interface` | Behaviour contract (abstract operations only) | interface / trait / ABC |
 | `role` | Composable facet: `played_by`, `context`, own `properties`/`relations`, `capabilities` | role object attached by composition `[INV-3]` |
 | `individual` | L2 instance / reference datum (optional) `[INV-2]` | seed data / singleton |
+| `scheme` | First-class classification scheme; `classified_as` claims on concepts, roles, individuals and associations reference it | queryable annotations (rival classifications) |
+| `association` | Reified n-ary or attributed relation: ≥ 2 named participants plus its own properties | association class |
 
 Enforced semantic rules (checked by the compiler, §2.4) — these are *why* the plain structures above are safe:
 
-- **S1 Shallow inheritance** `[INV-3]`: `extends` is single-valued; inheritance depth MUST be ≤ 6 (configurable per org, warned at 5). Violations fail CI.
+- **S1 Shallow inheritance** `[INV-3]`: `extends` is single-valued; inheritance depth MUST be ≤ 6 (configurable per org, warned at 5–6). Violations fail CI.
 - **S2 LSP-safe overrides** `[INV-3]`: a `property_override` MAY only *narrow* a parent property (e.g., tighten `maximum`, restrict an `enum` to a subset). Widening, type change, or making an optional property required in a subtype fails CI. (This is why `Moped` can cap `engineDisplacement ≤ 50` but could not *raise* `Motorcycle`'s cap.)
 - **S3 Roles are not classes** `[INV-3]`: a `role` MUST declare `played_by` (a concept); it MUST NOT appear in any `extends`. A lint flags agentive-noun concepts (`…er`/`…or`, e.g. a proposed `Driver` *concept*) with "should this be a role?".
-- **S4 Acyclic module graph** `[INV-5]`: `depends_on` is resolved and must be a DAG.
+- **S4 Acyclic module graph** `[INV-5]`: `depends_on` is resolved and must be a DAG. Every reference into another module, `extends` included, follows a declared `depends_on` edge whose version pin the target module satisfies.
 - **S5 Provenance present** `[INV-4]`: every `concept`, `role`, `datatype`, `enumeration`, **and every `property`** MUST carry a non-empty `definition`; and every `concept`, `role`, `enumeration`, **and every `property`** MUST carry at least one `provenance` entry. A property's `provenance` records where its **definition and documentation** come from — an external authority for a sourced term (`{ source: "ISO 3833:1977", ref: "§3.1", kind: sourced }`) or the project itself for a structural/definitional choice (`{ source: "Original WMOOP definition", kind: definitional }`). Factual property *values* at L2 additionally carry their own per-value source. A missing `definition` or `provenance` on any of these fails CI.
 - **S6 Stable IDs** `[INV-4]`: every element has a globally unique, immutable ID; renames are a MAJOR change that keeps the old ID as a `deprecated_alias`.
 
@@ -120,7 +122,7 @@ module:
   title: Transport
   depends_on:
     - { module: wmoop.core,   version: "^1.0.0" }   # L0 upper ontology
-    - { module: wmoop.nature, version: "^0.5.0" }   # for Person (cross-domain) [INV-5]
+    - { module: wmoop.nature, version: "^0.7.0" }   # for Person (cross-domain) [INV-5]
 
 datatypes:
   - id: wmoop.transport/WheelCount
@@ -740,7 +742,7 @@ Attaching `Driver` to a non-`Person` fails with `WM-ROLE-PLAYER-MISMATCH` in eve
 ## 7. Open questions for founder/architecture review
 
 1. **Role identity & lifetime at L2:** is a `Driver` role globally identified, or only relative to its player? Affects serialization and cross-domain references.
-2. **Relation storage ownership — RESOLVED (D9, meta-model §10.5):** a binary, unattributed relation is an edge on its source; any **n-ary or attributed** relation (incl. many-to-many `operates`/`operatedBy` with its own data) is a **reified association entity** that owns the relation and its attributes — uniform across languages. The reified-association construct is a planned additive schema enrichment.
+2. **Relation storage ownership — RESOLVED (D9, meta-model §10.5):** a binary, unattributed relation is an edge on its source; any **n-ary or attributed** relation (incl. many-to-many `operates`/`operatedBy` with its own data) is a **reified association entity** that owns the relation and its attributes — uniform across languages. The reified-association construct is in the schema as `associations:`.
 3. **Expression language for `invariants` and pure derivations — RESOLVED (D3, [ADR 0002](../governance/adr/0002-behaviour-and-wmx.md)):** adopt **WMX**, a tiny sandboxed, total, deterministic subset every binding evaluates identically, so invariants and pure derivations are **generated and behaviour-conformance-tested**, not hand-ported. (WMX is planned — it does not exist yet.)
 4. **Module granularity — decided (§4.5):** per-domain packages (`Wmoop.Nature`, `Wmoop.Transport`, …), so each domain is independently consumable and extensible by addition; the accepted cost is more dependency edges to keep acyclic (S4). Open sub-question: whether unusually large domains later split into sub-domain packages.
 5. **C#-first on-ramp scope:** ship the `import --from csharp` lifter in v1, or start DSL-only and add on-ramps once the model stabilizes?

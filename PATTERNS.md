@@ -36,7 +36,7 @@ Every modelling fact is expressed through a small, fixed vocabulary of **meta-mo
 
 > **Composition + interfaces/traits + Roles over deep inheritance.**
 >
-> Inheritance is reserved for rigid, substitutable **is-a** and kept **shallow** (depth budget ≈ 4 as the target; the CI gate is depth ≤ 6, warning at depth 5). Cross-domain intersection is expressed with **Role objects**: a `Person` (Nature domain) *acquires* a `Driver` role (Transport domain) — **never** `Driver : Person`.
+> Inheritance is reserved for rigid, substitutable **is-a** and kept **shallow** (depth budget ≈ 4 as the target; the CI gate is depth ≤ 6, warning at depths 5–6). Cross-domain intersection is expressed with **Role objects**: a `Person` (Nature domain) *acquires* a `Driver` role (Transport domain) — **never** `Driver : Person`.
 
 ### The engineering standard
 
@@ -109,7 +109,7 @@ Each principle below is stated once in general terms, then pinned to a concrete 
 
 ### 1.3 Supporting principles
 
-**Composition over inheritance.** The single most important rule. `Person` *has-a* `RoleContainer`; it does not inherit `Driver`. Deep trees are brittle and force a thing into exactly one lineage; the world is not shaped that way (a person is simultaneously a driver, an owner, an employee, a patient). Inheritance depth budget: **≈ 4** as the target (`Vehicle → RoadVehicle → Motorcycle → Moped` is at the limit); the CI gate is depth ≤ 6, warning at depth 5.
+**Composition over inheritance.** The single most important rule. `Person` *has-a* `RoleContainer`; it does not inherit `Driver`. Deep trees are brittle and force a thing into exactly one lineage; the world is not shaped that way (a person is simultaneously a driver, an owner, an employee, a patient). Inheritance depth budget: **≈ 4** as the target (`Vehicle → RoadVehicle → Motorcycle → Moped` is at the limit); the CI gate is depth ≤ 6, warning at depths 5–6.
 
 **Program to interfaces.** Callers depend on `IHasRoles`, `IRole`, `ISpecification<T>`, `IVisitor<T>` — never on a concrete generated class where an abstraction exists. This is what lets behaviour be swapped and the data be regenerated.
 
@@ -695,7 +695,7 @@ Each is a direct violation of the prime directive or an invariant. Reviewers rej
 
 | Anti-pattern | Why it is wrong in WMOOP | Do this instead |
 |---|---|---|
-| **Deep inheritance** (depth ≫ 4) | Brittle, forces one lineage, breaks Liskov as it grows | Keep ≈ 4 (CI gate: depth ≤ 6, warn at 5); push variation into Roles/Strategy/classification |
+| **Deep inheritance** (depth ≫ 4) | Brittle, forces one lineage, breaks Liskov as it grows | Keep ≈ 4 (CI gate: depth ≤ 6, warn at 5–6); push variation into Roles/Strategy/classification |
 | **God base class** | A fat `Entity` accreting every optional field/method; low cohesion, high coupling | Small `Entity` (Id, Name); capabilities as interfaces (`IHasRoles`), facets as roles |
 | **`Driver : Person`** | Models an anti-rigid, non-exclusive facet as a permanent kind; a person can't then be driver *and* owner | `has_role`: `person.AddRole(new DriverRole(...))` (§2.1) |
 | **Setter-driven mutable identity** | Mutating a `ConceptId` (or re-pointing a role's `Subject`) destroys L2 referential integrity | Immutable `ConceptId`; `AttachTo` internal + single-shot; new object for change |
