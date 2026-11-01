@@ -4,7 +4,7 @@ module:
   title: Organisations & Institutions
   depends_on:
     - { module: wmoop.core,   version: "^1.0.0" }   # L0 upper ontology
-    - { module: wmoop.nature, version: "^0.6.0" }   # for Person (the Employee role player) [INV-5]
+    - { module: wmoop.nature, version: "^0.7.0" }   # for Person (the Employee role player) [INV-5]
 
 # ---------------------------------------------------------------------------
 # Society's building block: the Organization (a social endurant — a structured

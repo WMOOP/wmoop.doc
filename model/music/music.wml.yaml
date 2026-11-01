@@ -4,7 +4,7 @@ module:
   title: Music
   depends_on:
     - { module: wmoop.core,   version: "^1.0.0" }   # L0 kernel (Time quantity for note durations)
-    - { module: wmoop.nature, version: "^0.6.0" }   # for Person (the Performer role player) [INV-5]
+    - { module: wmoop.nature, version: "^0.7.0" }   # for Person (the Performer role player) [INV-5]
 
 # ===========================================================================
 # wmoop.music — the one domain that exercises ALL THREE L0 ontological

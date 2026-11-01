@@ -2,7 +2,7 @@
 <!-- GENERATED from model/**/*.wml.yaml by schema/yaml_to_xml.py - DO NOT EDIT.
      The YAML is the single source of truth; regenerate with:
        python schema/yaml_to_xml.py -->
-<module xmlns="https://wmoop.org/wml/1" id="wmoop.core" version="1.0.0" title="Core">
+<module xmlns="https://wmoop.org/wml/1" id="wmoop.core" version="1.1.0" title="Core">
   <datatypes>
     <datatype id="wmoop.core/Wmid" name="Wmid" base="string">
       <definition>The opaque, immutable machine identity of a node (the "ConceptId"): the literal prefix `wmid:` followed by a 26-character Crockford base32 ULID. It never changes, even across rename or re-translation; all machine references ultimately resolve through it. WML source currently addresses nodes by their QName `id`; the Wmid is the stable identity behind it.</definition>
@@ -250,6 +250,15 @@
       <value property="offset">0</value>
       <provenance source="BIPM SI Brochure, 9th ed. (2019)" kind="sourced" ref="the metre" />
     </individual>
+    <individual id="wmoop.core/Kilometre" name="km" instanceOf="wmoop.core/Unit">
+      <definition>Kilometre — a decimal multiple of the metre, used for planetary radii and road distances.</definition>
+      <value property="symbol">km</value>
+      <value property="quantityKind">wmoop.core/Length</value>
+      <value property="factor">1000</value>
+      <value property="offset">0</value>
+      <provenance source="BIPM SI Brochure, 9th ed. (2019)" kind="sourced" ref="Table 7, SI prefix kilo (10³)" />
+      <provenance source="Exact conversion 1 km = 1000 m" kind="definitional" />
+    </individual>
     <individual id="wmoop.core/Kilogram" name="kg" instanceOf="wmoop.core/Unit">
       <definition>Kilogram — the SI base and canonical unit of Mass.</definition>
       <value property="symbol">kg</value>
@@ -265,6 +274,14 @@
       <value property="factor">1</value>
       <value property="offset">0</value>
       <provenance source="BIPM SI Brochure, 9th ed. (2019)" kind="sourced" ref="the second" />
+    </individual>
+    <individual id="wmoop.core/Day" name="d" instanceOf="wmoop.core/Unit">
+      <definition>Day — a non-SI unit of Time accepted for use with the SI, used for orbital periods.</definition>
+      <value property="symbol">d</value>
+      <value property="quantityKind">wmoop.core/Time</value>
+      <value property="factor">86400</value>
+      <value property="offset">0</value>
+      <provenance source="BIPM SI Brochure, 9th ed. (2019)" kind="sourced" ref="Table 8, non-SI units accepted for use with the SI: 1 d = 24 h = 86 400 s" />
     </individual>
     <individual id="wmoop.core/MetrePerSecond" name="m_per_s" instanceOf="wmoop.core/Unit">
       <definition>Metre per second — the coherent SI (canonical) unit of Speed.</definition>

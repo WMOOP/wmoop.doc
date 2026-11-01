@@ -31,7 +31,7 @@ module:
   title: <Human Title>
   depends_on:
     - { module: wmoop.core, version: "^1.0.0" }   # almost always; add others you reference
-    # - { module: wmoop.nature, version: "^0.6.0" }   # e.g. to attach a role to Person
+    # - { module: wmoop.nature, version: "^0.7.0" }   # e.g. to attach a role to Person
 
 # --- Value types: primitive refinements (optional) -------------------------
 datatypes:

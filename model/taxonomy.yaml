@@ -72,7 +72,7 @@ domains:
     steward: ~
     depends_on: []
     subdomains: [core.quantities, core.units, core.dimensions, core.provenance, core.identity]
-    note: "Realises L0 (QuantityKind + SI Dimension 7-vector, Unit + toCanonical, Provenance, wmid/QName base datatypes). Referenced by every module as wmoop.core; the module file is model/core/core.wml.yaml (v1.0.0)."
+    note: "Realises L0 (QuantityKind + SI Dimension 7-vector, Unit + toCanonical, Provenance, wmid/QName base datatypes). Referenced by every module as wmoop.core; the module file is model/core/core.wml.yaml (v1.1.0)."
 
   # --- Formal & Abstract ----------------------------------------------------
   - id: math

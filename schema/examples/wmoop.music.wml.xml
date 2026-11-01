@@ -4,7 +4,7 @@
        python schema/yaml_to_xml.py -->
 <module xmlns="https://wmoop.org/wml/1" id="wmoop.music" version="0.1.0" title="Music">
   <dependsOn module="wmoop.core" version="^1.0.0" />
-  <dependsOn module="wmoop.nature" version="^0.6.0" />
+  <dependsOn module="wmoop.nature" version="^0.7.0" />
   <datatypes>
     <datatype id="wmoop.music/FrequencyHz" name="FrequencyHz" base="decimal">
       <definition>A frequency in hertz (cycles per second). Modelled as a local datatype rather than a wmoop.core quantity because the core kernel defines no Frequency QuantityKind; the standard tuning reference is A4 = 440 Hz.</definition>

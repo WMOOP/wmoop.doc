@@ -33,7 +33,8 @@ Normative keywords (MUST/SHOULD/MAY) follow RFC 2119.
 |------|------------|
 | [`wml.schema.json`](wml.schema.json) | JSON Schema (Draft 2020-12) meta-schema for a WML module file (YAML → JSON). The context-free grammar. **Mirror** of the canonical copy in [`WMOOP/wmoop.json`](https://github.com/WMOOP/wmoop.json). |
 | [`wml.xsd`](wml.xsd) | The XSD equivalent, for the WML-in-XML serialization. Same grammar, XML idiom. **Mirror** of the canonical copy in `WMOOP/wmoop.json`. |
-| [`validate_wml.py`](validate_wml.py) | The **oracle**: runs the JSON Schema grammar gate **and** the cross-file semantic gates (S1–S6, referential integrity) that no context-free grammar can express. Optionally validates the XML projections against the XSD. |
+| [`validate_wml.py`](validate_wml.py) | The **oracle**: runs the JSON Schema grammar gate **and** the cross-file semantic gates (S1–S6, R5, referential integrity, inverses, L2 individuals, schemes, associations) that no context-free grammar can express. Optionally validates the XML projections against the XSD. |
+| [`test_validate_wml.py`](test_validate_wml.py) | The oracle's **self-test**: a small valid model plus one failing fixture per rule, so a rule listed in §4 is proven to fire. Runs in CI. |
 | [`check_canonical.py`](check_canonical.py) | Freshness check: fails if `wml.schema.json` / `wml.xsd` here have drifted from the canonical copies in `WMOOP/wmoop.json`. |
 | [`yaml_to_xml.py`](yaml_to_xml.py) | Deterministic projector: merges each module's `*.wml.yaml` files into one `<module>` XML document under [`examples/`](examples/). The XML is **generated** — never hand-edited. |
 | [`examples/*.wml.xml`](examples/) | The six seeded modules projected to WML-in-XML (exercise the XSD and double as a single-file view of each module). |
@@ -58,13 +59,16 @@ python schema/yaml_to_xml.py --check
 
 # 5. freshness check: fail if the schema mirrors drift from canonical WMOOP/wmoop.json
 python schema/check_canonical.py
+
+# 6. after changing the validator: its self-test (one failing fixture per rule)
+python schema/test_validate_wml.py
 ```
 
 `validate_wml.py` exits `0` when every gate is green and `1` on any error (warnings alone do not
 fail unless you pass `--strict`). This is the automated **Definition of Done** (Invariant 6).
 Useful flags: `--no-xsd` (skip the XSD check), `--lint-agentive` (warn on `-er`/`-or` concepts that
-may really be roles), and a path argument to validate a subtree (`python schema/validate_wml.py
-model/transport`).
+may really be roles), a path argument to validate a subtree (`python schema/validate_wml.py
+model/transport`), and `--complete` to treat explicit paths as a whole model (see §4).
 
 Validating directly, without the oracle:
 
@@ -93,6 +97,8 @@ interfaces:    [ ... ]        # behaviour contracts (abstract operations)
 concepts:      [ ... ]        # L1 classes
 roles:         [ ... ]        # composable, cross-cutting facets
 individuals:   [ ... ]        # L2 reference instances
+schemes:       [ ... ]        # first-class classification schemes (ADR 0001)
+associations:  [ ... ]        # reified n-ary / attributed relations (D9)
 ```
 
 ### 3.1 Identifiers (QNames)
@@ -167,7 +173,7 @@ module:
   definition: A low-powered motorcycle (EU L1e-B).      # required
   provenance: [ { source: "Regulation (EU) No 168/2013", ref: "Annex I, category L1e-B", kind: sourced } ]  # required
   classified_as:                 # non-inheritance classification (optional; §3.9)
-    - { scheme: "NCBI Taxonomy", value: "..." }
+    - { scheme: wmoop.transport/EuVehicleCategories, value: "L1e-B" }   # the id of a declared scheme (ADR 0001)
   properties:        [ ... ]     # §3.7
   property_overrides:[ ... ]     # §3.8 (LSP-safe narrowing only, S2)
   invariants:        [ ... ]     # boolean constraints over `self`
@@ -176,8 +182,9 @@ module:
 
 ### 3.7 `property` — a typed, defined, sourced attribute
 
-Every property carries its **own** `definition` and `provenance` (S5); a measurable property
-carries a `unit` (R5).
+Every property carries its **own** `definition` and `provenance` (S5); a property typed by a
+`wmoop.core` QuantityKind (`wmoop.core/Speed`, `wmoop.core/Mass`, …) carries a `unit` that is a Unit
+of that kind in the core catalogue, named by symbol (`km/h`) or by id (`wmoop.core/KilometrePerHour`) (R5).
 
 ```yaml
 - id: wmoop.transport/Vehicle#maxSpeed
@@ -237,7 +244,9 @@ any `extends` (S3 — a role is not a class).
 
 - **`relation`** — a named association: `{ id, name, target, cardinality, rel?, inverse?, definition?, provenance? }`.
   `rel` is `association` (default), `part_of`, `aggregation`, or `composition` — **never**
-  `subclass_of` (use `extends`). `inverse` names the other end's member QName.
+  `subclass_of` (use `extends`). `inverse` names the other end's member QName, which is a member
+  of the `target`. The target may leave that end implied (it is generated) or declare it; a declared
+  end must target this relation's owner and name this relation as its inverse.
 - **`constraints`** — `minimum`, `maximum`, `exclusiveMinimum`, `exclusiveMaximum`, `multipleOf`,
   `minLength`, `maxLength`, `pattern`, `format`, `enum`.
 - **`provenance`** — a non-empty list; each entry needs a `source`, SHOULD set `kind`
@@ -258,18 +267,27 @@ files or need resolution, so [`validate_wml.py`](validate_wml.py) enforces them 
 | Rule | What | Enforced by |
 |------|------|-------------|
 | Identifier shapes, required slots, kinds, cardinalities, constraint vocab | shape of each node | **grammar** (`wml.schema.json` / `wml.xsd`) |
-| **S1** Shallow inheritance | `extends` depth ≤ 6 (warn at 5) | `validate_wml.py` |
-| **S2** LSP-safe overrides | an override only narrows; the owner is an ancestor | `validate_wml.py` |
-| **S3** Roles are not classes | no role in any `extends`; a role declares `played_by`; agentive-noun lint (opt-in) | grammar (shape) + `validate_wml.py` |
-| **S4** Acyclic graphs | `depends_on` and `extends` are DAGs | `validate_wml.py` |
+| **S1** Shallow inheritance | `extends` depth ≤ 6 (warn at 5 and 6) | `validate_wml.py` |
+| **S2** LSP-safe overrides | an override only narrows — the property, its datatype **and every ancestor's override**; the owner is an ancestor; a subkind never redeclares an inherited member | `validate_wml.py` |
+| **S3** Roles are not classes | no role in any `extends`; a role declares one `played_by` concept; agentive-noun lint (opt-in) | grammar (shape) + `validate_wml.py` |
+| **S4** Acyclic graphs | `depends_on` and `extends` are DAGs; no module depends on itself | `validate_wml.py` |
 | **S5** Provenance & definitions | present where required; factual nodes sourced (lint) | grammar (presence) + `validate_wml.py` (honesty lint) |
-| **S6** Unique, well-formed IDs | no duplicate type/member IDs; a member's QName matches its owner | grammar (shape) + `validate_wml.py` (uniqueness) |
-| Referential integrity | every `extends`/`implements`/`type`/`target`/`played_by`/`capability`/`instance_of`/override resolves | `validate_wml.py` |
-| Unit presence (R5) | quantity-typed properties carry a unit (lint) | `validate_wml.py` |
+| **S6** Unique, well-formed IDs | no duplicate IDs across all kinds; a member's QName matches its owner; one module per directory, one header per module, a file declares only its module's IDs | grammar (shape) + `validate_wml.py` |
+| Referential integrity (DoD #3) | every `extends`/`implements`/`type`/`target`/`played_by`/`capability`/`instance_of`/override, interface parameter and return type, scheme and participant resolves; `depends_on` names existing modules whose versions satisfy the pins (`^0.5.0` does **not** accept 0.6.0) | `validate_wml.py` |
+| Declared dependencies (DoD #4) | a reference into another module — `extends` included — follows a `depends_on` edge | `validate_wml.py` |
+| Slot typing | a property is typed by a primitive, datatype, enumeration, concept or QuantityKind (not a role, interface, scheme or association); a relation targets a concept, role, interface or association | `validate_wml.py` |
+| Units (R5) | a QuantityKind-typed slot names a Unit of that kind from the `wmoop.core` catalogue; every Unit measures a QuantityKind; symbols are unique | `validate_wml.py` |
+| Relation inverses | the inverse is a member of the target; a declared inverse points back; one relation per inverse end | `validate_wml.py` |
+| L2 individuals (DoD #9) | a concrete concept is instantiated; `values` names only its properties, with the declared type, cardinality and (inherited) constraints; required values are present; invariants of the form `self.<property> <op> <literal>` hold (richer ones wait for WMX) | `validate_wml.py` |
+| Schemes (ADR 0001) | `classified_as.scheme` is the id of a declared scheme | `validate_wml.py` |
+| Associations (D9) | participants are uniquely named entities (not values); properties don't reuse a participant's name | grammar (≥ 2 participants) + `validate_wml.py` |
 
-References into a module not present in the checkout (e.g. the pending L0 `wmoop.core`, or a domain
-not yet authored) are treated as **external/pending** and accepted; only a dangling reference
-*within a module that is present* is a hard error.
+The default run (no path, or `model/`) treats the targets as the **whole model**: a reference into
+a module that does not exist is an error. When you validate a subtree or a single file, modules
+outside it are not loaded, so a reference into them is accepted **if** the referencing module
+declares that module in `depends_on` (pass `--complete` to treat your paths as a whole model).
+Unit checks need `wmoop.core` in the run; a partial run without it reports how many units it could
+not check.
 
 ---
 

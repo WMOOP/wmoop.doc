@@ -4,7 +4,7 @@
        python schema/yaml_to_xml.py -->
 <module xmlns="https://wmoop.org/wml/1" id="wmoop.org" version="0.1.0" title="Organisations &amp; Institutions">
   <dependsOn module="wmoop.core" version="^1.0.0" />
-  <dependsOn module="wmoop.nature" version="^0.6.0" />
+  <dependsOn module="wmoop.nature" version="^0.7.0" />
   <concepts>
     <concept id="wmoop.org/Organization" name="Organization" kind="concrete">
       <definition>A structured, persistent group of people (and resources) acting together to pursue one or more shared goals, recognised as a single entity.</definition>
