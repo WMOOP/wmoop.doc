@@ -4,7 +4,7 @@ module:
   title: Education
   depends_on:
     - { module: wmoop.core,         version: "^1.0.0" }   # L0 upper ontology
-    - { module: wmoop.nature,       version: "^0.6.0" }   # for Person (role player) [INV-5]
+    - { module: wmoop.nature,       version: "^0.7.0" }   # for Person (role player) [INV-5]
     - { module: wmoop.org,          version: "^0.1.0" }   # for Organization (School is-a Organization)
     - { module: wmoop.architecture, version: "^0.1.0" }   # for Building / Room (physical plant)
 

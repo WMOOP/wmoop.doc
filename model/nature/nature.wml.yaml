@@ -1,6 +1,7 @@
 module:
   id: wmoop.nature
-  version: 0.6.0                              # 0.5.0 -> 0.6.0: added the anatomy file (Organ, OrganSystem, part_of Animal) — MINOR
+  version: 0.7.0                              # 0.6.0 -> 0.7.0: declared the NcbiTaxonomy scheme (ADR 0001) — MINOR
+                                              # 0.5.0 -> 0.6.0: added the anatomy file (Organ, OrganSystem, part_of Animal) — MINOR
   title: Nature
   depends_on:
     - { module: wmoop.core, version: "^1.0.0" }
@@ -13,6 +14,20 @@ datatypes:
     base: integer
     definition: A non-negative count of legs in an organism's typical adult body plan.
     constraints: { minimum: 0 }
+
+# Classification schemes the biology branch is classified under (ADR 0001): a concept's
+# taxonomic ranks are scheme-qualified claims (`classified_as`), not inheritance levels.
+schemes:
+  - id: wmoop.nature/NcbiTaxonomy
+    name: NcbiTaxonomy
+    definition: >
+      The NCBI Taxonomy: the curated classification and nomenclature of the organisms
+      represented in the NCBI sequence databases, giving each taxon a ranked lineage.
+    authority: NCBI (US National Center for Biotechnology Information)
+    provenance:
+      - { source: "Schoch, C. L. et al. (2020), NCBI Taxonomy: a comprehensive update on curation, resources and tools, Database 2020: baaa062",
+          doi: "10.1093/database/baaa062", url: "https://www.ncbi.nlm.nih.gov/taxonomy", kind: sourced,
+          note: "NCBI states the database is not an authoritative source for nomenclature or classification; it is one sourced scheme among rivals." }
 
 concepts:
   - id: wmoop.nature/Animal
@@ -41,9 +56,10 @@ concepts:
       as inheritance levels, so the code hierarchy stays shallow [INV-3].
     provenance:
       - { source: "NCBI Taxonomy", ref: "taxid 9606 (Homo sapiens)", kind: sourced,
-          note: "Also the authority for the classified_as taxonomic path below (ADR 0001: per-claim provenance on classified_as awaits the Scheme/claim schema enrichment)." }
+          note: "The classified_as taxonomic path below is a claim under the NcbiTaxonomy scheme and carries its own provenance (ADR 0001)." }
     classified_as:
-      - { scheme: wmoop.scheme/NcbiTaxonomy, value: "Chordata / Mammalia / Primates / Hominidae" }
+      - { scheme: wmoop.nature/NcbiTaxonomy, value: "Chordata / Mammalia / Primates / Hominidae",
+          provenance: [ { source: "NCBI Taxonomy", ref: "taxid 9606 (Homo sapiens), lineage", kind: sourced } ] }
 
   - id: wmoop.nature/Person
     name: Person

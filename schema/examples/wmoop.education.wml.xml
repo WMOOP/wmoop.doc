@@ -4,7 +4,7 @@
        python schema/yaml_to_xml.py -->
 <module xmlns="https://wmoop.org/wml/1" id="wmoop.education" version="0.1.0" title="Education">
   <dependsOn module="wmoop.core" version="^1.0.0" />
-  <dependsOn module="wmoop.nature" version="^0.6.0" />
+  <dependsOn module="wmoop.nature" version="^0.7.0" />
   <dependsOn module="wmoop.org" version="^0.1.0" />
   <dependsOn module="wmoop.architecture" version="^0.1.0" />
   <datatypes>

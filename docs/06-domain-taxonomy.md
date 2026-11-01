@@ -94,7 +94,7 @@ Each sub-domain lists an example concept and, where useful, its dominant L0 cate
   - `core.units` — `m`, `kg`, `km_per_h`, `cm3`
   - `core.dimensions` — the SI 7-vector (L,M,T,I,Θ,N,J)
   - `core.provenance` · `core.identity` — citations, `wmid`/QName
-  - *Referenced everywhere as `wmoop.core`; realised in [`model/core/core.wml.yaml`](../model/core/core.wml.yaml) (v1.0.0).*
+  - *Referenced everywhere as `wmoop.core`; realised in [`model/core/core.wml.yaml`](../model/core/core.wml.yaml) (v1.1.0).*
 
 ### I · Formal & Abstract
 - **`math`** 🟢 — `math.number` (`Number → {ℕ,ℤ,ℚ,ℝ}`, **Abs**; siblings, not nested inheritance) ·

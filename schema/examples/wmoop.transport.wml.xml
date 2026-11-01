@@ -4,7 +4,7 @@
        python schema/yaml_to_xml.py -->
 <module xmlns="https://wmoop.org/wml/1" id="wmoop.transport" version="0.3.0" title="Transport">
   <dependsOn module="wmoop.core" version="^1.0.0" />
-  <dependsOn module="wmoop.nature" version="^0.6.0" />
+  <dependsOn module="wmoop.nature" version="^0.7.0" />
   <dependsOn module="wmoop.geography" version="^0.2.0" />
   <datatypes>
     <datatype id="wmoop.transport/WheelCount" name="WheelCount" base="integer">

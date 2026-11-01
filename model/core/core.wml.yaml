@@ -1,6 +1,6 @@
 module:
   id: wmoop.core
-  version: 1.0.0
+  version: 1.1.0                               # 1.0.0 -> 1.1.0: added the km and d units — MINOR
   title: Core
   # depends_on: []  — core is the root. It realises L0 and references nothing;
   # every other module depends on it (keeps the module graph acyclic, Invariant 5).
@@ -405,6 +405,15 @@ individuals:
     provenance:
       - { source: "BIPM SI Brochure, 9th ed. (2019)", ref: "the metre", kind: sourced }
 
+  - id: wmoop.core/Kilometre
+    name: km
+    instance_of: wmoop.core/Unit
+    definition: Kilometre — a decimal multiple of the metre, used for planetary radii and road distances.
+    values: { symbol: "km", quantityKind: "wmoop.core/Length", factor: 1000, offset: 0 }
+    provenance:
+      - { source: "BIPM SI Brochure, 9th ed. (2019)", ref: "Table 7, SI prefix kilo (10³)", kind: sourced }
+      - { source: "Exact conversion 1 km = 1000 m", kind: definitional }
+
   - id: wmoop.core/Kilogram
     name: kg
     instance_of: wmoop.core/Unit
@@ -420,6 +429,14 @@ individuals:
     values: { symbol: "s", quantityKind: "wmoop.core/Time", factor: 1, offset: 0 }
     provenance:
       - { source: "BIPM SI Brochure, 9th ed. (2019)", ref: "the second", kind: sourced }
+
+  - id: wmoop.core/Day
+    name: d
+    instance_of: wmoop.core/Unit
+    definition: Day — a non-SI unit of Time accepted for use with the SI, used for orbital periods.
+    values: { symbol: "d", quantityKind: "wmoop.core/Time", factor: 86400, offset: 0 }
+    provenance:
+      - { source: "BIPM SI Brochure, 9th ed. (2019)", ref: "Table 8, non-SI units accepted for use with the SI: 1 d = 24 h = 86 400 s", kind: sourced }
 
   - id: wmoop.core/MetrePerSecond
     name: m_per_s

@@ -71,6 +71,16 @@ the MAJOR version.
   suite — all building on .NET 8 with the cross-domain `Person`→`Driver` role worked end to end.
 - Example WML model files for the Transport, Nature and Geography domains (`model/`).
 
+### Changed
+- **Model data fixes found by the stricter validator:**
+  - **`wmoop.core` 1.0.0 → 1.1.0:** adds the `km` (Kilometre) and `d` (Day) units, which
+    `wmoop.space` already used for radii and orbital periods.
+  - **`wmoop.nature` 0.6.0 → 0.7.0:** declares the `wmoop.nature/NcbiTaxonomy` scheme. `Human`'s
+    classification previously pointed at an undeclared `wmoop.scheme/NcbiTaxonomy`; it now uses
+    the new scheme and carries its own provenance.
+  - **Re-pinned dependents:** `transport`, `org`, `education` and `music` now require
+    `wmoop.nature ^0.7.0`.
+
 ### Notes
 - This is **v0 (experimental)**. The WML format and tooling are not yet stable; see the
   [adversarial review](docs/05-adversarial-review.md) for known open problems.
