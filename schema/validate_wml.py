@@ -6,8 +6,9 @@ validate_wml.py - the WML oracle.
 Realises gate 1-3 of the ``wmoopc compile`` pipeline (docs/03-architecture.md Sec 2.4)
 against the canonical model in ``model/**``:
 
-  1. Grammar     - every ``*.wml.yaml`` validates against ``schema/wml.schema.json``
-                   (JSON Schema 2020-12). This is the context-free shape (R1-R12, S5/S6 shapes).
+  1. Grammar     - every ``*.wml.yaml`` validates against ``wml.schema.json`` (JSON Schema
+                   2020-12) from the grammar submodule ``external/wmoop.json``. This is the
+                   context-free shape (R1-R12, S5/S6 shapes).
   2. Resolution  - IDs and ``depends_on`` resolve; the module graph and the ``extends``
                    graph are acyclic (S4); a reference into another module follows a
                    declared ``depends_on`` edge (DoD #4) whose version pin that module
@@ -28,8 +29,8 @@ against the canonical model in ``model/**``:
                      referential integrity of every reference.
 
 Optionally (``--xsd`` / on by default when available) validates the WML-in-XML
-projections under ``schema/examples/*.wml.xml`` against ``schema/wml.xsd``, and
-(``--no-parity`` to skip) checks that ``wml.xsd`` and ``wml.schema.json`` - two
+projections under ``schema/examples/*.wml.xml`` against ``external/wmoop.json/wml.xsd``,
+and (``--no-parity`` to skip) checks that ``wml.xsd`` and ``wml.schema.json`` - two
 serializations of one grammar - stay in agreement (S4; see check_schema_parity.py).
 
 Exit code 0 = all gates green; 1 = at least one ERROR (warnings alone do not fail
@@ -55,8 +56,10 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parent
-SCHEMA_FILE = HERE / "wml.schema.json"
-XSD_FILE = HERE / "wml.xsd"
+# The grammar is the WMOOP/wmoop.json repo, pinned as the git submodule external/wmoop.json.
+GRAMMAR_DIR = REPO / "external" / "wmoop.json"
+SCHEMA_FILE = GRAMMAR_DIR / "wml.schema.json"
+XSD_FILE = GRAMMAR_DIR / "wml.xsd"
 EXAMPLES_DIR = HERE / "examples"
 
 # Inheritance depth cap (S1). Configurable per org; warned from MAX_DEPTH-1, failed above.
@@ -1258,6 +1261,9 @@ def main(argv: list[str]) -> int:
     model_root = (REPO / "model").resolve()
     COMPLETE = args.complete or all((REPO / t).resolve() == model_root for t in args.targets)
 
+    if not SCHEMA_FILE.is_file():
+        _die(f"{SCHEMA_FILE.relative_to(REPO).as_posix()} not found - the grammar submodule is "
+             "not checked out (run: git submodule update --init)")
     files = collect_files(args.targets)
     if not files:
         _die("no *.wml.yaml files found")

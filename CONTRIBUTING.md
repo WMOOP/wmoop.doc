@@ -53,13 +53,13 @@ WMOOP is split across the `WMOOP` GitHub organization. Know which repo your chan
 
 | Repo | Role | Do you hand-edit it? |
 |------|------|----------------------|
-| **`wmoop.doc`** | Canonical model source (`/model/**`, authored in YAML), **synced mirrors** of the meta-schema (`schema/wml.schema.json` + `wml.xsd`; canonical in the `wmoop.json` repo), **and** all governance/spec docs (this file, the meta-model spec, ethics, ADRs). Publishes the compiled model `wm-<ver>.json` as a Release. | **Yes — this is where you contribute the model.** (Meta-schema mirror: synced from `wmoop.json`. Compiled `wm-<ver>.json`: **never** — it is generated.) |
-| **`wmoop.json`** | **Canonical** home of the JSON-Schema **meta-schema** (the WML grammar); mirrored into `wmoop.doc/schema` and each binding. | Meta-schema: by proposal/ADR only. |
+| **`wmoop.doc`** | Canonical model source (`/model/**`, authored in YAML), the meta-schema **pinned as a git submodule** (`external/wmoop.json`: `wml.schema.json` + `wml.xsd`, canonical in the `wmoop.json` repo), **and** all governance/spec docs (this file, the meta-model spec, ethics, ADRs). Publishes the compiled model `wm-<ver>.json` as a Release. | **Yes — this is where you contribute the model.** (Meta-schema: edit it in `wmoop.json`, then move the submodule pin here. Compiled `wm-<ver>.json`: **never** — it is generated.) |
+| **`wmoop.json`** | **Canonical** home of the JSON-Schema **meta-schema** (the WML grammar); `wmoop.doc` pins it as the git submodule `external/wmoop.json` and never copies it. | Meta-schema: by proposal/ADR only. |
 | **`wmoop.tools`** | The `wmoopc` compiler, per-language generators, projectors, and the conformance runner. | Tooling PRs only; not model content. |
 | **`wmoop.net`** (C#), **`wmoop.java`**, **`wmoop.py`**, **`wmoop.cpp`** | **Generated**, conformance-gated idiomatic bindings + per-language conformance tests + the generator templates. | Model classes: **never**. Generator *templates* and runtime glue: yes, via their own PRs. |
 | **`wmoop.js`** (JavaScript), **`wmoop.db`** (database schema/migrations) | **Planned** — generated like the others, not yet conformance-gated. | Schema/classes: **never**. |
 
-> The canonical **source** lives in `wmoop.doc/model/**`. The **machine contract** (the JSON-Schema meta-schema) is **canonical in the `wmoop.json` repo** and mirrored at `schema/wml.schema.json` (+ `wml.xsd`) in `wmoop.doc`; the **compiled model** is published as `wm-<ver>.json` (a Release of `wmoop.doc`). See the [Normative constants](GOVERNANCE.md) table for the authoritative repo/artefact list.
+> The canonical **source** lives in `wmoop.doc/model/**`. The **machine contract** (the JSON-Schema meta-schema) is **canonical in the `wmoop.json` repo**, which `wmoop.doc` pins as the git submodule `external/wmoop.json` (clone with `--recurse-submodules`); the **compiled model** is published as `wm-<ver>.json` (a Release of `wmoop.doc`). See the [Normative constants](GOVERNANCE.md) table for the authoritative repo/artefact list.
 >
 > *(The exact repo-to-artifact split is fixed by [ADR-0001]; if you think it should change, open an ADR, don't improvise.)*
 
@@ -228,7 +228,7 @@ If any fails, it's a role, a relation, or a sibling — not a subclass.
 
 Copy the template, fill every required field, delete the guidance comments. Each template has a blank form and a worked example. Required fields are marked `# REQUIRED`.
 
-> These templates follow the **live schema** (`schema/wml.schema.json`) and the [Normative constants](GOVERNANCE.md) table (§1.1): slash QNames (`wmoop.<domain>/<Name>`, members `#<camelName>`), `extends`/`played_by`, **inline** properties, list-form `provenance`, and no `layer`/`status`/`contributedBy` fields (authorship is a commit trailer + PR label — see [`AI_CONTRIBUTING.md`](./AI_CONTRIBUTING.md)). The worked models in [`model/**`](model/) (e.g. [`model/transport/`](model/transport/)) are the canonical reference — prefer copying from there.
+> These templates follow the **live schema** (`external/wmoop.json/wml.schema.json`) and the [Normative constants](GOVERNANCE.md) table (§1.1): slash QNames (`wmoop.<domain>/<Name>`, members `#<camelName>`), `extends`/`played_by`, **inline** properties, list-form `provenance`, and no `layer`/`status`/`contributedBy` fields (authorship is a commit trailer + PR label — see [`AI_CONTRIBUTING.md`](./AI_CONTRIBUTING.md)). The worked models in [`model/**`](model/) (e.g. [`model/transport/`](model/transport/)) are the canonical reference — prefer copying from there.
 
 ### 7.1 Add a class (concept)
 
@@ -467,7 +467,7 @@ Each gate below blocks merge when red. "How to fix" tells you exactly what to ch
 
 | Gate | What it checks | How to fix |
 |------|----------------|------------|
-| **Schema lint** | YAML parses; validates against the JSON Schema meta-schema (`schema/wml.schema.json`). | Match the template; remove unknown fields; fix types. |
+| **Schema lint** | YAML parses; validates against the JSON Schema meta-schema (`external/wmoop.json/wml.schema.json`). | Match the template; remove unknown fields; fix types. |
 | **Naming rules** | ID regex; PascalCase concepts/roles, camelCase properties/relations; file name = local ID. | Rename the file/field to the convention. |
 | **ID immutability** | No previously-merged ID was renamed or deleted. | Use an `alias`/`replacedBy` + deprecation instead of editing the ID. |
 | **Referential integrity / no-orphan** | Every `extends`, `ref`, `played_by`, `instanceOf`, `dependsOn` resolves; a reference into another module follows a declared `depends_on` whose version pin that module satisfies; every node reachable from a root. | Add the missing target or dependency, fix the typo, or update the pin. |

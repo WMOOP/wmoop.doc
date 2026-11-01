@@ -182,7 +182,7 @@ Contributors do not write "category C" or "an anti-rigid sortal." They pick a **
 ### 3.1 How the stereotypes map to the live grammar (S1)
 
 The stereotypes above are an **authoring/conceptual layer**. The live schema
-(`schema/wml.schema.json`) implements **nine constructs** — `module`, `datatype`,
+(`wml.schema.json`, pinned at `external/wmoop.json`) implements **nine constructs** — `module`, `datatype`,
 `enumeration`, `interface`, `concept` (with `kind: abstract|concrete`), `role`,
 `individual`, `scheme`, `association` — onto which the stereotypes map. A planned additive **`stereotype`**
 annotation (on `concept`/`role`) will record the OntoUML stereotype and let

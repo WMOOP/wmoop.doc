@@ -57,7 +57,7 @@ This governance is bound by eight **architectural invariants**. They are not up 
 | **Provenance `kind` enum** | `sourced \| definitional \| convention` |
 | **Core invariants** | Eight: I1 schema-first · I2 three layers · I3 composition/roles over inheritance · I4 sourced/identified/measured · I5 versioned, acyclic domains · I6 machine-checkable · I7 ontological completeness · I8 identity lifecycle & open/closed-world stance |
 | **Canonical format** | WML (authored in YAML, compiled to canonical JSON) |
-| **Meta-schema (grammar)** | Canonical in the **`wmoop.json`** repo; `schema/wml.schema.json` (+ the hand-maintained `wml.xsd`) in `wmoop.doc` are **synced mirrors** of it (see `schema/README.md`) |
+| **Meta-schema (grammar)** | Canonical in the **`wmoop.json`** repo (`wml.schema.json` + the hand-maintained `wml.xsd`); `wmoop.doc` pins it as the git submodule `external/wmoop.json` and keeps no copies (see `schema/README.md`) |
 | **Compiled model artefact** | `wm-<ver>.json` (RFC 8785 JCS), published as a GitHub Release of `wmoop.doc` — distinct from the `wmoop.json` meta-schema repo. |
 | **Compiler / tooling home** | `wmoop.tools` (ships `wmoopc`, the generators, projectors, conformance runner) |
 | **Conformance-gated bindings (v1)** | `wmoop.net` (C#), `wmoop.java`, `wmoop.py`, `wmoop.cpp` |

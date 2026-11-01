@@ -72,6 +72,11 @@ the MAJOR version.
 - Example WML model files for the Transport, Nature and Geography domains (`model/`).
 
 ### Changed
+- **The WML grammar is a git submodule, not a mirror.** `wml.schema.json` and `wml.xsd` come from
+  `WMOOP/wmoop.json`, pinned at `external/wmoop.json`. The copies in `schema/` and
+  `schema/check_canonical.py` are gone, so the two can no longer drift. Clone with
+  `--recurse-submodules` (or run `git submodule update --init`); CI checks that the pin is a
+  commit on `wmoop.json` main.
 - **`schema/validate_wml.py` now enforces the rules the docs describe as machine-checked**, instead
   of passing them silently:
   - **References and dependencies:** a reference into another module needs a declared `depends_on`
