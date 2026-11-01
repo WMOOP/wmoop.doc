@@ -16,8 +16,6 @@
 # Governance, ethics and policy documents.
 /GOVERNANCE.md          @WMOOP/core-maintainers
 /ETHICS.md              @WMOOP/core-maintainers
-/CODE_OF_CONDUCT.md     @WMOOP/core-maintainers
-/SECURITY.md            @WMOOP/core-maintainers
 
 # Domain models are owned by their domain stewards (the "Adopt a Domain" program).
 # Add one line per domain as stewards are assigned, e.g.:

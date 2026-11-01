@@ -111,8 +111,8 @@ A runnable implementation of exactly this is in [`wmoop.net`](https://github.com
 **Taking part**
 - [CONTRIBUTING.md](CONTRIBUTING.md) — how humans contribute.
 - [AI_CONTRIBUTING.md](AI_CONTRIBUTING.md) — the protocol for AI/LLM contributors.
-- [GOVERNANCE.md](GOVERNANCE.md) · [ETHICS.md](ETHICS.md) · [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)
-- [SECURITY.md](SECURITY.md) · [SUPPORT.md](SUPPORT.md) · [CHANGELOG.md](CHANGELOG.md)
+- [GOVERNANCE.md](GOVERNANCE.md) · [ETHICS.md](ETHICS.md) · [CODE_OF_CONDUCT.md](https://github.com/WMOOP/.github/blob/main/CODE_OF_CONDUCT.md)
+- [SECURITY.md](https://github.com/WMOOP/.github/blob/main/SECURITY.md) · [SUPPORT.md](SUPPORT.md) · [CHANGELOG.md](CHANGELOG.md)
 
 ---
 

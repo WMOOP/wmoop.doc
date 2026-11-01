@@ -215,7 +215,7 @@ AI is welcome and expected to contribute, under GOVERNANCE §8. The ethics-speci
 ### 6. Reporting and enforcement
 
 - **Factual/epistemic problems** (bad citation, NPOV breach, mis-tiered source): open an issue or PR; the domain steward adjudicates under lazy consensus; escalate per GOVERNANCE §4.2.
-- **Red-line violations:** open a confidential report to the stewards/TSC (contact in [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md)) or a public issue if non-sensitive. Red-line content is reverted immediately; deliberate or repeated violations lead to removal (GOVERNANCE §4.4).
+- **Red-line violations:** open a confidential report to the stewards/TSC (contact in [CODE_OF_CONDUCT.md](https://github.com/WMOOP/.github/blob/main/CODE_OF_CONDUCT.md)) or a public issue if non-sensitive. Red-line content is reverted immediately; deliberate or repeated violations lead to removal (GOVERNANCE §4.4).
 - **Conduct problems** (harassment, bad-faith behaviour): Code of Conduct process, separate from technical review.
 
 ---

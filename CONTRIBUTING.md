@@ -503,7 +503,7 @@ Each gate below blocks merge when red. "How to fix" tells you exactly what to ch
 
 ## 12. Ethics (must-read summary)
 
-Full rules live in [`ETHICS.md`](./ETHICS.md) and [`CODE_OF_CONDUCT.md`](./CODE_OF_CONDUCT.md). The essentials:
+Full rules live in [`ETHICS.md`](./ETHICS.md) and [`CODE_OF_CONDUCT.md`](https://github.com/WMOOP/.github/blob/main/CODE_OF_CONDUCT.md). The essentials:
 
 - **Source your facts.** Unsourced factual claims are not accepted.
 - **People are modeled with care.** Model *roles and capacities* (Driver, Employee, Student), not immutable or sensitive personal attributes. Do **not** add properties that classify humans by race, ethnicity, religion, sexual orientation, disability, or similar, or that encode stereotypes. Legal/administrative facts about persons belong to roles, with sources and jurisdiction.

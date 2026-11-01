@@ -13,7 +13,7 @@ Canonical home: wmoop.doc. This document governs the whole organization and all 
 
 This document defines **how decisions get made** in WMOOP: who may change what, how changes are proposed, reviewed, versioned, and retired, and how disputes are resolved. It is written to be followed by **humans and AI agents alike**, and to be as machine-checkable as possible.
 
-For *what makes a contribution factually and ethically acceptable*, see **[ETHICS.md](./ETHICS.md)**. For *how to physically make a contribution* (branches, PR mechanics, local tooling), see **CONTRIBUTING.md**. For behaviour expectations, see **[CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md)**.
+For *what makes a contribution factually and ethically acceptable*, see **[ETHICS.md](./ETHICS.md)**. For *how to physically make a contribution* (branches, PR mechanics, local tooling), see **CONTRIBUTING.md**. For behaviour expectations, see **[CODE_OF_CONDUCT.md](https://github.com/WMOOP/.github/blob/main/CODE_OF_CONDUCT.md)**.
 
 ---
 
@@ -353,7 +353,7 @@ AI agents are **first-class, welcome contributors** — the project is explicitl
 1. **Assume good faith; argue the artefact, not the author.** Disagreements are about claims, sources, and model shape.
 2. **Technical disputes** follow the escalation ladder (§4.2): PR discussion → steward → TSC → vote.
 3. **Competing taxonomies are not a conflict to "win."** If two contributors disagree about *the* correct classification, the WM represents **both** as separate, sourced classification schemes (see ETHICS §2.5). The reviewer's job is to ensure each scheme is well-formed and attributed, not to pick a winner.
-4. **Conduct disputes** go to the Code of Conduct process ([CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md)), not the technical ladder.
+4. **Conduct disputes** go to the Code of Conduct process ([CODE_OF_CONDUCT.md](https://github.com/WMOOP/.github/blob/main/CODE_OF_CONDUCT.md)), not the technical ladder.
 5. **Deadlock** is broken by the TSC (§4.4). A recorded decision, even an imperfect one, beats an indefinite stall.
 
 ---
@@ -389,7 +389,7 @@ Both are excellent open licenses; the choice is about **ethos fit**, not opennes
 
 ### 11. Code of Conduct
 
-WMOOP adopts the **Contributor Covenant v2.1**. See **[CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md)** for the full text, scope, reporting channel, and enforcement ladder. Conduct enforcement is independent of the technical governance in this document.
+WMOOP adopts the **Contributor Covenant v2.1**. See **[CODE_OF_CONDUCT.md](https://github.com/WMOOP/.github/blob/main/CODE_OF_CONDUCT.md)** for the full text, scope, reporting channel, and enforcement ladder. Conduct enforcement is independent of the technical governance in this document.
 
 ---
 
@@ -405,7 +405,7 @@ This document and the invariants it protects are changed only by **Meta-RFC** (�
 |-------------|---------|
 | `GOVERNANCE.md` | This document |
 | `ETHICS.md` | Epistemic standards, sensitive-domain red lines |
-| `CODE_OF_CONDUCT.md` | Behaviour standards (Contributor Covenant 2.1) |
+| [`CODE_OF_CONDUCT.md`](https://github.com/WMOOP/.github/blob/main/CODE_OF_CONDUCT.md) (organisation-wide, in `WMOOP/.github`) | Behaviour standards (Contributor Covenant 2.1) |
 | `CONTRIBUTING.md` | Practical how-to for contributing |
 | `MAINTAINERS.yaml`, `TSC.yaml`, `CODEOWNERS` | Machine-readable authority |
 | `SOURCES.yaml` | Third-party source & license registry |
