@@ -51,12 +51,13 @@ This governance is bound by eight **architectural invariants**. They are not up 
 | **Opaque identity (optional backing)** | `wmid:` + Crockford-base32 ULID (26 chars). The QName is the working identifier in v0; `wmid` is reserved for stable identity across renames/merges. |
 | **Forbidden ID forms** | colon separators (`wm:x:Y`), dot-before-local-name CURIEs (`wm:x.Y`), reserved kind segments (`…role.`/`…prop.`/`…rel.`/`…ind.`), a `/role/` path segment, and the bare `wm:` prefix. Kind is a node property, never part of the id. |
 | **Inheritance keyword (WML)** | `extends` |
-| **Inheritance depth** | CI **error** at depth > 6; **warning** at depth 5. ("≤ 3–4 levels" in teaching material is a heuristic, not the gate.) |
+| **Inheritance depth** | CI **error** at depth > 6; **warning** at depths 5–6. ("≤ 3–4 levels" in teaching material is a heuristic, not the gate.) |
+| **Cross-module inheritance** | An `extends` into another module is allowed only along a declared `depends_on` (a rigid is-a such as `School` → `wmoop.org/Organization`); cross-domain *facets* are roles, never `extends`. |
 | **Role-player keyword (WML)** | `played_by` (rendered `playedBy` in the XML projection and camelCase bindings). `AddRole`/`HasRole`/`GetRole` are the generated runtime API, not the model keyword. |
 | **Provenance `kind` enum** | `sourced \| definitional \| convention` |
 | **Core invariants** | Eight: I1 schema-first · I2 three layers · I3 composition/roles over inheritance · I4 sourced/identified/measured · I5 versioned, acyclic domains · I6 machine-checkable · I7 ontological completeness · I8 identity lifecycle & open/closed-world stance |
 | **Canonical format** | WML (authored in YAML, compiled to canonical JSON) |
-| **Meta-schema (grammar)** | Canonical in the **`wmoop.json`** repo; `schema/wml.schema.json` (+ generated `wml.xsd`) in `wmoop.doc` are **synced mirrors** of it (see `schema/README.md`) |
+| **Meta-schema (grammar)** | Canonical in the **`wmoop.json`** repo; `schema/wml.schema.json` (+ the hand-maintained `wml.xsd`) in `wmoop.doc` are **synced mirrors** of it (see `schema/README.md`) |
 | **Compiled model artefact** | `wm-<ver>.json` (RFC 8785 JCS), published as a GitHub Release of `wmoop.doc` — distinct from the `wmoop.json` meta-schema repo. |
 | **Compiler / tooling home** | `wmoop.tools` (ships `wmoopc`, the generators, projectors, conformance runner) |
 | **Conformance-gated bindings (v1)** | `wmoop.net` (C#), `wmoop.java`, `wmoop.py`, `wmoop.cpp` |
@@ -68,8 +69,8 @@ This governance is bound by eight **architectural invariants**. They are not up 
 | **Contribution labels** | `human \| ai-assisted \| ai-generated` |
 | **Domain status** | `seeded` (module exists in `model/`) · `candidate` (needs steward + sources). Living list: `model/taxonomy.yaml`; map: `docs/06-domain-taxonomy.md`. |
 | **Geography** | Its own top-level domain (`wmoop.geography`); Transport depends on it — not a sub-domain of Nature. |
-| **Classification** | Classification `Scheme`s are first-class, versioned constructs (**planned** additive L0 construct, ADR 0001 — schema enrichment pending); a `classified_as`/`classifiedUnder` claim carries provenance + rank + `asOf` (dated) + tier + status and attaches to concepts, individuals and roles. `extends`/`instance_of` give identity + the **default** code projection (one scheme per domain, chosen by a sourced ADR); rival schemes are retained as annotations, never deleted. Additive layer over the OOP tree, not a source inversion — see [ADR 0001](governance/adr/0001-classification-source-of-truth.md). |
-| **Open/closed-world** | Facts are **open-world** (absence = Unknown, not false); schema conformance is **closed-world**. Each property/relation/role slot declares `completeness: open\|closed` (default `open`); generated accessors over `open` slots expose Present/Absent/Unknown and MUST NOT read absence as `false` (anti-pattern A10). Planned additive field — see 02-meta-model §6.5. |
+| **Classification** | Classification `Scheme`s are first-class, versioned constructs (additive L0 construct, ADR 0001 — in the schema as `schemes:` and checked by the validator; the ADR awaits ratification); a `classified_as` claim references a declared scheme, carries provenance + rank + `asOf` (dated) + tier + status, and attaches to concepts, roles, individuals and associations. `extends`/`instance_of` give identity + the **default** code projection (one scheme per domain, chosen by a sourced ADR); rival schemes are retained as annotations, never deleted. Additive layer over the OOP tree, not a source inversion — see [ADR 0001](governance/adr/0001-classification-source-of-truth.md). |
+| **Open/closed-world** | Facts are **open-world** (absence = Unknown, not false); schema conformance is **closed-world**. Each property/relation/role slot declares `completeness: open\|closed` (default `open`); generated accessors over `open` slots expose Present/Absent/Unknown and MUST NOT read absence as `false` (anti-pattern A10). In the schema (D2); generator support is pending — see 02-meta-model §6.5. |
 
 ---
 
@@ -198,7 +199,7 @@ Any decision that (a) sets a precedent, (b) rejects a plausible alternative, or 
 - Deciders: TSC
 - Context: Contributors kept proposing `Driver : Person`.
 - Decision: Cross-domain facets are modelled as Roles attached by composition. (Invariant I3.)
-- Consequences: Codegen emits role interfaces/traits; linter rejects cross-domain inheritance.
+- Consequences: Codegen emits role interfaces/traits; the validator rejects a role in any `extends`.
 - Alternatives considered: multiple inheritance (rejected: fragile, language-dependent); mixins only (rejected: loses identity of the role).
 ```
 
@@ -299,7 +300,7 @@ A contribution is **Done** when the automated gate is green **and** a human/acco
 - [ ] **Completeness (I4).** Name, definition, provenance/citation present; units present for every quantity.
 - [ ] **Provenance resolvable.** Every citation has a resolvable locator (DOI/ISBN/URL + accessed date) and a declared **source tier** (see ETHICS §2).
 - [ ] **No cycles (I5).** Domain dependency graph stays acyclic.
-- [ ] **No illegal inheritance (I3).** Linter finds no cross-domain `is-a`; facets are roles.
+- [ ] **No illegal inheritance (I3).** No role in any `extends`; an `extends` into another module follows a declared `depends_on`; cross-domain facets are roles.
 - [ ] **Red-line linter (ETHICS).** No forbidden constructs (e.g. race-as-subclass-of-human); sensitive-domain flags present where required.
 - [ ] **Codegen round-trips.** The model generates valid code in every active language and passes conformance tests.
 - [ ] **Versioning.** SemVer bump and stability tier are correct for the kind of change.

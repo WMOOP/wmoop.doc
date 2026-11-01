@@ -85,7 +85,7 @@ Before any assignment, teach this one decision. Every rubric and every brief ref
 1. **Would it ever stop being true while the object still exists?** → **Role.** (A person stops being a driver when the licence expires; they do not stop being a person.)
 2. **Can one object be several of these simultaneously?** → **Role or trait**, not single inheritance.
 3. **Is it a whole/part containment ("made of", "located in", "administered under")?** → **Composition (`partOf`).**
-4. **Is it a genuine, permanent *kind-of* that is substitutable everywhere the parent is?** → **Inheritance** — and keep it shallow (aim ≤ 3–4 levels as a teaching heuristic; the CI gate is depth ≤ 6, warn at 5; respect Liskov).
+4. **Is it a genuine, permanent *kind-of* that is substitutable everywhere the parent is?** → **Inheritance** — and keep it shallow (aim ≤ 3–4 levels as a teaching heuristic; the CI gate is depth ≤ 6, warn at 5–6; respect Liskov).
 5. **Is the classification contested or multi-axis?** (A fjord is a valley *and* a coastal feature; a piano is percussion *and* keyboard.) → Use **categories/tags / multiple-parent relations**, not a forced single tree.
 
 ### 3.3 The canonical anti-patterns (teach by negative example)

@@ -39,7 +39,7 @@ L0 is the smallest vocabulary that lets us say all six **without lying** (withou
 
 ## 2. The fixed set of foundational categories
 
-WMOOP commits to **7 foundational categories** (A–F, H below) arranged under one root, plus supporting apparatus: **one orthogonal meta-axis** (Type vs Individual), the **Unit/Dimension apparatus** that supports category D, and **classification Schemes** — a first-class, versioned construct for sourced, dated classification that is a **planned additive L0 extension** (see §2.5 and [ADR 0001](../governance/adr/0001-classification-source-of-truth.md); the schema enrichment is a tracked follow-up). The set of categories is *closed*: L1 contributors never invent a new foundational category; they specialize within these.
+WMOOP commits to **7 foundational categories** (A–F, H below) arranged under one root, plus supporting apparatus: **one orthogonal meta-axis** (Type vs Individual), the **Unit/Dimension apparatus** that supports category D, and **classification Schemes** — a first-class, versioned construct for sourced, dated classification that is an **additive L0 extension** (see §2.5 and [ADR 0001](../governance/adr/0001-classification-source-of-truth.md); it is in the schema as `schemes:`, while the ADR awaits ratification). The set of categories is *closed*: L1 contributors never invent a new foundational category; they specialize within these.
 
 ### 2.1 Two independent axes
 
@@ -182,14 +182,15 @@ Contributors do not write "category C" or "an anti-rigid sortal." They pick a **
 ### 3.1 How the stereotypes map to the live grammar (S1)
 
 The stereotypes above are an **authoring/conceptual layer**. The live schema
-(`schema/wml.schema.json`) implements **seven constructs** — `module`, `datatype`,
+(`schema/wml.schema.json`) implements **nine constructs** — `module`, `datatype`,
 `enumeration`, `interface`, `concept` (with `kind: abstract|concrete`), `role`,
-`individual` — onto which the stereotypes map. A planned additive **`stereotype`**
+`individual`, `scheme`, `association` — onto which the stereotypes map. A planned additive **`stereotype`**
 annotation (on `concept`/`role`) will record the OntoUML stereotype and let
 `validate_wml.py` enforce the §7.3 substitution gate mechanically; until it lands, the
 discipline is carried by the **construct choice** plus `concept.kind`, and the gate is
-enforced by review and by `validate_wml.py` where already expressible (no cross-domain
-`extends`, every `role` declares `played_by`, …).
+enforced by review and by `validate_wml.py` where already expressible (no role in any
+`extends`, an `extends` into another module only along a declared `depends_on`, every
+`role` declares `played_by`, …).
 
 | Stereotype | Live WML encoding | Status |
 |---|---|---|
@@ -199,7 +200,7 @@ enforced by review and by `validate_wml.py` where already expressible (no cross-
 | `Role` | the `role` construct (`played_by`) | ✅ |
 | `Category` | a cross-cutting tag via `classified_as` (per scheme), or a `concept` + `stereotype: Category` | ✅ tag / ⏳ annotation |
 | `RoleMixin` | a `role` with several allowed players + `stereotype: RoleMixin` | ⏳ needs multi-`played_by` + annotation |
-| `RelationType` | a `relation` member (binary) or a reified association entity (n-ary/attributed, §10.5) | ✅ binary / ⏳ reified (D9) |
+| `RelationType` | a `relation` member (binary) or a reified association entity (n-ary/attributed, §10.5) | ✅ binary / ✅ reified (D9, `associations:`) |
 | `QualityType` | a non-numeric `property` (primitive/datatype/enum type) | ✅ |
 | `QuantityKind` | the `wmoop.core/QuantityKind` concept + a property's `type` + `unit` | ✅ |
 | `EventType` | a `concept` + `stereotype: EventType` (perdurant) | ⏳ annotation |
@@ -211,8 +212,9 @@ enforced by review and by `validate_wml.py` where already expressible (no cross-
 Most stereotypes already have a faithful grammar encoding; the rest (`Phase`,
 `Category`-as-class, `RoleMixin`, `EventType`, `AbstractType`, `Collection`) ride on a
 `concept`/`role` today and become machine-checkable once the `stereotype` annotation
-lands. That annotation and the §7.3 gate are a **planned additive** enrichment (like
-`Scheme` §2.5, `completeness` §6.5, and the reified association §10.5).
+lands. That annotation and the §7.3 gate are a **planned additive** enrichment, the
+route `Scheme` (§2.5), `completeness` (§6.5) and the reified association (§10.5) already
+took into the schema.
 
 ---
 
@@ -545,7 +547,7 @@ Invariant 8 holds the model **open-world for facts** (absence of a fact ≠ its 
 - **Generated accessors over an `open` slot MUST expose three states — Present / Absent-known-complete / Unknown — and MUST NOT emit a boolean "does-not-have" that returns `false` on absence.** `HasRole<T>()`/`GetRole<T>()` over an open role slot return a tri-state (or raise `Unknown`); only `closed` slots may be queried as boolean-false-on-absence.
 - **CI gate (DoD):** reject any generator that emits an absence-as-false boolean accessor over an `open` slot — the OWA-facts-through-CWA-code anti-pattern (A10). An empty role container is **"unknown"**, not "cannot drive".
 
-> **Status.** `completeness` is a **planned additive slot field** (like the `Scheme` construct, [ADR 0001](../governance/adr/0001-classification-source-of-truth.md)); the schema enrichment, the generator/accessor rules, and updating the reference `wmoop.net` `RoleContainer` (which today returns `false` for an unrecorded role) are tracked follow-ups. Until it lands, slots are treated as **`open`** and generators MUST NOT emit absence-as-false.
+> **Status.** `completeness` is in the schema (D2) on property, relation and role slots. The generator/accessor rules and updating the reference `wmoop.net` `RoleContainer` (which today returns `false` for an unrecorded role) are tracked follow-ups. Until generators honour it, slots are treated as **`open`** and generators MUST NOT emit absence-as-false.
 
 ---
 
@@ -558,7 +560,7 @@ Deep, dishonest inheritance is the single biggest risk to a crowd-sourced world 
 1. **Rigid-sortal-only.** `Subkind` is allowed only between rigid sortals sharing identity (§3). Everything anti-rigid or non-sortal uses `Phase`/`Role`/`Category`/interface. *This alone removes most bad inheritance.*
 2. **Liskov is mandatory and checkable.** A `Subkind` may only **weaken preconditions, strengthen postconditions, preserve invariants, and never remove or contradict** an inherited member. A subtype that must throw "not supported" for an inherited operation is **not** a subtype — refactor to an interface or role.
 3. **Narrow, don't contradict.** A subkind may restrict a property's range (`Moped.maxDesignSpeed ≤ 45`) but may not redefine its type, unit, or meaning, nor flip a Boolean invariant.
-4. **Depth budget.** From a domain root to a concrete leaf, depth 5 triggers a CI *warning* and a required justification, and depth > 6 is a CI *error*. Most real "is-a-kind-of" chains in the world are 3–5 deep; longer usually hides phases, roles, or parts masquerading as subclasses.
+4. **Depth budget.** From a domain root to a concrete leaf, depths 5 and 6 trigger a CI *warning* and a required justification, and depth > 6 is a CI *error*. Most real "is-a-kind-of" chains in the world are 3–5 deep; longer usually hides phases, roles, or parts masquerading as subclasses.
 5. **Favor composition and capability.** Prefer `has-a` (part-whole), `plays` (role), `can-do` (interface/trait) to `is-a`. When tempted to subclass to add behavior, ask: *is this new behavior an essence of a new kind, or a capability?* Capability → interface/trait.
 6. **Thin, stable base types.** A base `Kind` declares only members true of **every** instance for **all time** (the rigid invariants). Optional, role-specific, phase-specific, or rarely-shared members **must not** be pushed up. This is the structural defense against the fragile base class: bases change rarely because they contain only what cannot vary.
 7. **Open for extension, closed for mutation.** New variants attach via new `Subkind`s, `Category` tags, roles, or interfaces — not by editing a published base. Published bases evolve only via SemVer-breaking releases.
@@ -625,7 +627,7 @@ An AI contributor is therefore handed an unambiguous, automatable target: *produ
 I **endorse all six** invariants and do not deviate from them. I sharpen three and add two, all consistent with the originals:
 
 - **Invariant 1 (schema-first) — sharpened.** Generation must be **conformance-tested round-trip** (DoD checks 11–12), and each language repo must provide **non-clobbered extension points** (C# `partial`/extension methods, Java/Python/C++ equivalents) so hand-written idiomatic helpers coexist with generated code without manual re-authoring of the *model*. "Generated" ≠ "frozen against idiom"; it means the *conceptual model* is never hand-copied. **Scope ([ADR 0002](../governance/adr/0002-behaviour-and-wmx.md)):** Invariant 1 covers **data structure + declarative constraints + pure derivations** (the latter authored once in **WMX** and behaviour-conformance-tested); **imperative behaviour** (I/O, side-effecting, heuristic) is per-binding, hand-written, and a declared drift surface — not part of the single-source guarantee.
-- **Invariant 3 (composition/roles over inheritance) — made checkable.** Elevated from a principle to a **stereotype system** (`Kind`/`Subkind`/`Phase`/`Role`/`Category`/`RoleMixin`, §3) with **rigidity + sortality** as the discriminators, and a CI substitution gate (§7.3). In the live grammar (§3.1) the stereotypes map onto the seven implemented constructs; the *fully* machine-checkable gate rides on a **planned** `stereotype` annotation, so today the validator enforces what is expressible (no cross-domain `extends`; every `role` declares `played_by`) and review covers the rest. "Roles over inheritance" is a validator-enforced property for the implemented cases, not a reviewer's opinion.
+- **Invariant 3 (composition/roles over inheritance) — made checkable.** Elevated from a principle to a **stereotype system** (`Kind`/`Subkind`/`Phase`/`Role`/`Category`/`RoleMixin`, §3) with **rigidity + sortality** as the discriminators, and a CI substitution gate (§7.3). In the live grammar (§3.1) the stereotypes map onto the nine implemented constructs; the *fully* machine-checkable gate rides on a **planned** `stereotype` annotation, so today the validator enforces what is expressible (no role in any `extends`; an `extends` into another module only along a declared `depends_on`; every `role` declares `played_by`) and review covers the rest. "Roles over inheritance" is a validator-enforced property for the implemented cases, not a reviewer's opinion.
 - **Invariant 4 (every concept sourced) — refined.** Provenance is **typed** (`sourced | definitional | convention`) with optional `confidence`, so definitions and naming/modelling conventions are not forced to cite an external source, while `sourced` facts must.
 - **Added — Invariant 7 (ontological completeness):** L0 must represent **endurants, perdurants, and abstracts** as first-class, not physical-objects-with-properties only. (Without this, Math and Music cannot be modeled; it is implicit in the mission and is now explicit.)
 - **Added — Invariant 8 (identity lifecycle & open-world stance):** identity is an **immutable opaque `wmid` + stable QName**, with first-class **deprecation/`sameAs`/`replacedBy`** merge policy; the model is **open-world for facts** (absence of a fact ≠ its falsehood) but **closed-world for schema conformance** (the DoD checks are exhaustive and binding). The open↔closed bridge is declared **per slot** (`completeness: open|closed`, §6.5), so generated accessors over `open` slots expose Present/Absent/Unknown and never read absence as `false` (anti-pattern A10). A crowd-sourced ontology *will* accumulate duplicates and renames; the identity lifecycle must be designed in, not bolted on.
@@ -638,7 +640,7 @@ I **endorse all six** invariants and do not deviate from them. I sharpen three a
 2. **Validator implementation language** and whether it ships as a reusable CLI/GitHub Action (needed for the DoD to be real on day one).
 3. **Governance of contested classifications** beyond the `contested` flag + alternative links: who adjudicates, and how `sameAs`/merge decisions are approved.
 4. **Temporal granularity for Phases/Roles** in v1 — are `Phase`s in scope for the first release, or deferred behind `Role`s and enum `status` fields?
-5. **n-ary relations and relation attributes — RESOLVED (D9): reify.** A **binary, unattributed** relation stays a relation member (`source → target`). Any **n-ary** relation, or a binary relation that **carries its own attributes** (a `teaches` with a `semester`; `operates`/`operatedBy` ownership with dates), is **reified as a first-class association entity** — its own node with a `wmid`, named participant roles, and its own properties — so cross-language generation is uniform (one association class, not ad-hoc edge attributes). The reified-association construct is a **planned additive** schema enrichment (like `Scheme`, [ADR 0001](../governance/adr/0001-classification-source-of-truth.md)).
+5. **n-ary relations and relation attributes — RESOLVED (D9): reify.** A **binary, unattributed** relation stays a relation member (`source → target`). Any **n-ary** relation, or a binary relation that **carries its own attributes** (a `teaches` with a `semester`; `operates`/`operatedBy` ownership with dates), is **reified as a first-class association entity** — its own node with a `wmid`, named participant roles, and its own properties — so cross-language generation is uniform (one association class, not ad-hoc edge attributes). The reified-association construct is in the schema as `associations:` and checked by the validator.
 6. **Internationalization** of `prefLabel`/`definition`: required languages at submission, and handling of non-Latin scripts in `altLabel`.
 7. **Generated-code escape hatches**: the exact per-language extension-point convention (so Invariant 1's "non-clobbering" is concrete for `wmoop.net` first, then mirrored).
 8. **ID minting at scale**: ULID is decentralized and sufficient, but do we also want a human-facing short-code registry for teaching (e.g., `WM-NAT-0001`) mapped to `wmid`s?

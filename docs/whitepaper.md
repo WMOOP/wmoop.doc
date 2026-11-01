@@ -200,7 +200,7 @@ Each metric is backed by an automated check so the **Definition of Done is machi
 - **Schema validation.** Every L0/L1/L2 artifact validates against the meta-model grammar before merge (supports M1, M3, M4).
 - **Cross-language conformance (golden cases).** A single, language-neutral suite is generated into, and executed against, every target library; parity is computed as the pass ratio (M2). A concept is "parity-complete" only when its golden cases pass identically everywhere.
 - **Provenance & units linting.** A PR that introduces a concept without a stable ID, definition, and citation — or a quantity without units — fails CI (M3).
-- **Consistency & discipline checks.** Dependency-cycle detection, Liskov/substitutability checks on inheritance edges, and a "role-not-subclass" linter that flags cross-domain `is-a` edges for human review (M4).
+- **Consistency & discipline checks.** Dependency-cycle detection, Liskov/substitutability checks on inheritance edges, and a "role-not-subclass" check that rejects a role in any `is-a` edge and a cross-domain `is-a` without a declared dependency, leaving the rigidity of each remaining edge to human review (M4).
 - **Human-in-the-loop review + ratification.** Automated gates are *necessary, not sufficient*: domain stewards review semantics, sourcing quality and modeling choices before ratification (supports M5, M6). AI PRs follow the **same** gates plus explicit provenance of the AI's sources (§E).
 - **Peer review of the model itself.** Domains and the meta-model are periodically reviewed as one would review a scientific artifact: reproducible, sourced, and open to challenge.
 
