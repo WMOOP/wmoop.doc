@@ -3,13 +3,12 @@
 """
 check_schema_parity.py - the WML schema-mirror oracle (S4, durable fix).
 
-`schema/wml.schema.json` (JSON Schema) and `schema/wml.xsd` (XSD) are two
-serializations of ONE grammar and MUST stay in agreement. They are hand-authored
-(the XSD is an XML-idiom projection of the JSON Schema), so without an automated
-gate they drift silently - a new enum value, field, or section added to one side
-and forgotten on the other. `check_canonical.py` guards freshness against the
-canonical `WMOOP/wmoop.json` repo; this script guards the two LOCAL mirrors
-against EACH OTHER, catching drift in either direction.
+`wml.schema.json` (JSON Schema) and `wml.xsd` (XSD), read from the grammar submodule
+`external/wmoop.json` (the WMOOP/wmoop.json repo), are two serializations of ONE
+grammar and MUST stay in agreement. They are hand-authored (the XSD is an XML-idiom
+projection of the JSON Schema), so without an automated gate they drift silently - a
+new enum value, field, or section added to one side and forgotten on the other. This
+script guards the two files against EACH OTHER, catching drift in either direction.
 
 Rather than regenerate `wml.xsd` from `wml.schema.json` (which would erase two
 intentional, documented differences - see BY_DESIGN below), this is the *validate*
@@ -54,8 +53,10 @@ except ImportError:
     import xml.etree.ElementTree as ET
 
 HERE = Path(__file__).resolve().parent
-SCHEMA_FILE = HERE / "wml.schema.json"
-XSD_FILE = HERE / "wml.xsd"
+# The grammar is the WMOOP/wmoop.json repo, pinned as the git submodule external/wmoop.json.
+GRAMMAR_DIR = HERE.parent / "external" / "wmoop.json"
+SCHEMA_FILE = GRAMMAR_DIR / "wml.schema.json"
+XSD_FILE = GRAMMAR_DIR / "wml.xsd"
 
 XS = "http://www.w3.org/2001/XMLSchema"
 
@@ -359,6 +360,10 @@ def main(argv: list[str]) -> int:
     ap.add_argument("--verbose", action="store_true", help="print per-check summaries")
     args = ap.parse_args(argv)
 
+    if not SCHEMA_FILE.is_file():
+        print(f"error: {SCHEMA_FILE} not found - the grammar submodule is not checked out "
+              "(run: git submodule update --init)")
+        return 2
     problems = check_parity(verbose=args.verbose)
     if problems:
         print(f"Schema mirrors DIVERGE - {len(problems)} issue(s) between wml.schema.json and wml.xsd:")

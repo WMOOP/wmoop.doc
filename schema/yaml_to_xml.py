@@ -7,7 +7,7 @@ The YAML under ``model/**`` is the single source of truth (Invariant 1); the XML
 *generated projection*, exactly like the OWL/JSON-Schema/Protobuf projections in
 docs/03-architecture.md Sec 2.1. This script merges every ``*.wml.yaml`` file of a module
 into ONE ``<module>`` document and writes ``schema/examples/<module-id>.wml.xml``, with
-child elements in the order the XSD (``schema/wml.xsd``) requires. The output is
+child elements in the order the XSD (``external/wmoop.json/wml.xsd``) requires. The output is
 deterministic, so it doubles as a CI diff-guard.
 
 Usage:

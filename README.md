@@ -121,7 +121,7 @@ A runnable implementation of exactly this is in [`wmoop.net`](https://github.com
 | Repo | Role | Status |
 |------|------|--------|
 | [`wmoop.doc`](https://github.com/WMOOP/wmoop.doc) | **This repo.** Canonical WML model, all documentation and the validator (`schema/validate_wml.py`): the source of truth. | Active |
-| [`wmoop.json`](https://github.com/WMOOP/wmoop.json) | The canonical WML grammar: `wml.schema.json` (JSON Schema 2020-12) and `wml.xsd`. [`schema/`](schema/) here keeps synced mirrors. | Active |
+| [`wmoop.json`](https://github.com/WMOOP/wmoop.json) | The canonical WML grammar: `wml.schema.json` (JSON Schema 2020-12) and `wml.xsd`. Pinned here as the git submodule `external/wmoop.json`. | Active |
 | [`wmoop.tools`](https://github.com/WMOOP/wmoop.tools) | The toolchain: WML loader, C# and Python generators, conformance tests. | Early: generates from part of WML |
 | [`wmoop.net`](https://github.com/WMOOP/wmoop.net) | The C#/.NET binding and reference implementation. | Hand-written, not yet generated |
 | [`wmoop.py`](https://github.com/WMOOP/wmoop.py) | The Python binding, at parity with `wmoop.net`. | Hand-written, not yet generated |

@@ -7,11 +7,15 @@ name: WML validation
 on:
   push:
     paths:
+      - ".gitmodules"
+      - "external/**"
       - "model/**"
       - "schema/**"
       - ".github/workflows/wml-validate.yml"
   pull_request:
     paths:
+      - ".gitmodules"
+      - "external/**"
       - "model/**"
       - "schema/**"
       - ".github/workflows/wml-validate.yml"
@@ -22,6 +26,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: recursive # the grammar: external/wmoop.json
+          fetch-depth: 0 # full history, for the pin check below
 
       - uses: actions/setup-python@v5
         with:
@@ -39,5 +46,10 @@ jobs:
       - name: Check XML projections are up to date
         run: python schema/yaml_to_xml.py --check
 
-      - name: Check schema mirrors are in sync with WMOOP/wmoop.json
-        run: python schema/check_canonical.py
+      - name: The grammar pin is a commit on WMOOP/wmoop.json main
+        run: |
+          git -C external/wmoop.json fetch --quiet origin main
+          if ! git -C external/wmoop.json merge-base --is-ancestor HEAD FETCH_HEAD; then
+            echo "::error::external/wmoop.json pins a commit that is not on wmoop.json main"
+            exit 1
+          fi

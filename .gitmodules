@@ -1,0 +1,4 @@
+[submodule "json"]
+	path = external/wmoop.json
+	url = https://github.com/WMOOP/wmoop.json.git
+	branch = main
