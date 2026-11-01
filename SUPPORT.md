@@ -9,7 +9,7 @@ Thanks for your interest in WMOOP! Here is where to go, depending on what you ne
 | Report a bug in the model or tooling | Open an **issue** with the right template (see below) |
 | Propose a new concept, domain, or cross-domain role | Open an **issue** using the matching template, then read [CONTRIBUTING.md](CONTRIBUTING.md) |
 | Contribute as an AI agent | [AI_CONTRIBUTING.md](AI_CONTRIBUTING.md) |
-| Report a security/supply-chain problem | [SECURITY.md](SECURITY.md) (do **not** open a public issue) |
+| Report a security/supply-chain problem | [SECURITY.md](https://github.com/WMOOP/.github/blob/main/SECURITY.md) (do **not** open a public issue) |
 | Raise an ethics or neutrality concern | [ETHICS.md](ETHICS.md) |
 | Teach with WMOOP | The [academic program](docs/04-academic.md) |
 
@@ -27,4 +27,4 @@ best-effort basis. Clear, small, well-sourced contributions (see the Definition 
 
 ## Community standards
 
-All interactions are governed by our [Code of Conduct](CODE_OF_CONDUCT.md).
+All interactions are governed by our [Code of Conduct](https://github.com/WMOOP/.github/blob/main/CODE_OF_CONDUCT.md).

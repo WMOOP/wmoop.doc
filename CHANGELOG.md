@@ -114,6 +114,9 @@ the MAJOR version.
     `wmoop.json` (the canonical grammar), `wmoop.js` and `wmoop.db` were missing.
   - **Intro:** it no longer says the language bindings are generated today; they are hand-written
     references, and generating them from WML is the target architecture.
+- **`CODE_OF_CONDUCT.md` and `SECURITY.md` moved to [`WMOOP/.github`](https://github.com/WMOOP/.github)**,
+  the organisation's default community health files, so every WMOOP repository shows the same two
+  policies without a copy or a pointer file. Links in this repo now point there.
 
 ### Notes
 - This is **v0 (experimental)**. The WML format and tooling are not yet stable; see the
