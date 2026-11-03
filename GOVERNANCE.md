@@ -60,7 +60,7 @@ This governance is bound by eight **architectural invariants**. They are not up 
 | **Meta-schema (grammar)** | Canonical in the **`wmoop.json`** repo (`wml.schema.json` + the hand-maintained `wml.xsd`); `wmoop.doc` pins it as the git submodule `external/wmoop.json` and keeps no copies (see `schema/README.md`) |
 | **Compiled model artefact** | `wm-<ver>.json` (RFC 8785 JCS), published as a GitHub Release of `wmoop.doc` — distinct from the `wmoop.json` meta-schema repo. |
 | **Compiler / tooling home** | `wmoop.tools` (ships `wmoopc`, the generators, projectors, conformance runner) |
-| **Conformance-gated bindings (v1)** | `wmoop.net` (C#), `wmoop.java`, `wmoop.py`, `wmoop.cpp`, `wmoop.js` (TypeScript) |
+| **Conformance-gated bindings (v1)** | `wmoop.net` (C#), `wmoop.java`, `wmoop.py`, `wmoop.cpp`, `wmoop.js` (TypeScript). `wmoop.js` was added by [ADR 0003](governance/adr/0003-wmoop-js-conformance-gated.md), which awaits ratification. |
 | **Planned bindings (not yet conformance-gated)** | `wmoop.db` |
 | **License — code** | Apache-2.0 (chosen) |
 | **License — model & docs** | CC-BY-4.0 (chosen) |
