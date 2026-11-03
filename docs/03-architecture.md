@@ -378,8 +378,9 @@ Per-language realization of the gap:
 | **Java** | gap subclass | `MopedGen` (abstract base) | `Moped extends MopedGen` |
 | **C++** | gap subclass | `MopedGen` | `Moped : public MopedGen` |
 | **Python** | gap subclass | `MopedGen` | `Moped(MopedGen)` |
+| **TypeScript** | `extend()` + module augmentation | `Moped` in `wmoop/transport.ts` | `extend(Moped, { … })` + `declare module` in `src/ext/transport.ts` |
 
-The *public* type is always the stable name (`Moped`). In C# both halves are `Moped`; elsewhere the hand-written `Moped` is the public type and `MopedGen` is its generated base. For gap languages the generator emits the hand-written stub **once** if it is absent (`class Moped(MopedGen): pass`), then never touches it again.
+The *public* type is always the stable name (`Moped`). In C# both halves are `Moped`. In TypeScript the generated `Moped` is the public type too: `extend()` adds the hand-written members to its prototype, and module augmentation (`declare module`) declares their types. In the gap-subclass languages the hand-written `Moped` is the public type and `MopedGen` is its generated base. For gap languages the generator emits the hand-written stub **once** if it is absent (`class Moped(MopedGen): pass`), then never touches it again.
 
 ### 2.3 Safe regeneration
 
@@ -546,16 +547,17 @@ Error codes are part of the model (not per-language) so vectors are language-neu
 | **`wmoop.java`** | Java binding | same shape | Maven `org.wmoop:*` |
 | **`wmoop.py`** | Python binding | same shape | PyPI `wmoop-*` |
 | **`wmoop.cpp`** | C++ binding | same shape | vcpkg/Conan `wmoop-*` |
+| **`wmoop.js`** | TypeScript binding | same shape | nothing yet (its `package.json` is `private`) |
 | *(later)* `wmoop.web` | Ontology/metaverse explorer | reads `wm.json` | hosted site |
 
 ### 4.2 Identifier and namespace naming
 
-| Thing | Canonical (in WML) | C# | Java | Python | C++ |
-|---|---|---|---|---|---|
-| Module | `wmoop.transport` | `Wmoop.Transport` | `org.wmoop.transport` | `wmoop.transport` | `wmoop::transport` |
-| Concept | `wmoop.transport/Moped` | `Moped` | `Moped` | `Moped` | `Moped` |
-| Property | `…/Vehicle#wheelCount` | `WheelCount` | `getWheelCount()` | `wheel_count` | `wheelCount()` |
-| Enum value | `LicenceCategory.A2` | `A2` | `A2` | `A2` | `A2` |
+| Thing | Canonical (in WML) | C# | Java | Python | C++ | TypeScript |
+|---|---|---|---|---|---|---|
+| Module | `wmoop.transport` | `Wmoop.Transport` | `org.wmoop.transport` | `wmoop.transport` | `wmoop::transport` | `wmoop/transport` |
+| Concept | `wmoop.transport/Moped` | `Moped` | `Moped` | `Moped` | `Moped` | `Moped` |
+| Property | `…/Vehicle#wheelCount` | `WheelCount` | `getWheelCount()` | `wheel_count` | `wheelCount()` | `wheelCount` |
+| Enum value | `LicenceCategory.A2` | `A2` | `A2` | `A2` | `A2` | `A2` |
 
 Identifier shapes: module `wmoop.<domain>`; concept `wmoop.<domain>/<Concept>`; member `wmoop.<domain>/<Concept>#<member>`. The ID is immutable (S6); only the human name/casing is projected per language.
 

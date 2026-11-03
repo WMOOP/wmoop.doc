@@ -125,8 +125,16 @@ the MAJOR version.
 - **README:**
   - **Repository topology:** the table links all nine WMOOP repositories and has a status column.
     `wmoop.json` (the canonical grammar), `wmoop.js` and `wmoop.db` were missing.
-  - **Intro:** it no longer says the language bindings are generated today; they are hand-written
-    references, and generating them from WML is the target architecture.
+  - **Intro:** it names the bindings `wmoop.tools` generates today and links the conformance vectors
+    and the repository topology table.
+- **Binding status** (README, CONTRIBUTING, docs/03-architecture.md):
+  - `wmoop.net` and `wmoop.py` are generated from the model by `wmoop.tools`, with their behaviour
+    hand-written. The docs called them hand-written references.
+  - `wmoop.js` is the TypeScript binding, generated the same way. The docs called it planned. Its
+    behaviour is added with `extend()` and module augmentation.
+  - All three run the shared conformance vectors.
+  - The architecture spec has TypeScript in its generation-gap (§2.2), repository (§4.1) and
+    naming (§4.2) tables.
 - **`CODE_OF_CONDUCT.md` and `SECURITY.md` moved to [`WMOOP/.github`](https://github.com/WMOOP/.github)**,
   the organisation's default community health files, so every WMOOP repository shows the same two
   policies without a copy or a pointer file. Links in this repo now point there.
