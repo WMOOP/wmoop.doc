@@ -1,8 +1,6 @@
 id: conf.transport.driver.one-per-person
 category: role
 description: Driver has cardinality_per_player 0..1, so a Person cannot take a second Driver role.
-status: pending
-reason: The generated code does not enforce cardinality_per_player yet.
 given:
   - construct: { type: wmoop.nature/Person, with: { fullName: Ada }, bind: ada }
   - attach_role: { role: wmoop.transport/Driver, to: ada, with: { licenceNumber: RO-1, licenceCategories: [AM] } }

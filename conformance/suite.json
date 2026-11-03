@@ -762,8 +762,6 @@
       "id": "conf.transport.driver.one-per-person",
       "category": "role",
       "description": "Driver has cardinality_per_player 0..1, so a Person cannot take a second Driver role.",
-      "status": "pending",
-      "reason": "The generated code does not enforce cardinality_per_player yet.",
       "given": [
         {
           "construct": {
@@ -1208,8 +1206,6 @@
       "id": "conf.transport.vehicle.max-speed-unit",
       "category": "constraint",
       "description": "maxSpeed is a speed, so a value in kilograms is rejected.",
-      "status": "pending",
-      "reason": "The generated code does not check a quantity's unit against the property's QuantityKind yet.",
       "given": [
         {
           "construct": {
