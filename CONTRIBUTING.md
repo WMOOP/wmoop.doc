@@ -3,7 +3,7 @@
 > **WMOOP — World Map Object-Oriented Programming**
 > *Describe World into OOP. Map all World Objects into Programming Languages.*
 
-Welcome. WMOOP is a collaborative, open-source effort to model the real world — biology, mathematics, music, astronomy, geography, transport, language, and beyond — as a **single, language-neutral, object-oriented knowledge model** from which idiomatic code is generated into bindings — C#, Java, Python and C++ are conformance-gated; JavaScript and a database schema (`wmoop.db`) are planned. This guide tells you how to contribute so that your work is correct, reusable, and automatically verifiable.
+Welcome. WMOOP is a collaborative, open-source effort to model the real world — biology, mathematics, music, astronomy, geography, transport, language, and beyond — as a **single, language-neutral, object-oriented knowledge model** from which idiomatic code is generated into bindings — C#, Java, Python and C++ are conformance-gated, TypeScript (`wmoop.js`) is generated and runs the same conformance vectors, and a database schema (`wmoop.db`) is planned. This guide tells you how to contribute so that your work is correct, reusable, and automatically verifiable.
 
 If you only remember one sentence, remember this:
 
@@ -13,11 +13,11 @@ If you only remember one sentence, remember this:
 
 ## 1. The one rule, and why it exists
 
-The model is written **once**, declaratively, in a language-neutral form. Every per-language binding (`wmoop.net`, `wmoop.java`, `wmoop.py`, `wmoop.cpp` are conformance-gated today; `wmoop.js` and the database `wmoop.db` are planned) is **produced by a code generator** and verified against the canonical model by a **conformance test suite**. "Write once, replicate everywhere" is therefore *mechanical*, not manual.
+The model is written **once**, declaratively, in a language-neutral form. Every per-language binding (`wmoop.net`, `wmoop.java`, `wmoop.py`, `wmoop.cpp` are conformance-gated today; `wmoop.js`, in TypeScript, is generated too and runs the same conformance vectors; the database `wmoop.db` is planned) is **produced by a code generator** and verified against the canonical model by a **conformance test suite**. "Write once, replicate everywhere" is therefore *mechanical*, not manual.
 
 This is what lets:
 
-- a professor assign a student the **Geography** domain and have that student's work instantly become correct C#, Java, Python and C++ (JavaScript and SQL are planned);
+- a professor assign a student the **Geography** domain and have that student's work instantly become correct C#, Java, Python, C++ and TypeScript (SQL is planned);
 - an AI agent contribute safely, because its output is a small, slot-shaped, machine-checkable artifact rather than free-form code in five languages;
 - the project scale to "the whole world" without the conceptual model ever being duplicated or drifting between languages.
 
@@ -57,7 +57,8 @@ WMOOP is split across the `WMOOP` GitHub organization. Know which repo your chan
 | **`wmoop.json`** | **Canonical** home of the JSON-Schema **meta-schema** (the WML grammar); `wmoop.doc` pins it as the git submodule `external/wmoop.json` and never copies it. | Meta-schema: by proposal/ADR only. |
 | **`wmoop.tools`** | The `wmoopc` compiler, per-language generators, projectors, and the conformance runner. | Tooling PRs only; not model content. |
 | **`wmoop.net`** (C#), **`wmoop.java`**, **`wmoop.py`**, **`wmoop.cpp`** | **Generated**, conformance-gated idiomatic bindings + per-language conformance tests + the generator templates. | Model classes: **never**. Generator *templates* and runtime glue: yes, via their own PRs. |
-| **`wmoop.js`** (JavaScript), **`wmoop.db`** (database schema/migrations) | **Planned** — generated like the others, not yet conformance-gated. | Schema/classes: **never**. |
+| **`wmoop.js`** (TypeScript) | **Generated** idiomatic binding + the runner of the shared conformance vectors. Behaviour is added to the generated classes with `extend()` and module augmentation. | Model classes: **never**. Behaviour in `src/ext/` and runtime glue: yes, via their own PRs. |
+| **`wmoop.db`** (database schema/migrations) | **Planned** — generated like the others, not yet conformance-gated. | Schema/classes: **never**. |
 
 > The canonical **source** lives in `wmoop.doc/model/**`. The **machine contract** (the JSON-Schema meta-schema) is **canonical in the `wmoop.json` repo**, which `wmoop.doc` pins as the git submodule `external/wmoop.json` (clone with `--recurse-submodules`); the **compiled model** is published as `wm-<ver>.json` (a Release of `wmoop.doc`). See the [Normative constants](GOVERNANCE.md) table for the authoritative repo/artefact list.
 >
@@ -515,7 +516,7 @@ Full rules live in [`ETHICS.md`](./ETHICS.md) and [`CODE_OF_CONDUCT.md`](https:/
 
 ## 13. For educators
 
-WMOOP is designed for the classroom (e.g. an OOP course). A professor can assign a domain or sub-tree (relief landforms, administrative divisions: countries → regions → cities) and students contribute real, machine-verified modeling. The green/red validator gives students an objective, immediate Definition of Done, and their single model edit becomes correct C#, Java, Python and C++ automatically (JavaScript and SQL are planned). See [`docs/educators.md`](./docs/educators.md) for a syllabus kit and example assignments.
+WMOOP is designed for the classroom (e.g. an OOP course). A professor can assign a domain or sub-tree (relief landforms, administrative divisions: countries → regions → cities) and students contribute real, machine-verified modeling. The green/red validator gives students an objective, immediate Definition of Done, and their single model edit becomes correct C#, Java, Python, C++ and TypeScript automatically (SQL is planned). See [`docs/educators.md`](./docs/educators.md) for a syllabus kit and example assignments.
 
 ---
 
