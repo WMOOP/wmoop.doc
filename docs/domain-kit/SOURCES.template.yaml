@@ -1,0 +1,33 @@
+# Source register for wmoop.<id> — copy to docs/domains/<id>/SOURCES.yaml.
+#
+# One entry per work the domain cites (ETHICS.md §2.2 and §4). The `provenance` entries in the WML
+# cite the same works by their `source`/`title`, so a reviewer can check each claim against this list.
+#
+#   key      stable local key, kebab-case (author-year or institution-topic)
+#   tier     A = peer-reviewed scholarship, standards, primary legal texts
+#            B = edited reference works, official statistics
+#            C = community references (identifiers and corroboration only)
+#   kind     book | article | encyclopedia | standard | statute | dataset | primary-text | report
+#   licence  the licence of the work or of what we reuse from it (facts are not copyrightable;
+#            wording is). "n/a (cited, not reused)" when we only cite it.
+#   used_for what the domain relies on it for — one line.
+#
+# Rules: a URL gets `retrieved` only if you opened it on that date; a book gets an ISBN; an article a DOI.
+
+sources:
+  - key: <author-year>
+    tier: A
+    kind: book
+    citation: "<Author, A. (Year). Title. Publisher.>"
+    isbn: "<978-…>"
+    licence: "n/a (cited, not reused)"
+    used_for: "<…>"
+
+  - key: <institution-topic>
+    tier: B
+    kind: dataset
+    citation: "<Institution (Year). Title.>"
+    url: "<https://…>"
+    retrieved: <YYYY-MM-DD>
+    licence: "<CC BY 4.0 | public domain | …>"
+    used_for: "<…>"

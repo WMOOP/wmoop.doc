@@ -70,7 +70,7 @@ generate the same way once the pipeline runs over them.
    every noun/attribute to an L0 stereotype (is-a vs part-of vs role vs quality vs category).
 2. **Fill the brief.** Complete the one-page *domain brief* in
    [`../docs/07-expansion-roadmap.md`](../docs/07-expansion-roadmap.md) §6 (or the
-   [`new-domain` issue template](../.github/ISSUE_TEMPLATE/new-domain.md)).
+   [`new-domain` issue template](../.github/ISSUE_TEMPLATE/new-domain.yml)).
 3. **Copy the skeleton.** Start from [`_template/DOMAIN_TEMPLATE.wml.yaml`](_template/DOMAIN_TEMPLATE.wml.yaml)
    into `model/<id>/<id>.wml.yaml`; keep the first PR to **≤ 5 nodes**.
 4. **Source everything.** Every concept, role, enum **and property** gets its own `definition` +

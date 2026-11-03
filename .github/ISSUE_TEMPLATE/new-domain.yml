@@ -1,0 +1,156 @@
+name: New domain
+description: Propose a whole new domain or sub-domain (e.g. for the "Adopt a Domain" program)
+title: "[domain] <Name>"
+labels: ["domain", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for proposing a domain. Read [Contributing a Domain](https://github.com/WMOOP/wmoop.doc/blob/main/docs/08-contributing-a-domain.md)
+        first; it explains each field below and links a complete worked example (`wmoop.religion`).
+        Keep this issue short: the design detail belongs in the whitepaper, which you link once it exists.
+
+  - type: input
+    id: module
+    attributes:
+      label: Module id
+      description: "`wmoop.<domain>[.<subdomain>]`, lowercase. A maintainer reserves the prefix in `model/taxonomy.yaml`."
+      placeholder: wmoop.religion
+    validations:
+      required: true
+
+  - type: dropdown
+    id: cluster
+    attributes:
+      label: Cluster
+      options:
+        - foundation
+        - formal
+        - natural
+        - place
+        - society
+        - culture
+        - technology
+        - health
+    validations:
+      required: true
+
+  - type: textarea
+    id: abstract
+    attributes:
+      label: Abstract
+      description: "150–250 words: context → problem → approach → result → limits. The same text as `docs/domains/<id>/ABSTRACT.md`."
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: What the domain covers, what it does not cover, and which neighbouring domains it borders.
+      value: |
+        **In scope:**
+        -
+
+        **Out of scope (and where it belongs instead):**
+        -
+
+        **Neighbouring domains:**
+        -
+    validations:
+      required: true
+
+  - type: input
+    id: depends-on
+    attributes:
+      label: Depends on
+      description: Modules referenced by id. They must be seeded, and the graph must stay acyclic (Invariant 5).
+      placeholder: "wmoop.core ^1.0.0, wmoop.org ^0.1.0"
+    validations:
+      required: true
+
+  - type: textarea
+    id: seed-concepts
+    attributes:
+      label: Seed concepts
+      description: "At most five for the first PR. For each: name, L0 stereotype (Kind / Subkind / Role / Category / …), own-words definition, and the relation it uses (extends / role / part-of / scheme / property)."
+      value: |
+        | Name | Stereotype | Definition | Relation |
+        |------|------------|------------|----------|
+        |      |            |            |          |
+    validations:
+      required: true
+
+  - type: textarea
+    id: contested
+    attributes:
+      label: Contested classifications and uncertainty
+      description: What do sources disagree about, and how will the model hold every sourced view (schemes, attributed claims) without picking a winner?
+    validations:
+      required: true
+
+  - type: textarea
+    id: sources
+    attributes:
+      label: Sources
+      description: "By tier (ETHICS.md §2.2). Each with ISBN, DOI or URL and a locator."
+      value: |
+        **Tier A:**
+        -
+
+        **Tier B:**
+        -
+
+        **Tier C (identifiers / corroboration only):**
+        -
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: ethics
+    attributes:
+      label: Sensitive-domain checklist (ETHICS.md §3)
+      description: Tick every line that you have checked. Explain any line you cannot tick under Notes.
+      options:
+        - label: Beliefs, doctrines and contested histories are attributed to their holders, never asserted as fact.
+        - label: No property or role classifies persons by a protected attribute (religion, ethnicity, sexual orientation, health, …).
+        - label: No private living person appears as an individual.
+        - label: Disputed places and statuses are not reduced to one point of view.
+        - label: Nothing is phrased as medical, legal or financial advice.
+        - label: Images, symbols and texts are reused only under a licence that allows it.
+
+  - type: textarea
+    id: plan
+    attributes:
+      label: PR plan
+      description: The sequence of pull requests, each one concern and at most five nodes.
+      value: |
+        1. PR 1 — module header, identity root, taxonomy entry
+        2.
+    validations:
+      required: true
+
+  - type: textarea
+    id: stewardship
+    attributes:
+      label: Stewardship
+      description: Who will review this domain's PRs ("Adopt a Domain", docs/04-academic.md §7)? An individual, a class or cohort, or a team, with affiliation.
+    validations:
+      required: true
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes and open questions
+      description: Decisions you need from stewards or maintainers, each with the options you see.
+
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Before you submit
+      options:
+        - label: I have read CONTRIBUTING.md, ETHICS.md and docs/08-contributing-a-domain.md.
+          required: true
+        - label: I searched the issues and model/taxonomy.yaml for an existing or candidate domain that covers this.
+          required: true
+        - label: If AI assisted this proposal, I followed AI_CONTRIBUTING.md and verified every source myself.

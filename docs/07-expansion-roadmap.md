@@ -175,7 +175,7 @@ Each wave only ever **adds**; nothing above re-opens a module below it.
 ## 6. The domain brief (make any domain tractable)
 
 Before authoring a domain, a steward fills this one-page brief in the "new domain" issue
-([`.github/ISSUE_TEMPLATE/new-domain.md`](../.github/ISSUE_TEMPLATE/new-domain.md)). It turns an
+([`.github/ISSUE_TEMPLATE/new-domain.yml`](../.github/ISSUE_TEMPLATE/new-domain.yml)). It turns an
 intimidating subject into a small, reviewable first PR.
 
 ```
