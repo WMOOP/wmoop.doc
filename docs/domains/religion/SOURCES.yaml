@@ -1,0 +1,173 @@
+# Source register for wmoop.religion (template: docs/domain-kit/SOURCES.template.yaml).
+#
+# Every `provenance` entry in model/religion/religion.wml.yaml cites one of these works.
+# Tiers per ETHICS.md §2.2. A URL carries `retrieved` only where it was opened on that date.
+
+sources:
+  # --- Tier A: scholarship, primary legal and religious texts ---------------
+  - key: smart-1996
+    tier: A
+    kind: book
+    citation: "Smart, N. (1996). Dimensions of the Sacred: An Anatomy of the World's Beliefs. Berkeley: University of California Press."
+    isbn: "978-0-520-20777-6"
+    licence: "n/a (cited, not reused)"
+    used_for: "The seven dimensions behind the properties of ReligiousTradition; the working definition of a tradition."
+
+  - key: masuzawa-2005
+    tier: A
+    kind: book
+    citation: "Masuzawa, T. (2005). The Invention of World Religions, or, How European Universalism Was Preserved in the Language of Pluralism. Chicago: University of Chicago Press."
+    isbn: "978-0-226-50988-4"
+    licence: "n/a (cited, not reused)"
+    used_for: "The critique of the world-religions paradigm; why ReligiousFamilies is common usage, not consensus."
+
+  - key: harvey-2000
+    tier: A
+    kind: book
+    citation: "Harvey, P. (2000). An Introduction to Buddhist Ethics: Foundations, Values and Issues. Cambridge: Cambridge University Press."
+    isbn: "978-0-521-55394-0"
+    licence: "n/a (cited, not reused)"
+    used_for: "The Five Precepts and their Pali formulas; the sublime attitudes mettā and karuṇā."
+
+  - key: smith-2002
+    tier: A
+    kind: book
+    citation: "Smith, M. S. (2002). The Early History of God: Yahweh and the Other Deities in Ancient Israel, 2nd ed. Grand Rapids: Eerdmans."
+    licence: "n/a (cited, not reused)"
+    used_for: "The historical monolatry claim on Judaism (Israelite religion before the exile)."
+
+  - key: ro-law-489-2006
+    tier: A
+    kind: statute
+    citation: "Legea nr. 489/2006 privind libertatea religioasă și regimul general al cultelor. Monitorul Oficial al României."
+    url: "https://legislatie.just.ro/Public/DetaliiDocument/156588"
+    licence: "public domain (official legal text, Romanian Law no. 8/1996 art. 9)"
+    used_for: "The RomanianLegalStatus scheme; art. 49(1) and the annex list the 18 denominations recognised when the law came into force."
+
+  - key: ro-hg-741-2024
+    tier: A
+    kind: statute
+    citation: "Hotărârea Guvernului nr. 741/2024 (28 June 2024), recognising the Assemblies of God in Romania (Adunările lui Dumnezeu din România) as a religious denomination."
+    licence: "public domain (official legal text, Romanian Law no. 8/1996 art. 9)"
+    used_for: "The dated legal-status claim on AssembliesOfGodRomania, the nineteenth recognised denomination."
+
+  - key: modoran-2007
+    tier: A
+    kind: article
+    citation: "Modoran, G. (2007). Confesiunile neoprotestante din România în perioada regimului comunist: 1945–1965. Studia Politica. Romanian Political Science Review 7(3), 655–673."
+    url: "https://www.ceeol.com/search/article-detail?id=144861"
+    licence: "n/a (cited, not reused)"
+    used_for: "The neo-Protestant grouping (Adventists, Baptists, Christians according to the Gospel, Pentecostals) in RomanianConfessionalGroups."
+
+  - key: acta-marisiensis-2022
+    tier: A
+    kind: article
+    citation: "Modern Religious Movements on Romanian Territory: Can Evangelical Cults in Romania Historically be Seen as Neo-Protestant? Acta Marisiensis. Seria Historia 4(1), 27–43 (2022)."
+    doi: "10.2478/amsh-2022-0019"
+    licence: "CC BY-NC-ND 4.0 (cited, not reused)"
+    used_for: "That the name 'neo-Protestant' is debated in Romanian scholarship, 'evangelical' being increasingly preferred."
+
+  - key: nostra-aetate-1965
+    tier: A
+    kind: primary-text
+    citation: "Second Vatican Council (1965). Nostra aetate: Declaration on the Relation of the Church to Non-Christian Religions, §3."
+    url: "https://www.vatican.va/archive/hist_councils/ii_vatican_council/documents/vat-ii_decl_19651028_nostra-aetate_en.html"
+    licence: "n/a (cited, not reused)"
+    used_for: "One position, cited as a position, on whether Muslims and Christians worship the same God (Allah individual)."
+
+  - key: iso-8601-2-2019
+    tier: A
+    kind: standard
+    citation: "ISO 8601-2:2019. Date and time — Representations for information interchange — Part 2: Extensions. Geneva: ISO."
+    licence: "n/a (cited, not reused)"
+    used_for: "Year zero and negative years: the HistoricalYear datatype."
+
+  - key: unicode
+    tier: A
+    kind: standard
+    citation: "The Unicode Consortium. The Unicode Standard (Appendix A, Notational Conventions) and the Unicode Character Database (UnicodeData.txt)."
+    url: "https://www.unicode.org/Public/UCD/latest/ucd/UnicodeData.txt"
+    licence: "Unicode License v3 (data reused: code points and character names)"
+    used_for: "Code points and character names of the religious symbols; the U+ notation of UnicodeCodePoint."
+
+  - key: bcp-47
+    tier: A
+    kind: standard
+    citation: "IETF BCP 47 (RFC 5646 and RFC 4647). Tags for Identifying Languages."
+    url: "https://www.rfc-editor.org/info/bcp47"
+    licence: "n/a (cited, not reused)"
+    used_for: "Language tags of labels and of SacredText#originalLanguages."
+
+  # --- Tier B: edited reference works, official statistics ------------------
+  - key: britannica
+    tier: B
+    kind: encyclopedia
+    citation: "Encyclopaedia Britannica (online edition), entries as cited per node (e.g. 'Hinduism', 'Baptist', 'classification of religions')."
+    url: "https://www.britannica.com/"
+    licence: "n/a (cited, not reused)"
+    used_for: "Per-tradition facts (emergence, region, branches, texts, figures); the theism typology terms."
+
+  - key: jones-2005
+    tier: B
+    kind: encyclopedia
+    citation: "Jones, L. (ed.) (2005). Encyclopedia of Religion, 2nd ed., 15 vols. Detroit: Macmillan Reference USA."
+    isbn: "978-0-02-865733-2"
+    licence: "n/a (cited, not reused)"
+    used_for: "Corroboration of per-tradition facts; the scholarly definitions of the typology terms."
+
+  - key: sep
+    tier: B
+    kind: encyclopedia
+    citation: "Zalta, E. N. and Nodelman, U. (eds.). Stanford Encyclopedia of Philosophy, entries 'Pantheism', 'Panentheism', 'Deontic Logic'."
+    url: "https://plato.stanford.edu/"
+    licence: "n/a (cited, not reused)"
+    used_for: "Pantheism and panentheism in TheismTypology; the deontic categories behind PreceptPolarity."
+
+  - key: ssc-denominations
+    tier: B
+    kind: dataset
+    citation: "Secretariatul de Stat pentru Culte (State Secretariat for Religious Affairs). List of the recognised religious denominations in Romania."
+    url: "https://culte.gov.ro/culte-religioase/"
+    licence: "n/a (cited, not reused)"
+    used_for: "Current names of the recognised denominations and the count of 19; the asOf date of the legal-status claims."
+
+  - key: ins-census-2021
+    tier: B
+    kind: dataset
+    citation: "Institutul Național de Statistică (2023, 30 June). Recensământul Populației și Locuințelor 2021, definitive results, table 2.4.1: stable population by religion."
+    url: "https://www.recensamantromania.ro/wp-content/uploads/2023/06/Tabel-2.04.1-si-Tabel-2.04.2.xlsx"
+    licence: "n/a (cited, not reused)"
+    used_for: "Romanian context in the whitepaper (§4); that the census has no neo-Protestant subtotal."
+
+  - key: basilica-2025
+    tier: B
+    kind: report
+    citation: "Basilica.ro, news agency of the Romanian Patriarchate. Synodal act on 140 years of autocephaly and the centenary of the Romanian Patriarchate."
+    url: "https://basilica.ro/en/synodal-act-of-the-romanian-orthodox-church-140-years-of-autocephaly-and-the-centennial-of-the-romanian-patriarchate-en-gr/"
+    licence: "n/a (cited, not reused)"
+    used_for: "Dates of autocephaly (1885) and of the patriarchate (1925) on RomanianOrthodoxChurch."
+
+  - key: lds-church-history
+    tier: B
+    kind: primary-text
+    citation: "The Church of Jesus Christ of Latter-day Saints. Church History in the Fulness of Times, chapter 6."
+    url: "https://www.churchofjesuschrist.org/study/manual/church-history-in-the-fulness-of-times/chapter-six"
+    licence: "n/a (cited, not reused)"
+    used_for: "The church's own account of its organization on 6 April 1830 at Fayette, New York."
+
+  - key: pew-2025
+    tier: B
+    kind: report
+    citation: "Pew Research Center (2025, 9 June). How the Global Religious Landscape Changed From 2010 to 2020. Washington, DC: Pew Research Center."
+    url: "https://www.pewresearch.org/religion/2025/06/09/how-the-global-religious-landscape-changed-from-2010-to-2020/"
+    licence: "n/a (cited, not reused)"
+    used_for: "Scope check of which traditions are seeded; the later religion.demographics sub-domain."
+
+  # --- Tier C: identifiers and corroboration only ---------------------------
+  - key: wikidata
+    tier: C
+    kind: dataset
+    citation: "Wikidata, item identifiers."
+    url: "https://www.wikidata.org/"
+    licence: "CC0 1.0 (identifiers reused)"
+    used_for: "The wikidataId cross-references; never the only support for a fact."
