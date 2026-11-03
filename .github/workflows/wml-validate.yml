@@ -76,13 +76,13 @@ jobs:
           app-id: ${{ secrets.WMOOP_BOT_APP_ID }}
           private-key: ${{ secrets.WMOOP_BOT_PRIVATE_KEY }}
           owner: WMOOP
-          repositories: wmoop.net,wmoop.py
+          repositories: wmoop.net,wmoop.py,wmoop.js
       - name: Send wmoop-upstream-updated to every binding
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
           SOURCE: ${{ github.repository }}
           SHA: ${{ github.sha }}
         run: |
-          for repo in wmoop.net wmoop.py; do
+          for repo in wmoop.net wmoop.py wmoop.js; do
             gh api "repos/WMOOP/$repo/dispatches" -f event_type=wmoop-upstream-updated -f "client_payload[source]=$SOURCE" -f "client_payload[sha]=$SHA"
           done
