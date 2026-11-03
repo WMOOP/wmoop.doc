@@ -44,7 +44,6 @@ So `wmoop.js` already met every condition the gated bindings meet. Only the tabl
     - deprecation annotations (GOVERNANCE.md §6.4);
     - extension points ([`docs/02-meta-model.md`](../../docs/02-meta-model.md) §9);
     - the member names in [`docs/03-architecture.md`](../../docs/03-architecture.md) §3.4–§3.5.
-  - The pattern helpers of `wmoop.py` (`wmoop/patterns.py`) have no TypeScript port yet.
 
 ## Alternatives considered
 
