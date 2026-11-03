@@ -1,0 +1,1941 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- GENERATED from model/**/*.wml.yaml by schema/yaml_to_xml.py - DO NOT EDIT.
+     The YAML is the single source of truth; regenerate with:
+       python schema/yaml_to_xml.py -->
+<module xmlns="https://wmoop.org/wml/1" id="wmoop.religion" version="0.1.0" title="Religion">
+  <dependsOn module="wmoop.core" version="^1.0.0" />
+  <dependsOn module="wmoop.nature" version="^0.7.0" />
+  <dependsOn module="wmoop.org" version="^0.1.0" />
+  <datatypes>
+    <datatype id="wmoop.religion/HistoricalYear" name="HistoricalYear" base="integer">
+      <definition>A calendar year in astronomical numbering, in which 1 CE is 1, 1 BCE is 0 and 2 BCE is -1, so that years before the common era are ordinary integers.</definition>
+      <provenance source="ISO 8601-2:2019, Date and time - Representations for information interchange - Part 2: Extensions" kind="sourced" note="Year zero and negative (expanded) years, by agreement between the communicating parties. The proleptic Gregorian calendar is assumed; an approximate year carries its uncertainty in the paired human-readable period." />
+    </datatype>
+    <datatype id="wmoop.religion/UnicodeCodePoint" name="UnicodeCodePoint" base="string">
+      <definition>A Unicode code point written in the standard U+ notation with four to six uppercase hexadecimal digits.</definition>
+      <constraints pattern="^U\+[0-9A-F]{4,6}$" />
+      <provenance source="The Unicode Standard" kind="sourced" ref="Appendix A, Notational Conventions (code points as U+ followed by 4-6 hex digits)" />
+    </datatype>
+    <datatype id="wmoop.religion/WikidataId" name="WikidataId" base="string">
+      <definition>The identifier of a Wikidata item, the letter Q followed by a positive integer.</definition>
+      <constraints pattern="^Q[1-9][0-9]*$" />
+      <provenance source="Wikidata" kind="sourced" ref="Help:Items (item identifiers)" note="A Tier C cross-reference for interoperability (ETHICS.md §2.2); it never supports a fact on its own." url="https://www.wikidata.org/wiki/Help:Items" />
+    </datatype>
+  </datatypes>
+  <enumerations>
+    <enumeration id="wmoop.religion/TraditionVitality" name="TraditionVitality">
+      <definition>Whether a tradition is practised today by a continuing community, is known only historically, or is a modern revival.</definition>
+      <provenance source="Original WMOOP definition" kind="definitional" note="A revival is recorded as its own tradition that emergedFrom the historical one; the historical tradition stays HISTORICAL." />
+      <value id="LIVING">
+        <definition>Practised today by a community that continues it without a break.</definition>
+      </value>
+      <value id="HISTORICAL">
+        <definition>No longer practised as a continuous tradition; known from historical and archaeological sources.</definition>
+      </value>
+      <value id="REVIVED">
+        <definition>A modern reconstruction or revival of a historical tradition.</definition>
+      </value>
+    </enumeration>
+    <enumeration id="wmoop.religion/Historicity" name="Historicity">
+      <definition>What historical scholarship concludes about whether a figure presented by a tradition existed as a historical person.</definition>
+      <provenance source="Original WMOOP definition" kind="definitional" note="The scale records the state of scholarship, not the tradition's belief. Each figure's value is sourced on the individual." />
+      <value id="HISTORICAL_CONSENSUS">
+        <definition>Historians broadly agree that the person existed, whatever they conclude about the traditions told of them.</definition>
+      </value>
+      <value id="DEBATED">
+        <definition>Historians disagree whether, or in what form, the person existed.</definition>
+      </value>
+      <value id="TRADITION_ONLY">
+        <definition>Known only from the tradition's own texts; historical method cannot assess the figure's existence.</definition>
+      </value>
+    </enumeration>
+    <enumeration id="wmoop.religion/PreceptPolarity" name="PreceptPolarity">
+      <definition>Whether a precept obliges, recommends, discourages or prohibits the action it concerns.</definition>
+      <provenance source="Stanford Encyclopedia of Philosophy" kind="sourced" ref="entry 'Deontic Logic' (obligatory, permissible, forbidden)" note="A four-step scale between obligation and prohibition. Traditions have finer scales of their own, such as the five categories (al-ahkam al-khamsa) of Islamic jurisprudence; those belong to a later sub-domain." />
+      <value id="OBLIGATION">
+        <definition>The tradition holds the action to be required.</definition>
+      </value>
+      <value id="RECOMMENDATION">
+        <definition>The tradition holds the action to be commendable but not required.</definition>
+      </value>
+      <value id="DISCOURAGEMENT">
+        <definition>The tradition holds the action to be blameworthy but not forbidden.</definition>
+      </value>
+      <value id="PROHIBITION">
+        <definition>The tradition holds the action to be forbidden.</definition>
+      </value>
+    </enumeration>
+  </enumerations>
+  <concepts>
+    <concept id="wmoop.religion/BeliefSystem" name="BeliefSystem" kind="abstract">
+      <definition>A coherent body of beliefs, values and practices about what is ultimately real, meaningful or valuable, shared by a community and passed on over time.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Sistem de credințe</label>
+        </group>
+      </labels>
+      <provenance source="ETHICS.md §3.3 (belief systems as a first-class concept)" kind="definitional" note="The identity root (L0 Kind) for religions here and, later, for philosophies and ideologies; a candidate to move to a shared module by issue, never unilaterally." />
+    </concept>
+    <concept id="wmoop.religion/ReligiousTradition" name="ReligiousTradition" kind="concrete" extends="wmoop.religion/BeliefSystem">
+      <definition>A belief system that a community passes on as a lineage of teachings, practices, narratives and institutions oriented to what it holds sacred or ultimate. A branch of a larger tradition is itself a tradition.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Tradiție religioasă</label>
+        </group>
+        <group kind="alt">
+          <label lang="en">Religion</label>
+          <label lang="ro">Religie</label>
+        </group>
+      </labels>
+      <provenance source="Smart, N. (1996). Dimensions of the Sacred: An Anatomy of the World's Beliefs. University of California Press." kind="sourced" note="Smart's seven dimensions (doctrinal, narrative, ethical, ritual, experiential, social, material) are the checklist behind the properties below. Defining 'religion' is itself contested; this is a working definition, not a verdict." />
+      <property id="wmoop.religion/ReligiousTradition#wikidataId" name="wikidataId" type="wmoop.religion/WikidataId" cardinality="0..1">
+        <definition>The Wikidata item that describes the same tradition.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" />
+      </property>
+      <property id="wmoop.religion/ReligiousTradition#vitality" name="vitality" type="wmoop.religion/TraditionVitality" cardinality="1">
+        <definition>Whether the tradition is living, historical or revived.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" />
+      </property>
+      <property id="wmoop.religion/ReligiousTradition#emergencePeriod" name="emergencePeriod" type="string" cardinality="0..1">
+        <definition>When the tradition emerged as a distinct tradition, in words that keep the uncertainty, for example 'c. 6th-5th century BCE'.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" note="'Emergence' rather than 'founding': most traditions took shape over a period, and several deny having a beginning in time." />
+      </property>
+      <property id="wmoop.religion/ReligiousTradition#emergenceStartYear" name="emergenceStartYear" type="wmoop.religion/HistoricalYear" cardinality="0..1">
+        <definition>The earliest year of the emergence period, for sorting and querying.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" />
+      </property>
+      <property id="wmoop.religion/ReligiousTradition#emergenceEndYear" name="emergenceEndYear" type="wmoop.religion/HistoricalYear" cardinality="0..1">
+        <definition>The latest year of the emergence period, for sorting and querying.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" />
+      </property>
+      <property id="wmoop.religion/ReligiousTradition#originRegion" name="originRegion" type="string" cardinality="0..1">
+        <definition>The region where the tradition emerged, named as it was at the time.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" note="A historical region name, not a modern state: mapping ancient regions to present-day states can take a side in a dispute (ETHICS.md §3.2)." />
+      </property>
+      <property id="wmoop.religion/ReligiousTradition#parentTradition" name="parentTradition" type="wmoop.religion/ReligiousTradition" cardinality="0..1">
+        <definition>The larger tradition of which this tradition is a branch. A part-whole link between traditions, not inheritance between classes.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" note="A property, not a part_of relation, because L2 individuals carry property values only. Where a placement is contested the individual's notes say so, and rival groupings are scheme claims." />
+      </property>
+      <property id="wmoop.religion/ReligiousTradition#emergedFrom" name="emergedFrom" type="wmoop.religion/ReligiousTradition" cardinality="0..*">
+        <definition>Traditions this tradition historically arose from, without being a branch of them.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" />
+      </property>
+      <property id="wmoop.religion/ReligiousTradition#founders" name="founders" type="wmoop.religion/ReligiousFigure" cardinality="0..*">
+        <definition>The figures regarded as the tradition's founders, as attributed in the individual's provenance. Empty does not mean that the tradition has none.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" note="Founding is an attribution: a tradition may see a figure as a restorer or a messenger rather than a founder, and historians may weigh the roles differently." />
+      </property>
+      <property id="wmoop.religion/ReligiousTradition#principalDeities" name="principalDeities" type="wmoop.religion/Deity" cardinality="0..*">
+        <definition>The divine beings at the centre of the tradition's worship, as the tradition conceives them.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" />
+      </property>
+      <property id="wmoop.religion/ReligiousTradition#doctrines" name="doctrines" type="wmoop.religion/Doctrine" cardinality="0..*">
+        <definition>Central doctrines the tradition teaches.</definition>
+        <provenance source="Smart (1996), doctrinal and philosophical dimension" kind="sourced" />
+      </property>
+      <property id="wmoop.religion/ReligiousTradition#ethicalValues" name="ethicalValues" type="wmoop.religion/EthicalValue" cardinality="0..*">
+        <definition>Central qualities of character the tradition teaches as good.</definition>
+        <provenance source="Smart (1996), ethical and legal dimension" kind="sourced" />
+      </property>
+      <property id="wmoop.religion/ReligiousTradition#preceptSets" name="preceptSets" type="wmoop.religion/PreceptSet" cardinality="0..*">
+        <definition>Named sets of precepts (commandments, pillars, vows) the tradition transmits.</definition>
+        <provenance source="Smart (1996), ethical and legal dimension" kind="sourced" />
+      </property>
+      <property id="wmoop.religion/ReligiousTradition#sacredTexts" name="sacredTexts" type="wmoop.religion/SacredText" cardinality="0..*">
+        <definition>Texts the tradition holds as scripture or as authoritative.</definition>
+        <provenance source="Smart (1996), narrative and doctrinal dimensions" kind="sourced" />
+      </property>
+      <property id="wmoop.religion/ReligiousTradition#symbols" name="symbols" type="wmoop.religion/ReligiousSymbol" cardinality="0..*">
+        <definition>Visual signs widely used to represent the tradition.</definition>
+        <provenance source="Smart (1996), material dimension" kind="sourced" />
+      </property>
+    </concept>
+    <concept id="wmoop.religion/Deity" name="Deity" kind="concrete">
+      <definition>A god, goddess or other divine being as conceived within one or more traditions. An individual records a conception; it asserts neither that the being exists nor that conceptions in different traditions coincide.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Divinitate</label>
+        </group>
+      </labels>
+      <provenance source="ETHICS.md §3.3 (belief modelled as belief, with attribution)" kind="definitional" note="An L0 Abstract: the conception. The names a tradition uses for the deity are its labels, in each language and script." />
+      <property id="wmoop.religion/Deity#wikidataId" name="wikidataId" type="wmoop.religion/WikidataId" cardinality="0..1">
+        <definition>The Wikidata item that describes the same conception.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" />
+      </property>
+    </concept>
+    <concept id="wmoop.religion/ReligiousFigure" name="ReligiousFigure" kind="concrete">
+      <definition>A person or figure who holds a significant place in a tradition's teaching or history, such as a founder, prophet, teacher or reformer, as the tradition presents them.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Personalitate religioasă</label>
+        </group>
+      </labels>
+      <provenance source="Original WMOOP definition" kind="definitional" note="Not wmoop.nature/Person: a figure is described as a tradition presents them, and its historicity is stated rather than assumed. A future, sourced link may identify a figure with a historical Person." />
+      <property id="wmoop.religion/ReligiousFigure#historicity" name="historicity" type="wmoop.religion/Historicity" cardinality="1">
+        <definition>What historical scholarship concludes about the figure's existence.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" />
+      </property>
+      <property id="wmoop.religion/ReligiousFigure#lifetime" name="lifetime" type="string" cardinality="0..1">
+        <definition>The figure's lifetime in words that keep the uncertainty, for example 'c. 563-483 BCE (dates debated)'.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" />
+      </property>
+      <property id="wmoop.religion/ReligiousFigure#wikidataId" name="wikidataId" type="wmoop.religion/WikidataId" cardinality="0..1">
+        <definition>The Wikidata item that describes the same figure.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" />
+      </property>
+    </concept>
+    <concept id="wmoop.religion/Teaching" name="Teaching" kind="abstract">
+      <definition>A belief, value or rule that a tradition teaches, recorded as that tradition's teaching and not as a claim of WMOOP.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Învățătură</label>
+        </group>
+      </labels>
+      <provenance source="ETHICS.md §3.3 (tenets attributed to the tradition)" kind="definitional" />
+      <property id="wmoop.religion/Teaching#originalTerm" name="originalTerm" type="string" cardinality="0..1">
+        <definition>The tradition's own term for the teaching, romanized, for example 'tawhid' or 'anatta'.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" note="Romanization per the whitepaper (IAST for Sanskrit and Pali, ALA-LC for Arabic and Hebrew); native-script forms go in labels." />
+      </property>
+    </concept>
+    <concept id="wmoop.religion/Doctrine" name="Doctrine" kind="concrete" extends="wmoop.religion/Teaching">
+      <definition>A teaching about what is real or true - the divine, the world, the human condition or its final goal - as a tradition holds it.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Doctrină</label>
+        </group>
+        <group kind="alt">
+          <label lang="ro">Dogmă</label>
+        </group>
+      </labels>
+      <provenance source="Smart (1996), doctrinal and philosophical dimension" kind="sourced" />
+    </concept>
+    <concept id="wmoop.religion/EthicalValue" name="EthicalValue" kind="concrete" extends="wmoop.religion/Teaching">
+      <definition>A teaching that names a disposition or quality of character that a tradition holds to be good.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Valoare morală</label>
+        </group>
+      </labels>
+      <provenance source="Smart (1996), ethical and legal dimension" kind="sourced" />
+    </concept>
+    <concept id="wmoop.religion/Precept" name="Precept" kind="concrete" extends="wmoop.religion/Teaching">
+      <definition>A teaching that obliges, recommends, discourages or prohibits a kind of action.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Poruncă</label>
+        </group>
+        <group kind="alt">
+          <label lang="ro">Precept</label>
+        </group>
+      </labels>
+      <provenance source="Smart (1996), ethical and legal dimension" kind="sourced" note="Described in the third person ('abstaining from taking life'), never as an imperative (docs/08-contributing-a-domain.md §3.1)." />
+      <property id="wmoop.religion/Precept#polarity" name="polarity" type="wmoop.religion/PreceptPolarity" cardinality="1">
+        <definition>Whether the precept obliges, recommends, discourages or prohibits its action.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" />
+      </property>
+    </concept>
+    <concept id="wmoop.religion/PreceptSet" name="PreceptSet" kind="concrete">
+      <definition>A named collection of precepts that a tradition passes on as a unit, such as a list of commandments, pillars or vows.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Set de porunci</label>
+        </group>
+      </labels>
+      <provenance source="Original WMOOP definition" kind="definitional" note="An L0 Collection. The same set may be counted or divided differently by different branches, as the Ten Commandments are." />
+      <property id="wmoop.religion/PreceptSet#traditionalCount" name="traditionalCount" type="integer" cardinality="0..1">
+        <definition>How many items the tradition counts in the set.</definition>
+        <constraints minimum="1" />
+        <provenance source="Original WMOOP definition" kind="definitional" />
+      </property>
+      <property id="wmoop.religion/PreceptSet#precepts" name="precepts" type="wmoop.religion/Precept" cardinality="0..*">
+        <definition>The precepts recorded so far as members of the set.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" />
+      </property>
+    </concept>
+    <concept id="wmoop.religion/SacredText" name="SacredText" kind="concrete">
+      <definition>A text or body of texts that a tradition holds as scripture or as authoritative.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Text sacru</label>
+        </group>
+        <group kind="alt">
+          <label lang="ro">Scriptură</label>
+        </group>
+      </labels>
+      <provenance source="Smart (1996), narrative and doctrinal dimensions" kind="sourced" note="An L0 Abstract (the work), not a physical copy. Canons differ between branches; the individual's notes say so." />
+      <property id="wmoop.religion/SacredText#originalLanguages" name="originalLanguages" type="string" cardinality="0..*">
+        <definition>The languages in which the text was composed, as BCP-47 language subtags.</definition>
+        <provenance source="IETF BCP 47, Tags for Identifying Languages" kind="sourced" />
+      </property>
+      <property id="wmoop.religion/SacredText#compositionPeriod" name="compositionPeriod" type="string" cardinality="0..1">
+        <definition>When scholars date the composition or compilation of the text, in words that keep the uncertainty.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" />
+      </property>
+      <property id="wmoop.religion/SacredText#wikidataId" name="wikidataId" type="wmoop.religion/WikidataId" cardinality="0..1">
+        <definition>The Wikidata item that describes the same text.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" />
+      </property>
+    </concept>
+    <concept id="wmoop.religion/ReligiousSymbol" name="ReligiousSymbol" kind="concrete">
+      <definition>A visual sign that stands for a tradition, a teaching or a sacred reality for those who use it.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Simbol religios</label>
+        </group>
+      </labels>
+      <provenance source="Smart (1996), material dimension" kind="sourced" note="A tradition has symbols, not a logo; an organization's emblem may be a registered trademark. Unicode characters carry no image licence, so they are the default representation." />
+      <property id="wmoop.religion/ReligiousSymbol#unicodeCodePoint" name="unicodeCodePoint" type="wmoop.religion/UnicodeCodePoint" cardinality="0..1">
+        <definition>The Unicode code point of the character that encodes the symbol, if one exists.</definition>
+        <provenance source="The Unicode Standard" kind="sourced" />
+      </property>
+      <property id="wmoop.religion/ReligiousSymbol#unicodeName" name="unicodeName" type="string" cardinality="0..1">
+        <definition>The character's name in the Unicode Character Database.</definition>
+        <provenance source="Unicode Character Database, UnicodeData.txt" kind="sourced" />
+      </property>
+      <property id="wmoop.religion/ReligiousSymbol#wikidataId" name="wikidataId" type="wmoop.religion/WikidataId" cardinality="0..1">
+        <definition>The Wikidata item that describes the same symbol.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" />
+      </property>
+    </concept>
+    <concept id="wmoop.religion/ReligiousEvent" name="ReligiousEvent" kind="concrete">
+      <definition>A historical occurrence that sources treat as significant in the history of one or more traditions, such as a council, a schism or a revival.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Eveniment religios</label>
+        </group>
+      </labels>
+      <provenance source="Original WMOOP definition" kind="definitional" note="An L0 Perdurant. The traditions involved are referenced; their own accounts of the event may differ and are noted on the individual." />
+      <property id="wmoop.religion/ReligiousEvent#period" name="period" type="string" cardinality="0..1">
+        <definition>When the event happened, in words that keep any uncertainty.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" />
+      </property>
+      <property id="wmoop.religion/ReligiousEvent#startYear" name="startYear" type="wmoop.religion/HistoricalYear" cardinality="0..1">
+        <definition>The year the event began.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" />
+      </property>
+      <property id="wmoop.religion/ReligiousEvent#endYear" name="endYear" type="wmoop.religion/HistoricalYear" cardinality="0..1">
+        <definition>The year the event ended, when it lasted beyond one year.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" />
+      </property>
+      <property id="wmoop.religion/ReligiousEvent#place" name="place" type="string" cardinality="0..1">
+        <definition>Where the event happened, named as at the time.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" />
+      </property>
+      <property id="wmoop.religion/ReligiousEvent#traditions" name="traditions" type="wmoop.religion/ReligiousTradition" cardinality="0..*">
+        <definition>The traditions whose history the event shaped.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" />
+      </property>
+      <property id="wmoop.religion/ReligiousEvent#wikidataId" name="wikidataId" type="wmoop.religion/WikidataId" cardinality="0..1">
+        <definition>The Wikidata item that describes the same event.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" />
+      </property>
+    </concept>
+    <concept id="wmoop.religion/ReligiousOrganization" name="ReligiousOrganization" kind="concrete" extends="wmoop.org/Organization">
+      <definition>An organization through which a community of a religious tradition is governed, such as a church, a union of congregations or a federation of communities.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Organizație religioasă</label>
+        </group>
+        <group kind="alt">
+          <label lang="ro">Cult</label>
+          <label lang="en">Religious denomination</label>
+        </group>
+      </labels>
+      <provenance source="Original WMOOP definition" kind="definitional" note="Eastern Orthodoxy is a tradition; the Romanian Orthodox Church is an organization of that tradition, with a legal name, a legal status and dates of its own." />
+      <property id="wmoop.religion/ReligiousOrganization#tradition" name="tradition" type="wmoop.religion/ReligiousTradition" cardinality="1">
+        <definition>The tradition the organization belongs to.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" />
+      </property>
+    </concept>
+  </concepts>
+  <roles>
+    <role id="wmoop.religion/Cleric" name="Cleric" playedBy="wmoop.nature/Person" context="wmoop.religion" cardinalityPerPlayer="0..*">
+      <definition>The role of a person ordained, appointed or recognised to lead worship, teach or administer rites for a religious organization, such as a priest, minister, imam or rabbi.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Cleric</label>
+        </group>
+        <group kind="alt">
+          <label lang="ro">Slujitor al cultului</label>
+        </group>
+      </labels>
+      <provenance source="Original WMOOP definition" kind="definitional" note="An office, so a role on Person by composition [S3]; it records a capacity, not a belief. There is deliberately no Believer or Adherent role: a person's religion is a protected attribute (ETHICS.md §3.1)." />
+      <property id="wmoop.religion/Cleric#title" name="title" type="string" cardinality="0..1">
+        <definition>The title of the office as the organization names it, for example 'preot', 'imam' or 'rabbi'.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" />
+      </property>
+      <relation id="wmoop.religion/Cleric#servesIn" name="servesIn" target="wmoop.religion/ReligiousOrganization" cardinality="0..*" inverse="wmoop.religion/ReligiousOrganization#clergy">
+        <definition>The religious organizations in which the person holds the office.</definition>
+        <provenance source="Original WMOOP definition" kind="definitional" />
+      </relation>
+    </role>
+  </roles>
+  <individuals>
+    <individual id="wmoop.religion/JesusOfNazareth" name="Jesus of Nazareth" instanceOf="wmoop.religion/ReligiousFigure">
+      <definition>The Jewish teacher from Galilee whom Christianity proclaims as the Christ and the Son of God.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Iisus din Nazaret</label>
+        </group>
+        <group kind="alt">
+          <label lang="ro">Isus</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q302</value>
+      <value property="historicity">HISTORICAL_CONSENSUS</value>
+      <value property="lifetime">c. 4 BCE - c. 30/33 CE</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Jesus'" note="Historians of antiquity broadly agree that Jesus existed and was crucified under Pontius Pilate; claims about his divinity are Christian teaching, recorded as such." />
+    </individual>
+    <individual id="wmoop.religion/Muhammad" name="Muhammad" instanceOf="wmoop.religion/ReligiousFigure">
+      <definition>The Arab religious and political leader whom Islam regards as the final prophet of God.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ar">محمد</label>
+          <label lang="ro">Mahomed</label>
+        </group>
+        <group kind="alt">
+          <label lang="ro">Muhammad</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q9458</value>
+      <value property="historicity">HISTORICAL_CONSENSUS</value>
+      <value property="lifetime">c. 570 - 632 CE</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Muhammad'" />
+    </individual>
+    <individual id="wmoop.religion/Abraham" name="Abraham" instanceOf="wmoop.religion/ReligiousFigure">
+      <definition>The patriarch whom Judaism, Christianity and Islam regard as the father of faith in the one God.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="he">אברהם</label>
+          <label lang="ar">إبراهيم</label>
+          <label lang="ro">Avraam</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q9181</value>
+      <value property="historicity">TRADITION_ONLY</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Abraham'" note="Known only from the scriptures of the three traditions; no independent historical evidence confirms or excludes a historical figure." />
+    </individual>
+    <individual id="wmoop.religion/Moses" name="Moses" instanceOf="wmoop.religion/ReligiousFigure">
+      <definition>The prophet and lawgiver whom Judaism regards as the receiver of the Torah at Sinai, also revered in Christianity and Islam.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="he">משה</label>
+          <label lang="ro">Moise</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q9077</value>
+      <value property="historicity">DEBATED</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Moses'" note="No evidence outside the Bible; scholars disagree whether a historical figure lies behind the narratives." />
+    </individual>
+    <individual id="wmoop.religion/SiddharthaGautama" name="Siddhartha Gautama" instanceOf="wmoop.religion/ReligiousFigure">
+      <definition>The teacher from the northern Indian subcontinent known as the Buddha, the 'awakened one', whose teaching is the origin of Buddhism.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="sa">सिद्धार्थ गौतम</label>
+          <label lang="ro">Siddhartha Gautama (Buddha)</label>
+        </group>
+        <group kind="alt">
+          <label lang="en">the Buddha</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q9441</value>
+      <value property="historicity">HISTORICAL_CONSENSUS</value>
+      <value property="lifetime">c. 563-483 BCE or c. 480-400 BCE (dates debated)</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Buddha'" note="His existence is accepted; his dates are not: the older chronology gives c. 563-483 BCE, many scholars now prefer c. 480-400 BCE." />
+    </individual>
+    <individual id="wmoop.religion/GuruNanak" name="Guru Nanak" instanceOf="wmoop.religion/ReligiousFigure">
+      <definition>The first of the ten Sikh Gurus, whose teaching in the Punjab is the origin of Sikhism.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="pa">ਗੁਰੂ ਨਾਨਕ</label>
+          <label lang="ro">Guru Nanak</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q83322</value>
+      <value property="historicity">HISTORICAL_CONSENSUS</value>
+      <value property="lifetime">1469 - 1539 CE</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Nanak'" />
+    </individual>
+    <individual id="wmoop.religion/Mahavira" name="Mahavira" instanceOf="wmoop.religion/ReligiousFigure">
+      <definition>The twenty-fourth and last Tirthankara of the present cosmic age in Jain teaching, who reformed and spread the Jain community.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="sa">महावीर</label>
+          <label lang="ro">Mahavira</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q9422</value>
+      <value property="historicity">HISTORICAL_CONSENSUS</value>
+      <value property="lifetime">traditionally 599-527 BCE; often dated c. 6th-5th century BCE</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Mahavira'" note="Jain tradition sees him as the last of a line of teachers, not a founder; it dates him 599-527 BCE, many historians about a century later." />
+    </individual>
+    <individual id="wmoop.religion/Zarathustra" name="Zarathustra" instanceOf="wmoop.religion/ReligiousFigure">
+      <definition>The Iranian prophet traditionally regarded as the founder of Zoroastrianism and the author of the Gathas.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Zarathustra</label>
+        </group>
+        <group kind="alt">
+          <label lang="en">Zoroaster</label>
+          <label lang="ro">Zoroastru</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q35811</value>
+      <value property="historicity">HISTORICAL_CONSENSUS</value>
+      <value property="lifetime">dates disputed: c. 628-551 BCE (later tradition) or the 2nd millennium BCE</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Zarathustra'" note="Treated as a historical prophet; what is disputed is when he lived: c. 628-551 BCE by a date drawn from later Zoroastrian texts, or some time in the second millennium BCE." />
+    </individual>
+    <individual id="wmoop.religion/Bahaullah" name="Bahá'u'lláh" instanceOf="wmoop.religion/ReligiousFigure">
+      <definition>The Iranian religious leader whom the Bahá'í Faith regards as its founder and as the latest messenger of God.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="fa">بهاءالله</label>
+          <label lang="ro">Bahá'u'lláh</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q101054</value>
+      <value property="historicity">HISTORICAL_CONSENSUS</value>
+      <value property="lifetime">1817 - 1892 CE</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Bahāʾ Allāh'" />
+    </individual>
+    <individual id="wmoop.religion/MartinLuther" name="Martin Luther" instanceOf="wmoop.religion/ReligiousFigure">
+      <definition>The German theologian whose challenge to Church teaching in 1517 began the Protestant Reformation.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="de">Martin Luther</label>
+          <label lang="ro">Martin Luther</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q9554</value>
+      <value property="historicity">HISTORICAL_CONSENSUS</value>
+      <value property="lifetime">1483 - 1546 CE</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Martin Luther'" note="Luther sought to reform the Western Church, not to found a new one; 'founder' of Lutheranism is an attribution by others." />
+    </individual>
+    <individual id="wmoop.religion/JohnCalvin" name="John Calvin" instanceOf="wmoop.religion/ReligiousFigure">
+      <definition>The French theologian and Geneva reformer whose theology shaped the Reformed tradition.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="fr">Jean Calvin</label>
+          <label lang="ro">Jean Calvin</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q37577</value>
+      <value property="historicity">HISTORICAL_CONSENSUS</value>
+      <value property="lifetime">1509 - 1564 CE</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'John Calvin'" />
+    </individual>
+    <individual id="wmoop.religion/JohnSmyth" name="John Smyth" instanceOf="wmoop.religion/ReligiousFigure">
+      <definition>The English Separatist minister who led the first Baptist congregation, in Amsterdam.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">John Smyth</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q928195</value>
+      <value property="historicity">HISTORICAL_CONSENSUS</value>
+      <value property="lifetime">c. 1570 - 1612 CE</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Baptist'" />
+    </individual>
+    <individual id="wmoop.religion/ThomasHelwys" name="Thomas Helwys" instanceOf="wmoop.religion/ReligiousFigure">
+      <definition>The English layman who, with John Smyth, led the first Baptist congregation and brought it back to England.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Thomas Helwys</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q1347196</value>
+      <value property="historicity">HISTORICAL_CONSENSUS</value>
+      <value property="lifetime">c. 1575 - c. 1616 CE</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Baptist'" />
+    </individual>
+    <individual id="wmoop.religion/JosephSmith" name="Joseph Smith" instanceOf="wmoop.religion/ReligiousFigure">
+      <definition>The American religious leader whom the Latter Day Saint movement regards as its founding prophet.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Joseph Smith</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q47102</value>
+      <value property="historicity">HISTORICAL_CONSENSUS</value>
+      <value property="lifetime">1805 - 1844 CE</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Joseph Smith'" />
+    </individual>
+    <individual id="wmoop.religion/Laozi" name="Laozi" instanceOf="wmoop.religion/ReligiousFigure">
+      <definition>The sage to whom Daoist tradition attributes the Daodejing.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="zh">老子</label>
+          <label lang="ro">Lao Zi</label>
+        </group>
+        <group kind="alt">
+          <label lang="en">Lao-tzu</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q9333</value>
+      <value property="historicity">DEBATED</value>
+      <value property="lifetime">traditionally 6th century BCE</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Laozi'" note="Traditionally an older contemporary of Confucius (6th century BCE); many scholars doubt a single historical author." />
+    </individual>
+    <individual id="wmoop.religion/HolyTrinity" name="Holy Trinity" instanceOf="wmoop.religion/Deity">
+      <definition>God as conceived in trinitarian Christianity, one God in three persons, the Father, the Son and the Holy Spirit.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Sfânta Treime</label>
+          <label lang="la">Trinitas</label>
+          <label lang="el">Αγία Τριάδα</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q37090</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Trinity'" note="Defined by the councils of Nicaea (325) and Constantinople (381); nontrinitarian Christian traditions conceive God differently." />
+    </individual>
+    <individual id="wmoop.religion/Allah" name="Allah" instanceOf="wmoop.religion/Deity">
+      <definition>God as conceived in Islam, one and unique, without partner or equal.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ar">الله</label>
+          <label lang="ro">Allah</label>
+        </group>
+        <group kind="alt">
+          <label lang="en">God</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q2095353</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Allah'" note="'Allah' is the Arabic word for God, used also by Arabic-speaking Christians and Jews. Whether the three Abrahamic traditions worship the same God is a theological question WMOOP does not settle; Nostra aetate §3 (1965) states the Catholic view that Muslims adore the one God." />
+    </individual>
+    <individual id="wmoop.religion/Yhwh" name="YHWH" instanceOf="wmoop.religion/Deity">
+      <definition>The God of Israel as conceived in Judaism, whose four-letter name is not pronounced in Jewish practice.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="he">יהוה</label>
+          <label lang="ro">Dumnezeul lui Israel</label>
+        </group>
+        <group kind="alt">
+          <label lang="he">Adonai</label>
+          <label lang="he">HaShem</label>
+          <label lang="en">Yahweh</label>
+          <label lang="ro">Iahve</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q2155501</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Yahweh'" note="Readers say Adonai ('my Lord') or HaShem ('the Name') instead of the Tetragrammaton; 'Yahweh' is a scholarly reconstruction of its pronunciation." />
+    </individual>
+    <individual id="wmoop.religion/Vishnu" name="Vishnu" instanceOf="wmoop.religion/Deity">
+      <definition>The Hindu god conceived as the preserver of the universe, supreme being in Vaishnavism, worshipped also through avatars such as Krishna and Rama.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="sa">विष्णु</label>
+          <label lang="ro">Vishnu</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q11380</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Vishnu'" />
+    </individual>
+    <individual id="wmoop.religion/Shiva" name="Shiva" instanceOf="wmoop.religion/Deity">
+      <definition>The Hindu god conceived as destroyer and renewer of the universe, supreme being in Shaivism.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="sa">शिव</label>
+          <label lang="ro">Shiva</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q11378</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Shiva'" />
+    </individual>
+    <individual id="wmoop.religion/AhuraMazda" name="Ahura Mazda" instanceOf="wmoop.religion/Deity">
+      <definition>The supreme, wise and good God of Zoroastrianism.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ae">Ahura Mazdā</label>
+          <label lang="ro">Ahura Mazda</label>
+        </group>
+        <group kind="alt">
+          <label lang="fa">Ohrmazd</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q179575</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Ahura Mazdā'" />
+    </individual>
+    <individual id="wmoop.religion/Waheguru" name="Waheguru" instanceOf="wmoop.religion/Deity">
+      <definition>The name most used in Sikhism for the one, formless God.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="pa">ਵਾਹਿਗੁਰੂ</label>
+          <label lang="ro">Waheguru</label>
+        </group>
+        <group kind="alt">
+          <label lang="pa">Ik Onkar</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q1650920</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Sikhism'" />
+    </individual>
+    <individual id="wmoop.religion/Zeus" name="Zeus" instanceOf="wmoop.religion/Deity">
+      <definition>The sky god and ruler of the gods in ancient Greek religion.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="grc">Ζεύς</label>
+          <label lang="ro">Zeus</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q34201</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Zeus'" />
+    </individual>
+    <individual id="wmoop.religion/Bible" name="Bible" instanceOf="wmoop.religion/SacredText">
+      <definition>The Christian scriptures, made of the Old Testament and the New Testament.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Biblia</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q1845</value>
+      <value property="originalLanguages">['he', 'arc', 'grc']</value>
+      <value property="compositionPeriod">Hebrew Bible texts across the first millennium BCE; New Testament c. 50-120 CE (scholarly estimates)</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Bible'" note="The Old Testament canon differs: Catholic and Orthodox Bibles include deuterocanonical books that Protestant Bibles omit or set apart." />
+    </individual>
+    <individual id="wmoop.religion/Tanakh" name="Tanakh" instanceOf="wmoop.religion/SacredText">
+      <definition>The Hebrew Bible, made of the Torah, the Prophets (Nevi'im) and the Writings (Ketuvim).</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="he">תנ״ך</label>
+          <label lang="ro">Tanah</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q83367</value>
+      <value property="originalLanguages">['he', 'arc']</value>
+      <value property="compositionPeriod">first millennium BCE; the canon was settled by about the 2nd century CE (debated)</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Hebrew Bible'" />
+    </individual>
+    <individual id="wmoop.religion/Talmud" name="Talmud" instanceOf="wmoop.religion/SacredText">
+      <definition>The body of rabbinic law and discussion made of the Mishnah and the Gemara, in a Jerusalem and a Babylonian version.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="he">תלמוד</label>
+          <label lang="ro">Talmud</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q43290</value>
+      <value property="originalLanguages">['he', 'arc']</value>
+      <value property="compositionPeriod">Mishnah c. 200 CE; Babylonian Talmud completed c. 500-600 CE</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Talmud and Midrash'" note="Authoritative in Rabbinic Judaism; Karaite Judaism does not accept it." />
+    </individual>
+    <individual id="wmoop.religion/Quran" name="Qur'an" instanceOf="wmoop.religion/SacredText">
+      <definition>The scripture of Islam, which Muslims hold to be the word of God revealed to Muhammad.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ar">القرآن</label>
+          <label lang="ro">Coran</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q428</value>
+      <value property="originalLanguages">['ar']</value>
+      <value property="compositionPeriod">610-632 CE according to Islamic tradition; standard codex c. 650 CE</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Qurʾān'" note="Islamic tradition dates the revelation 610-632 CE and the standard codex to the caliph Uthman (c. 650 CE)." />
+    </individual>
+    <individual id="wmoop.religion/Vedas" name="Vedas" instanceOf="wmoop.religion/SacredText">
+      <definition>The oldest scriptures of Hinduism, four collections of hymns, ritual texts and philosophical teachings transmitted orally.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="sa">वेद</label>
+          <label lang="ro">Vedele</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q39950</value>
+      <value property="originalLanguages">['sa']</value>
+      <value property="compositionPeriod">c. 1500-500 BCE (scholarly estimates)</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Veda'" />
+    </individual>
+    <individual id="wmoop.religion/BhagavadGita" name="Bhagavad Gita" instanceOf="wmoop.religion/SacredText">
+      <definition>A Hindu scripture in the Mahabharata, a dialogue in which Krishna instructs the warrior Arjuna.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="sa">भगवद्गीता</label>
+          <label lang="ro">Bhagavad Gita</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q46802</value>
+      <value property="originalLanguages">['sa']</value>
+      <value property="compositionPeriod">c. 2nd century BCE - 2nd century CE (debated)</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Bhagavadgita'" />
+    </individual>
+    <individual id="wmoop.religion/PaliCanon" name="Pali Canon" instanceOf="wmoop.religion/SacredText">
+      <definition>The Tipitaka, the collection of Buddhist scriptures in Pali preserved by the Theravada tradition.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="pi">Tipiṭaka</label>
+          <label lang="ro">Canonul Pali</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q215685</value>
+      <value property="originalLanguages">['pi']</value>
+      <value property="compositionPeriod">transmitted orally; written down in Sri Lanka in the 1st century BCE</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Pali canon'" />
+    </individual>
+    <individual id="wmoop.religion/GuruGranthSahib" name="Guru Granth Sahib" instanceOf="wmoop.religion/SacredText">
+      <definition>The scripture of Sikhism, which Sikhs regard as their eternal, living Guru.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="pa">ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ</label>
+          <label lang="ro">Guru Granth Sahib</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q203249</value>
+      <value property="originalLanguages">['pa']</value>
+      <value property="compositionPeriod">compiled as the Adi Granth in 1604; final recension 1706</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Adi Granth'" />
+    </individual>
+    <individual id="wmoop.religion/Avesta" name="Avesta" instanceOf="wmoop.religion/SacredText">
+      <definition>The scriptures of Zoroastrianism, whose oldest part is the Gathas attributed to Zarathustra.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Avesta</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q83426</value>
+      <value property="originalLanguages">['ae']</value>
+      <value property="compositionPeriod">oral composition over many centuries BCE (dates disputed); written down in the Sasanian period</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Avesta'" />
+    </individual>
+    <individual id="wmoop.religion/BookOfMormon" name="Book of Mormon" instanceOf="wmoop.religion/SacredText">
+      <definition>A scripture of the Latter Day Saint movement, which it holds to be an ancient record translated by Joseph Smith.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Cartea lui Mormon</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q459842</value>
+      <value property="originalLanguages">['en']</value>
+      <value property="compositionPeriod">first published in 1830</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Book of Mormon'" />
+    </individual>
+    <individual id="wmoop.religion/Daodejing" name="Daodejing" instanceOf="wmoop.religion/SacredText">
+      <definition>The classic text of Daoism, attributed to Laozi, on the Dao and its power.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="zh">道德經</label>
+          <label lang="ro">Tao Te Ching</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q134425</value>
+      <value property="originalLanguages">['lzh']</value>
+      <value property="compositionPeriod">c. 4th century BCE (debated)</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Daodejing'" />
+    </individual>
+    <individual id="wmoop.religion/LatinCross" name="Latin cross" instanceOf="wmoop.religion/ReligiousSymbol">
+      <definition>A cross with a long lower arm, the most widespread symbol of Christianity.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Cruce latină</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q200674</value>
+      <value property="unicodeCodePoint">U+271D</value>
+      <value property="unicodeName">LATIN CROSS</value>
+      <provenance source="Unicode Character Database, UnicodeData.txt" kind="sourced" ref="U+271D" />
+    </individual>
+    <individual id="wmoop.religion/OrthodoxCross" name="Orthodox cross" instanceOf="wmoop.religion/ReligiousSymbol">
+      <definition>A cross with a short upper bar and a slanted lower bar, used especially in Slavic Orthodox churches.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Cruce ortodoxă</label>
+        </group>
+        <group kind="alt">
+          <label lang="en">Russian Orthodox cross</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q1706350</value>
+      <value property="unicodeCodePoint">U+2626</value>
+      <value property="unicodeName">ORTHODOX CROSS</value>
+      <provenance source="Unicode Character Database, UnicodeData.txt" kind="sourced" ref="U+2626" note="Orthodox churches use several forms of the cross; this one is not used by all of them." />
+    </individual>
+    <individual id="wmoop.religion/StarOfDavid" name="Star of David" instanceOf="wmoop.religion/ReligiousSymbol">
+      <definition>A six-pointed star formed of two triangles, a widely used emblem of Judaism and of the Jewish people.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="he">מגן דוד</label>
+          <label lang="ro">Steaua lui David</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q161396</value>
+      <value property="unicodeCodePoint">U+2721</value>
+      <value property="unicodeName">STAR OF DAVID</value>
+      <provenance source="Unicode Character Database, UnicodeData.txt" kind="sourced" ref="U+2721" />
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Star of David'" note="In wide Jewish use since the 19th century; it also appears on the flag of Israel, a national use distinct from the religious one." />
+    </individual>
+    <individual id="wmoop.religion/StarAndCrescent" name="Star and crescent" instanceOf="wmoop.religion/ReligiousSymbol">
+      <definition>A crescent moon with a star, widely associated with Islam since the Ottoman period.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Semiluna și steaua</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q3592503</value>
+      <value property="unicodeCodePoint">U+262A</value>
+      <value property="unicodeName">STAR AND CRESCENT</value>
+      <provenance source="Unicode Character Database, UnicodeData.txt" kind="sourced" ref="U+262A" note="Many Muslims do not regard it as a religious symbol; Islam has no official symbol." />
+    </individual>
+    <individual id="wmoop.religion/DharmaWheel" name="Dharma wheel" instanceOf="wmoop.religion/ReligiousSymbol">
+      <definition>An eight-spoked wheel representing the Buddha's teaching and the Noble Eightfold Path.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="sa">धर्मचक्र</label>
+          <label lang="ro">Roata Dharmei</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q665056</value>
+      <value property="unicodeCodePoint">U+2638</value>
+      <value property="unicodeName">WHEEL OF DHARMA</value>
+      <provenance source="Unicode Character Database, UnicodeData.txt" kind="sourced" ref="U+2638" />
+    </individual>
+    <individual id="wmoop.religion/Om" name="Om" instanceOf="wmoop.religion/ReligiousSymbol">
+      <definition>The written form of the sacred syllable Om, central in Hinduism and used also in Buddhism and Jainism.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="sa">ॐ</label>
+          <label lang="ro">Om</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q184128</value>
+      <value property="unicodeCodePoint">U+1F549</value>
+      <value property="unicodeName">OM SYMBOL</value>
+      <provenance source="Unicode Character Database, UnicodeData.txt" kind="sourced" ref="U+1F549" note="U+0950 DEVANAGARI OM encodes the same sign as a letter of the Devanagari script; the Sanskrit label uses it." />
+    </individual>
+    <individual id="wmoop.religion/Khanda" name="Khanda" instanceOf="wmoop.religion/ReligiousSymbol">
+      <definition>The emblem of Sikhism, a double-edged sword within a ring flanked by two curved swords.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="pa">ਖੰਡਾ</label>
+          <label lang="ro">Khanda</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q1570211</value>
+      <value property="unicodeCodePoint">U+1FAAF</value>
+      <value property="unicodeName">KHANDA</value>
+      <provenance source="Unicode Character Database, UnicodeData.txt" kind="sourced" ref="U+1FAAF" note="The dedicated character, added in Unicode 15.0. Older texts use U+262C ADI SHAKTI, which the Unicode names list annotates as khanda and cross-references to U+1FAAF." />
+    </individual>
+    <individual id="wmoop.religion/Taijitu" name="Taijitu" instanceOf="wmoop.religion/ReligiousSymbol">
+      <definition>The yin-yang diagram of complementary opposites, used in Daoism and in Chinese thought more widely.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="zh">太極圖</label>
+          <label lang="ro">Yin și yang</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q1465408</value>
+      <value property="unicodeCodePoint">U+262F</value>
+      <value property="unicodeName">YIN YANG</value>
+      <provenance source="Unicode Character Database, UnicodeData.txt" kind="sourced" ref="U+262F" />
+    </individual>
+    <individual id="wmoop.religion/Torii" name="Torii" instanceOf="wmoop.religion/ReligiousSymbol">
+      <definition>The gateway that marks the entrance to a Shinto shrine, used as a symbol of Shinto.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ja">鳥居</label>
+          <label lang="ro">Torii</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q234731</value>
+      <value property="unicodeCodePoint">U+26E9</value>
+      <value property="unicodeName">SHINTO SHRINE</value>
+      <provenance source="Unicode Character Database, UnicodeData.txt" kind="sourced" ref="U+26E9" note="Unicode's character is the map symbol for a Shinto shrine, drawn as a torii." />
+    </individual>
+    <individual id="wmoop.religion/TrinityDoctrine" name="Doctrine of the Trinity" instanceOf="wmoop.religion/Doctrine">
+      <definition>The Christian teaching that God is one being in three persons, the Father, the Son and the Holy Spirit.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Dogma Sfintei Treimi</label>
+        </group>
+      </labels>
+      <value property="originalTerm">Trinitas</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Trinity'" />
+    </individual>
+    <individual id="wmoop.religion/Tawhid" name="Tawhid" instanceOf="wmoop.religion/Doctrine">
+      <definition>The Islamic teaching of the absolute oneness and uniqueness of God.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ar">توحيد</label>
+          <label lang="ro">Unicitatea lui Dumnezeu (tawhid)</label>
+        </group>
+      </labels>
+      <value property="originalTerm">tawḥīd</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'tawḥīd'" />
+    </individual>
+    <individual id="wmoop.religion/Karma" name="Karma" instanceOf="wmoop.religion/Doctrine">
+      <definition>The teaching that intentional actions have consequences that shape a being's future lives or states.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="sa">कर्म</label>
+          <label lang="ro">Karma</label>
+        </group>
+      </labels>
+      <value property="originalTerm">karman</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'karma'" note="Shared by Hinduism, Buddhism, Jainism and Sikhism, which interpret it differently; one individual stands for the shared teaching and each tradition's reading belongs in its own notes." />
+    </individual>
+    <individual id="wmoop.religion/FourNobleTruths" name="Four Noble Truths" instanceOf="wmoop.religion/Doctrine">
+      <definition>The Buddhist teaching on suffering, its origin, its cessation and the path leading to its cessation.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="pi">cattāri ariyasaccāni</label>
+          <label lang="ro">Cele patru adevăruri nobile</label>
+        </group>
+      </labels>
+      <value property="originalTerm">cattāri ariyasaccāni</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Four Noble Truths'" />
+    </individual>
+    <individual id="wmoop.religion/Anatta" name="Anatta" instanceOf="wmoop.religion/Doctrine">
+      <definition>The Buddhist teaching that there is no permanent, unchanging self in any being.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Non-sinele (anatta)</label>
+        </group>
+      </labels>
+      <value property="originalTerm">anattā</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'anatta'" />
+    </individual>
+    <individual id="wmoop.religion/Agape" name="Agape" instanceOf="wmoop.religion/EthicalValue">
+      <definition>Self-giving love for God and neighbour, which Christianity teaches as the greatest of the virtues.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="grc">ἀγάπη</label>
+          <label lang="ro">Iubirea (agape)</label>
+        </group>
+      </labels>
+      <value property="originalTerm">agapē</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'agape'" note="With faith and hope one of the three theological virtues (1 Corinthians 13:13)." />
+    </individual>
+    <individual id="wmoop.religion/Metta" name="Metta" instanceOf="wmoop.religion/EthicalValue">
+      <definition>Loving-kindness towards all beings, the first of the four sublime attitudes of Buddhist teaching.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Bunătatea iubitoare (metta)</label>
+        </group>
+      </labels>
+      <value property="originalTerm">mettā</value>
+      <provenance source="Harvey, P. (2000). An Introduction to Buddhist Ethics. Cambridge University Press." kind="sourced" />
+    </individual>
+    <individual id="wmoop.religion/Karuna" name="Karuna" instanceOf="wmoop.religion/EthicalValue">
+      <definition>Compassion, the wish that beings be free of suffering, one of the four sublime attitudes of Buddhist teaching.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Compasiunea (karuna)</label>
+        </group>
+      </labels>
+      <value property="originalTerm">karuṇā</value>
+      <provenance source="Harvey, P. (2000). An Introduction to Buddhist Ethics. Cambridge University Press." kind="sourced" />
+    </individual>
+    <individual id="wmoop.religion/Ahimsa" name="Ahimsa" instanceOf="wmoop.religion/EthicalValue">
+      <definition>Non-violence towards all living beings, central in Jainism and taught also in Hinduism and Buddhism.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="sa">अहिंसा</label>
+          <label lang="ro">Non-violența (ahimsa)</label>
+        </group>
+      </labels>
+      <value property="originalTerm">ahiṃsā</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'ahimsa'" />
+    </individual>
+    <individual id="wmoop.religion/Seva" name="Seva" instanceOf="wmoop.religion/EthicalValue">
+      <definition>Selfless service to others, which Sikhism teaches as a central expression of devotion.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="pa">ਸੇਵਾ</label>
+          <label lang="ro">Slujirea dezinteresată (seva)</label>
+        </group>
+      </labels>
+      <value property="originalTerm">sevā</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Sikhism'" />
+    </individual>
+    <individual id="wmoop.religion/PreceptAgainstKilling" name="Abstaining from taking life" instanceOf="wmoop.religion/Precept">
+      <definition>The first of the Five Precepts, the undertaking to abstain from killing living beings.</definition>
+      <value property="originalTerm">pāṇātipātā veramaṇī</value>
+      <value property="polarity">PROHIBITION</value>
+      <provenance source="Harvey, P. (2000). An Introduction to Buddhist Ethics. Cambridge University Press." kind="sourced" ref="ch. 2, the five precepts" />
+    </individual>
+    <individual id="wmoop.religion/PreceptAgainstStealing" name="Abstaining from taking what is not given" instanceOf="wmoop.religion/Precept">
+      <definition>The second of the Five Precepts, the undertaking to abstain from theft.</definition>
+      <value property="originalTerm">adinnādānā veramaṇī</value>
+      <value property="polarity">PROHIBITION</value>
+      <provenance source="Harvey, P. (2000). An Introduction to Buddhist Ethics. Cambridge University Press." kind="sourced" ref="ch. 2, the five precepts" />
+    </individual>
+    <individual id="wmoop.religion/PreceptAgainstSexualMisconduct" name="Abstaining from sexual misconduct" instanceOf="wmoop.religion/Precept">
+      <definition>The third of the Five Precepts, the undertaking to abstain from misconduct concerning sensual pleasures.</definition>
+      <value property="originalTerm">kāmesu micchācārā veramaṇī</value>
+      <value property="polarity">PROHIBITION</value>
+      <provenance source="Harvey, P. (2000). An Introduction to Buddhist Ethics. Cambridge University Press." kind="sourced" ref="ch. 2, the five precepts" />
+    </individual>
+    <individual id="wmoop.religion/PreceptAgainstFalseSpeech" name="Abstaining from false speech" instanceOf="wmoop.religion/Precept">
+      <definition>The fourth of the Five Precepts, the undertaking to abstain from lying.</definition>
+      <value property="originalTerm">musāvādā veramaṇī</value>
+      <value property="polarity">PROHIBITION</value>
+      <provenance source="Harvey, P. (2000). An Introduction to Buddhist Ethics. Cambridge University Press." kind="sourced" ref="ch. 2, the five precepts" />
+    </individual>
+    <individual id="wmoop.religion/PreceptAgainstIntoxicants" name="Abstaining from intoxicants" instanceOf="wmoop.religion/Precept">
+      <definition>The fifth of the Five Precepts, the undertaking to abstain from intoxicating drink and drugs that cloud the mind.</definition>
+      <value property="originalTerm">surāmerayamajjapamādaṭṭhānā veramaṇī</value>
+      <value property="polarity">PROHIBITION</value>
+      <provenance source="Harvey, P. (2000). An Introduction to Buddhist Ethics. Cambridge University Press." kind="sourced" ref="ch. 2, the five precepts" />
+    </individual>
+    <individual id="wmoop.religion/Shahada" name="Shahada" instanceOf="wmoop.religion/Precept">
+      <definition>The first pillar of Islam, the profession that there is no god but God and that Muhammad is the messenger of God.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ar">الشهادة</label>
+          <label lang="ro">Mărturisirea de credință (shahada)</label>
+        </group>
+      </labels>
+      <value property="originalTerm">shahādah</value>
+      <value property="polarity">OBLIGATION</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Pillars of Islam'" />
+    </individual>
+    <individual id="wmoop.religion/Salat" name="Salat" instanceOf="wmoop.religion/Precept">
+      <definition>The second pillar of Islam, the ritual prayer performed five times a day.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ar">الصلاة</label>
+          <label lang="ro">Rugăciunea rituală (salat)</label>
+        </group>
+      </labels>
+      <value property="originalTerm">ṣalāh</value>
+      <value property="polarity">OBLIGATION</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Pillars of Islam'" />
+    </individual>
+    <individual id="wmoop.religion/Zakat" name="Zakat" instanceOf="wmoop.religion/Precept">
+      <definition>The third pillar of Islam, the obligatory giving of a share of one's wealth to those in need.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ar">الزكاة</label>
+          <label lang="ro">Dania obligatorie (zakat)</label>
+        </group>
+      </labels>
+      <value property="originalTerm">zakāh</value>
+      <value property="polarity">OBLIGATION</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Pillars of Islam'" />
+    </individual>
+    <individual id="wmoop.religion/Sawm" name="Sawm" instanceOf="wmoop.religion/Precept">
+      <definition>The fourth pillar of Islam, fasting from dawn to sunset during the month of Ramadan.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ar">الصوم</label>
+          <label lang="ro">Postul din Ramadan (sawm)</label>
+        </group>
+      </labels>
+      <value property="originalTerm">ṣawm</value>
+      <value property="polarity">OBLIGATION</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Pillars of Islam'" />
+    </individual>
+    <individual id="wmoop.religion/Hajj" name="Hajj" instanceOf="wmoop.religion/Precept">
+      <definition>The fifth pillar of Islam, the pilgrimage to Mecca, due once in a lifetime from every Muslim who is able to make it.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ar">الحج</label>
+          <label lang="ro">Pelerinajul la Mecca (hajj)</label>
+        </group>
+      </labels>
+      <value property="originalTerm">ḥajj</value>
+      <value property="polarity">OBLIGATION</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'hajj'" />
+    </individual>
+    <individual id="wmoop.religion/FivePrecepts" name="Five Precepts" instanceOf="wmoop.religion/PreceptSet">
+      <definition>The basic ethical undertakings of lay Buddhists.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="pi">pañcasīla</label>
+          <label lang="ro">Cele cinci precepte</label>
+        </group>
+      </labels>
+      <value property="traditionalCount">5</value>
+      <value property="precepts">['wmoop.religion/PreceptAgainstKilling', 'wmoop.religion/PreceptAgainstStealing', 'wmoop.religion/PreceptAgainstSexualMisconduct', 'wmoop.religion/PreceptAgainstFalseSpeech', 'wmoop.religion/PreceptAgainstIntoxicants']</value>
+      <provenance source="Harvey, P. (2000). An Introduction to Buddhist Ethics. Cambridge University Press." kind="sourced" ref="ch. 2" />
+    </individual>
+    <individual id="wmoop.religion/FivePillarsOfIslam" name="Five Pillars of Islam" instanceOf="wmoop.religion/PreceptSet">
+      <definition>The five acts that Islam holds obligatory for every Muslim who is able to perform them.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ar">أركان الإسلام</label>
+          <label lang="ro">Cei cinci stâlpi ai islamului</label>
+        </group>
+      </labels>
+      <value property="traditionalCount">5</value>
+      <value property="precepts">['wmoop.religion/Shahada', 'wmoop.religion/Salat', 'wmoop.religion/Zakat', 'wmoop.religion/Sawm', 'wmoop.religion/Hajj']</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Pillars of Islam'" note="The canonical Sunni list; Shia traditions arrange the obligatory practices in their own lists." />
+    </individual>
+    <individual id="wmoop.religion/TenCommandments" name="Ten Commandments" instanceOf="wmoop.religion/PreceptSet">
+      <definition>The Decalogue, the precepts given in Exodus 20 and Deuteronomy 5, held in Judaism and Christianity.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="he">עשרת הדיברות</label>
+          <label lang="ro">Cele zece porunci</label>
+        </group>
+        <group kind="alt">
+          <label lang="ro">Decalogul</label>
+        </group>
+      </labels>
+      <value property="traditionalCount">10</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Ten Commandments'" note="Jewish, Catholic and Lutheran, and Orthodox and Reformed traditions divide the same text into ten in different ways, so the individual precepts are left for a later PR that models each numbering as a scheme." />
+    </individual>
+    <individual id="wmoop.religion/Christianity" name="Christianity" instanceOf="wmoop.religion/ReligiousTradition">
+      <definition>The tradition centred on the life, teaching, death and resurrection of Jesus of Nazareth, whom it proclaims as the Christ.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Creștinism</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q5043</value>
+      <value property="vitality">LIVING</value>
+      <value property="emergencePeriod">1st century CE</value>
+      <value property="emergenceStartYear">30</value>
+      <value property="emergenceEndYear">100</value>
+      <value property="originRegion">Judaea and Galilee, Roman Empire</value>
+      <value property="emergedFrom">['wmoop.religion/Judaism']</value>
+      <value property="founders">['wmoop.religion/JesusOfNazareth']</value>
+      <value property="principalDeities">['wmoop.religion/HolyTrinity']</value>
+      <value property="doctrines">['wmoop.religion/TrinityDoctrine']</value>
+      <value property="ethicalValues">['wmoop.religion/Agape']</value>
+      <value property="preceptSets">['wmoop.religion/TenCommandments']</value>
+      <value property="sacredTexts">['wmoop.religion/Bible']</value>
+      <value property="symbols">['wmoop.religion/LatinCross']</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Christianity'" note="Christianity emerged within Second Temple Judaism; the 'emergedFrom' link points to Judaism as a whole, of which Rabbinic Judaism is the other heir." />
+    </individual>
+    <individual id="wmoop.religion/Catholicism" name="Catholicism" instanceOf="wmoop.religion/ReligiousTradition">
+      <definition>The branch of Christianity in communion with the Bishop of Rome, comprising the Latin Church and the Eastern Catholic Churches.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Catolicism</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q1841</value>
+      <value property="vitality">LIVING</value>
+      <value property="emergencePeriod">Latin and Greek Christianity grew apart over centuries; the schism of 1054 is the conventional date</value>
+      <value property="originRegion">Latin-speaking western Mediterranean</value>
+      <value property="parentTradition">wmoop.religion/Christianity</value>
+      <value property="symbols">['wmoop.religion/LatinCross']</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Roman Catholicism'" note="Catholicism holds that it continues the Church of the apostles without a new beginning; 1054 is the conventional date of its separation from Eastern Orthodoxy." />
+    </individual>
+    <individual id="wmoop.religion/EasternOrthodoxy" name="Eastern Orthodoxy" instanceOf="wmoop.religion/ReligiousTradition">
+      <definition>The branch of Christianity formed by the autocephalous churches in communion with the Ecumenical Patriarchate of Constantinople.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Ortodoxie</label>
+        </group>
+        <group kind="alt">
+          <label lang="ro">Creștinism ortodox răsăritean</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q3333484</value>
+      <value property="vitality">LIVING</value>
+      <value property="emergencePeriod">Greek and Latin Christianity grew apart over centuries; the schism of 1054 is the conventional date</value>
+      <value property="originRegion">Greek-speaking eastern Roman (Byzantine) Empire</value>
+      <value property="parentTradition">wmoop.religion/Christianity</value>
+      <value property="symbols">['wmoop.religion/OrthodoxCross']</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Eastern Orthodoxy'" note="Like Catholicism, Orthodoxy holds that it continues the apostolic Church; 1054 is a conventional, not a founding, date." />
+    </individual>
+    <individual id="wmoop.religion/OrientalOrthodoxy" name="Oriental Orthodoxy" instanceOf="wmoop.religion/ReligiousTradition">
+      <definition>The branch of Christianity formed by the churches that did not accept the Council of Chalcedon, including the Coptic, Armenian, Syriac and Ethiopian churches.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Ortodoxie orientală</label>
+        </group>
+        <group kind="alt">
+          <label lang="ro">Biserici necalcedoniene</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q111464733</value>
+      <value property="vitality">LIVING</value>
+      <value property="emergencePeriod">after the Council of Chalcedon, 451 CE</value>
+      <value property="emergenceStartYear">451</value>
+      <value property="originRegion">Egypt, Syria and Armenia</value>
+      <value property="parentTradition">wmoop.religion/Christianity</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Oriental Orthodoxy'" />
+    </individual>
+    <individual id="wmoop.religion/Protestantism" name="Protestantism" instanceOf="wmoop.religion/ReligiousTradition">
+      <definition>The branch of Christianity that arose from the 16th-century Reformation, stressing the authority of scripture and salvation by grace through faith.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Protestantism</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q23540</value>
+      <value property="vitality">LIVING</value>
+      <value property="emergencePeriod">16th century CE, from 1517</value>
+      <value property="emergenceStartYear">1517</value>
+      <value property="originRegion">Holy Roman Empire and the Swiss Confederacy</value>
+      <value property="parentTradition">wmoop.religion/Christianity</value>
+      <value property="emergedFrom">['wmoop.religion/Catholicism']</value>
+      <value property="founders">['wmoop.religion/MartinLuther']</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Protestantism'" />
+    </individual>
+    <individual id="wmoop.religion/Lutheranism" name="Lutheranism" instanceOf="wmoop.religion/ReligiousTradition">
+      <definition>The Protestant tradition that follows the theology of Martin Luther as set out in the Lutheran confessions.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Luteranism</label>
+        </group>
+        <group kind="alt">
+          <label lang="ro">Biserica Evanghelică de Confesiune Augustană</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q75809</value>
+      <value property="vitality">LIVING</value>
+      <value property="emergencePeriod">16th century CE, from 1517</value>
+      <value property="emergenceStartYear">1517</value>
+      <value property="originRegion">Electorate of Saxony, Holy Roman Empire</value>
+      <value property="parentTradition">wmoop.religion/Protestantism</value>
+      <value property="founders">['wmoop.religion/MartinLuther']</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Lutheranism'" />
+    </individual>
+    <individual id="wmoop.religion/ReformedChristianity" name="Reformed Christianity" instanceOf="wmoop.religion/ReligiousTradition">
+      <definition>The Protestant tradition shaped by Zwingli, Calvin and the Reformed confessions, also called Calvinism.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Calvinism</label>
+        </group>
+        <group kind="alt">
+          <label lang="ro">Biserica Reformată</label>
+          <label lang="en">Calvinism</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q101849</value>
+      <value property="vitality">LIVING</value>
+      <value property="emergencePeriod">16th century CE, from the 1520s</value>
+      <value property="emergenceStartYear">1520</value>
+      <value property="originRegion">Swiss Confederacy (Zürich, Geneva)</value>
+      <value property="parentTradition">wmoop.religion/Protestantism</value>
+      <value property="founders">['wmoop.religion/JohnCalvin']</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Calvinism'" />
+    </individual>
+    <individual id="wmoop.religion/Anglicanism" name="Anglicanism" instanceOf="wmoop.religion/ReligiousTradition">
+      <definition>The tradition of the Church of England and the churches in communion with the Archbishop of Canterbury.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Anglicanism</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q6423963</value>
+      <value property="vitality">LIVING</value>
+      <value property="emergencePeriod">16th century CE, from the English break with Rome in 1534</value>
+      <value property="emergenceStartYear">1534</value>
+      <value property="originRegion">Kingdom of England</value>
+      <value property="parentTradition">wmoop.religion/Protestantism</value>
+      <value property="emergedFrom">['wmoop.religion/Catholicism']</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Anglicanism'" note="Placed under Protestantism by common reference usage; many Anglicans describe their church as both Catholic and Reformed, a 'middle way', and reject the plain label Protestant." />
+    </individual>
+    <individual id="wmoop.religion/BaptistTradition" name="Baptists" instanceOf="wmoop.religion/ReligiousTradition">
+      <definition>The Protestant tradition that baptizes believers on their profession of faith, usually by immersion, and governs each congregation independently.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Baptiști</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q93191</value>
+      <value property="vitality">LIVING</value>
+      <value property="emergencePeriod">1609 CE</value>
+      <value property="emergenceStartYear">1609</value>
+      <value property="originRegion">English Separatist exiles in Amsterdam, Dutch Republic</value>
+      <value property="parentTradition">wmoop.religion/Protestantism</value>
+      <value property="founders">['wmoop.religion/JohnSmyth', 'wmoop.religion/ThomasHelwys']</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Baptist'" />
+    </individual>
+    <individual id="wmoop.religion/Pentecostalism" name="Pentecostalism" instanceOf="wmoop.religion/ReligiousTradition">
+      <definition>The Protestant tradition that stresses baptism in the Holy Spirit and spiritual gifts such as speaking in tongues and healing.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Penticostalism</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q483978</value>
+      <value property="vitality">LIVING</value>
+      <value property="emergencePeriod">1901-1906 CE (Topeka, then the Azusa Street Revival)</value>
+      <value property="emergenceStartYear">1901</value>
+      <value property="emergenceEndYear">1906</value>
+      <value property="originRegion">United States</value>
+      <value property="parentTradition">wmoop.religion/Protestantism</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Pentecostalism'" />
+    </individual>
+    <individual id="wmoop.religion/Adventism" name="Adventism" instanceOf="wmoop.religion/ReligiousTradition">
+      <definition>The Protestant tradition that expects the imminent second coming of Christ, the largest body of which is the Seventh-day Adventist Church.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Adventism</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q215168</value>
+      <value property="vitality">LIVING</value>
+      <value property="emergencePeriod">from the Millerite movement of the 1840s; the Seventh-day Adventist Church was organised in 1863</value>
+      <value property="emergenceStartYear">1844</value>
+      <value property="emergenceEndYear">1863</value>
+      <value property="originRegion">New England and New York, United States</value>
+      <value property="parentTradition">wmoop.religion/Protestantism</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Adventist'" />
+    </individual>
+    <individual id="wmoop.religion/LatterDaySaintMovement" name="Latter Day Saint movement" instanceOf="wmoop.religion/ReligiousTradition">
+      <definition>The tradition begun by Joseph Smith, which holds that he restored the original church of Christ; its largest body is The Church of Jesus Christ of Latter-day Saints.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Mișcarea Sfinților din Zilele din Urmă</label>
+        </group>
+        <group kind="alt">
+          <label lang="en">Mormonism</label>
+          <label lang="ro">Mormoni</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q1097673</value>
+      <value property="vitality">LIVING</value>
+      <value property="emergencePeriod">1830 CE</value>
+      <value property="emergenceStartYear">1830</value>
+      <value property="originRegion">Western New York, United States</value>
+      <value property="parentTradition">wmoop.religion/Christianity</value>
+      <value property="emergedFrom">['wmoop.religion/Protestantism']</value>
+      <value property="founders">['wmoop.religion/JosephSmith']</value>
+      <value property="sacredTexts">['wmoop.religion/Bible', 'wmoop.religion/BookOfMormon']</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Latter-day Saints'" note="Not a Protestant tradition: it teaches a restoration, not a reformation. Placed under Christianity by its own self-understanding and by common religious-studies usage; the Catholic Church, the Orthodox churches and many Protestant churches regard it as outside historic Christianity because it rejects the Nicene doctrine of the Trinity. The church asks to be called by its full name rather than 'Mormon'." />
+    </individual>
+    <individual id="wmoop.religion/Islam" name="Islam" instanceOf="wmoop.religion/ReligiousTradition">
+      <definition>The tradition of submission to the one God as taught in the Qur'an and the example of Muhammad, whom it regards as the final prophet.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ar">الإسلام</label>
+          <label lang="ro">Islam</label>
+        </group>
+        <group kind="alt">
+          <label lang="ro">Islamism</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q432</value>
+      <value property="vitality">LIVING</value>
+      <value property="emergencePeriod">7th century CE (610-632, per Islamic tradition)</value>
+      <value property="emergenceStartYear">610</value>
+      <value property="emergenceEndYear">632</value>
+      <value property="originRegion">Hejaz, Arabian Peninsula (Mecca and Medina)</value>
+      <value property="founders">['wmoop.religion/Muhammad']</value>
+      <value property="principalDeities">['wmoop.religion/Allah']</value>
+      <value property="doctrines">['wmoop.religion/Tawhid']</value>
+      <value property="preceptSets">['wmoop.religion/FivePillarsOfIslam']</value>
+      <value property="sacredTexts">['wmoop.religion/Quran']</value>
+      <value property="symbols">['wmoop.religion/StarAndCrescent']</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Islam'" note="Islam regards itself as the original religion of all the prophets, restored through Muhammad, not as a new religion with a founder; historians date its emergence to 7th-century Arabia. In Romanian, 'islamism' also names political Islamism, so 'islam' is the clearer label." />
+    </individual>
+    <individual id="wmoop.religion/SunniIslam" name="Sunni Islam" instanceOf="wmoop.religion/ReligiousTradition">
+      <definition>The largest branch of Islam, which recognises the first four caliphs as rightful successors of Muhammad and follows the sunna as transmitted by the community.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ar">أهل السنة والجماعة</label>
+          <label lang="ro">Islam sunnit</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q483654</value>
+      <value property="vitality">LIVING</value>
+      <value property="emergencePeriod">from the succession dispute after 632 CE; consolidated over the following centuries</value>
+      <value property="emergenceStartYear">632</value>
+      <value property="parentTradition">wmoop.religion/Islam</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Sunni'" />
+    </individual>
+    <individual id="wmoop.religion/ShiaIslam" name="Shia Islam" instanceOf="wmoop.religion/ReligiousTradition">
+      <definition>The branch of Islam which holds that leadership of the community passed from Muhammad to Ali and his descendants, the Imams.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ar">شيعة</label>
+          <label lang="ro">Islam șiit</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q9585</value>
+      <value property="vitality">LIVING</value>
+      <value property="emergencePeriod">from the succession dispute after 632 CE; consolidated over the following centuries</value>
+      <value property="emergenceStartYear">632</value>
+      <value property="parentTradition">wmoop.religion/Islam</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Shiʿi'" />
+    </individual>
+    <individual id="wmoop.religion/Judaism" name="Judaism" instanceOf="wmoop.religion/ReligiousTradition">
+      <definition>The tradition of the Jewish people, centred on the covenant with the one God and on the Torah, written and oral.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="he">יהדות</label>
+          <label lang="ro">Iudaism</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q9268</value>
+      <value property="vitality">LIVING</value>
+      <value property="emergencePeriod">Israelite religion of the Iron Age (from c. 1000 BCE); Rabbinic Judaism after 70 CE</value>
+      <value property="originRegion">Ancient Israel and Judah, southern Levant</value>
+      <value property="founders">['wmoop.religion/Abraham', 'wmoop.religion/Moses']</value>
+      <value property="principalDeities">['wmoop.religion/Yhwh']</value>
+      <value property="preceptSets">['wmoop.religion/TenCommandments']</value>
+      <value property="sacredTexts">['wmoop.religion/Tanakh', 'wmoop.religion/Talmud']</value>
+      <value property="symbols">['wmoop.religion/StarOfDavid']</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Judaism'" note="Judaism traces itself to the covenant with Abraham and the revelation to Moses; historians trace it to Israelite religion of the Iron Age and to Rabbinic Judaism after the destruction of the Second Temple (70 CE)." />
+    </individual>
+    <individual id="wmoop.religion/OrthodoxJudaism" name="Orthodox Judaism" instanceOf="wmoop.religion/ReligiousTradition">
+      <definition>The branch of Judaism that holds the written and oral Torah to be divinely given and Jewish law binding in full.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Iudaism ortodox</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q80970</value>
+      <value property="vitality">LIVING</value>
+      <value property="emergencePeriod">19th century CE, as a named movement</value>
+      <value property="originRegion">Central and Eastern Europe</value>
+      <value property="parentTradition">wmoop.religion/Judaism</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Orthodox Judaism'" note="Orthodox Jews see their practice as continuous with traditional Judaism; the name and the self-conscious movement date from the 19th-century response to Reform." />
+    </individual>
+    <individual id="wmoop.religion/ConservativeJudaism" name="Conservative Judaism" instanceOf="wmoop.religion/ReligiousTradition">
+      <definition>The branch of Judaism that holds Jewish law binding while seeing it as developing historically; called Masorti outside North America.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Iudaism conservator</label>
+        </group>
+        <group kind="alt">
+          <label lang="en">Masorti Judaism</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q205644</value>
+      <value property="vitality">LIVING</value>
+      <value property="emergencePeriod">19th century CE</value>
+      <value property="originRegion">German states and the United States</value>
+      <value property="parentTradition">wmoop.religion/Judaism</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Conservative Judaism'" />
+    </individual>
+    <individual id="wmoop.religion/ReformJudaism" name="Reform Judaism" instanceOf="wmoop.religion/ReligiousTradition">
+      <definition>The branch of Judaism that regards Jewish law as open to change and stresses its ethical teaching; also called Progressive or Liberal Judaism.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Iudaism reformat</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q1133485</value>
+      <value property="vitality">LIVING</value>
+      <value property="emergencePeriod">early 19th century CE</value>
+      <value property="originRegion">German states</value>
+      <value property="parentTradition">wmoop.religion/Judaism</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Reform Judaism'" />
+    </individual>
+    <individual id="wmoop.religion/BahaiFaith" name="Bahá'í Faith" instanceOf="wmoop.religion/ReligiousTradition">
+      <definition>The tradition founded by Bahá'u'lláh, which teaches the oneness of God, of religion and of humanity.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Credința Bahá'í</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q22679</value>
+      <value property="vitality">LIVING</value>
+      <value property="emergencePeriod">1863 CE (Bahá'u'lláh's declaration), from the Bábí movement of 1844</value>
+      <value property="emergenceStartYear">1844</value>
+      <value property="emergenceEndYear">1863</value>
+      <value property="originRegion">Qajar Iran and Ottoman Baghdad</value>
+      <value property="emergedFrom">['wmoop.religion/ShiaIslam']</value>
+      <value property="founders">['wmoop.religion/Bahaullah']</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Bahāʾī Faith'" note="It arose from the Bábí movement within Shia Islam, which is why 'emergedFrom' links it to Shia Islam; Bahá'ís regard it as an independent religion, not a branch of Islam." />
+    </individual>
+    <individual id="wmoop.religion/Hinduism" name="Hinduism" instanceOf="wmoop.religion/ReligiousTradition">
+      <definition>The family of traditions of the Indian subcontinent that look to the Vedas and to dharma, called by many adherents Sanatana Dharma, the eternal order.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="sa">सनातन धर्म</label>
+          <label lang="ro">Hinduism</label>
+        </group>
+        <group kind="alt">
+          <label lang="en">Sanatana Dharma</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q9089</value>
+      <value property="vitality">LIVING</value>
+      <value property="emergencePeriod">no single beginning; Vedic roots c. 1500-500 BCE, classical synthesis c. 500 BCE - 300 CE</value>
+      <value property="originRegion">Indian subcontinent</value>
+      <value property="principalDeities">['wmoop.religion/Vishnu', 'wmoop.religion/Shiva']</value>
+      <value property="doctrines">['wmoop.religion/Karma']</value>
+      <value property="ethicalValues">['wmoop.religion/Ahimsa']</value>
+      <value property="sacredTexts">['wmoop.religion/Vedas', 'wmoop.religion/BhagavadGita']</value>
+      <value property="symbols">['wmoop.religion/Om']</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Hinduism'" note="No founder and no single creed. Theism claims below are one per strand, all normal rank: none of them is 'the' answer." />
+    </individual>
+    <individual id="wmoop.religion/Vaishnavism" name="Vaishnavism" instanceOf="wmoop.religion/ReligiousTradition">
+      <definition>The Hindu tradition that worships Vishnu, or his avatars Krishna and Rama, as the supreme God.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Vaișnavism</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q45584</value>
+      <value property="vitality">LIVING</value>
+      <value property="parentTradition">wmoop.religion/Hinduism</value>
+      <value property="principalDeities">['wmoop.religion/Vishnu']</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Vaishnavism'" />
+    </individual>
+    <individual id="wmoop.religion/Shaivism" name="Shaivism" instanceOf="wmoop.religion/ReligiousTradition">
+      <definition>The Hindu tradition that worships Shiva as the supreme God.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Șivaism</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q234953</value>
+      <value property="vitality">LIVING</value>
+      <value property="parentTradition">wmoop.religion/Hinduism</value>
+      <value property="principalDeities">['wmoop.religion/Shiva']</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Shaivism'" />
+    </individual>
+    <individual id="wmoop.religion/Buddhism" name="Buddhism" instanceOf="wmoop.religion/ReligiousTradition">
+      <definition>The tradition based on the teaching of the Buddha on suffering, its cause and the path to liberation from it.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Budism</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q748</value>
+      <value property="vitality">LIVING</value>
+      <value property="emergencePeriod">c. 5th century BCE (dates of the Buddha debated)</value>
+      <value property="originRegion">Gangetic plain, northern Indian subcontinent (Magadha and Kosala)</value>
+      <value property="founders">['wmoop.religion/SiddharthaGautama']</value>
+      <value property="doctrines">['wmoop.religion/FourNobleTruths', 'wmoop.religion/Anatta', 'wmoop.religion/Karma']</value>
+      <value property="ethicalValues">['wmoop.religion/Metta', 'wmoop.religion/Karuna']</value>
+      <value property="preceptSets">['wmoop.religion/FivePrecepts']</value>
+      <value property="sacredTexts">['wmoop.religion/PaliCanon']</value>
+      <value property="symbols">['wmoop.religion/DharmaWheel']</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Buddhism'" note="Gods (devas) appear in Buddhist cosmology but are neither creators nor the source of liberation, hence the non-theistic classification." />
+    </individual>
+    <individual id="wmoop.religion/Theravada" name="Theravada" instanceOf="wmoop.religion/ReligiousTradition">
+      <definition>The branch of Buddhism that preserves the Pali Canon, predominant in Sri Lanka and mainland Southeast Asia.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="pi">Theravāda</label>
+          <label lang="ro">Theravada</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q132265</value>
+      <value property="vitality">LIVING</value>
+      <value property="originRegion">Indian subcontinent and Sri Lanka</value>
+      <value property="parentTradition">wmoop.religion/Buddhism</value>
+      <value property="sacredTexts">['wmoop.religion/PaliCanon']</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Theravada'" />
+    </individual>
+    <individual id="wmoop.religion/Mahayana" name="Mahayana" instanceOf="wmoop.religion/ReligiousTradition">
+      <definition>The branch of Buddhism centred on the bodhisattva path, predominant in East Asia.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="sa">Mahāyāna</label>
+          <label lang="ro">Mahayana</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q48362</value>
+      <value property="vitality">LIVING</value>
+      <value property="emergencePeriod">c. 1st century BCE - 1st century CE</value>
+      <value property="originRegion">Northern Indian subcontinent</value>
+      <value property="parentTradition">wmoop.religion/Buddhism</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Mahayana'" />
+    </individual>
+    <individual id="wmoop.religion/Vajrayana" name="Vajrayana" instanceOf="wmoop.religion/ReligiousTradition">
+      <definition>The tantric branch of Buddhism, predominant in Tibet, Bhutan and Mongolia.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="sa">Vajrayāna</label>
+          <label lang="ro">Vajrayana</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q172175</value>
+      <value property="vitality">LIVING</value>
+      <value property="emergencePeriod">c. 6th-7th century CE</value>
+      <value property="originRegion">Northern Indian subcontinent</value>
+      <value property="parentTradition">wmoop.religion/Buddhism</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Vajrayana'" note="Counted as a third vehicle by some, and as a form of Mahayana by others; placed under Buddhism here, with the Mahayana reading recorded in this note." />
+    </individual>
+    <individual id="wmoop.religion/Jainism" name="Jainism" instanceOf="wmoop.religion/ReligiousTradition">
+      <definition>The tradition of liberation of the soul through non-violence, ascetic discipline and right knowledge, taught by the Tirthankaras.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Jainism</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q9232</value>
+      <value property="vitality">LIVING</value>
+      <value property="emergencePeriod">historically c. 6th-5th century BCE; eternal in Jain teaching</value>
+      <value property="originRegion">Gangetic plain, northern Indian subcontinent</value>
+      <value property="founders">['wmoop.religion/Mahavira']</value>
+      <value property="doctrines">['wmoop.religion/Karma']</value>
+      <value property="ethicalValues">['wmoop.religion/Ahimsa']</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Jainism'" note="Jains regard their teaching as eternal, renewed by 24 Tirthankaras in each cosmic age; historians place Mahavira, the 24th, in the 6th-5th century BCE. No creator god, hence the non-theistic classification." />
+    </individual>
+    <individual id="wmoop.religion/Sikhism" name="Sikhism" instanceOf="wmoop.religion/ReligiousTradition">
+      <definition>The tradition founded by Guru Nanak in the Punjab, centred on devotion to the one God and on the teaching of the ten Gurus and the Guru Granth Sahib.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="pa">ਸਿੱਖੀ</label>
+          <label lang="ro">Sikhism</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q9316</value>
+      <value property="vitality">LIVING</value>
+      <value property="emergencePeriod">late 15th - early 16th century CE</value>
+      <value property="emergenceStartYear">1499</value>
+      <value property="emergenceEndYear">1539</value>
+      <value property="originRegion">Punjab region</value>
+      <value property="founders">['wmoop.religion/GuruNanak']</value>
+      <value property="principalDeities">['wmoop.religion/Waheguru']</value>
+      <value property="doctrines">['wmoop.religion/Karma']</value>
+      <value property="ethicalValues">['wmoop.religion/Seva']</value>
+      <value property="sacredTexts">['wmoop.religion/GuruGranthSahib']</value>
+      <value property="symbols">['wmoop.religion/Khanda']</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Sikhism'" note="Older accounts described it as a synthesis of Hinduism and Islam; Sikh scholarship rejects that reading, so no 'emergedFrom' link is recorded." />
+    </individual>
+    <individual id="wmoop.religion/Zoroastrianism" name="Zoroastrianism" instanceOf="wmoop.religion/ReligiousTradition">
+      <definition>The tradition of ancient Iran based on the teaching of Zarathustra, centred on Ahura Mazda and the struggle between truth and falsehood.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Zoroastrism</label>
+        </group>
+        <group kind="alt">
+          <label lang="ro">Mazdeism</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q9601</value>
+      <value property="vitality">LIVING</value>
+      <value property="emergencePeriod">dates disputed, between c. 1500 and c. 500 BCE</value>
+      <value property="originRegion">Greater Iran</value>
+      <value property="founders">['wmoop.religion/Zarathustra']</value>
+      <value property="principalDeities">['wmoop.religion/AhuraMazda']</value>
+      <value property="sacredTexts">['wmoop.religion/Avesta']</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Zoroastrianism'" />
+    </individual>
+    <individual id="wmoop.religion/Taoism" name="Daoism" instanceOf="wmoop.religion/ReligiousTradition">
+      <definition>The Chinese tradition of living in harmony with the Dao, including both philosophical texts and an organised religion with priests, temples and deities.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="zh">道教</label>
+          <label lang="ro">Taoism</label>
+        </group>
+        <group kind="alt">
+          <label lang="en">Taoism</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q9598</value>
+      <value property="vitality">LIVING</value>
+      <value property="emergencePeriod">philosophical texts from c. 4th century BCE; organised religion from the 2nd century CE</value>
+      <value property="originRegion">China</value>
+      <value property="founders">['wmoop.religion/Laozi']</value>
+      <value property="sacredTexts">['wmoop.religion/Daodejing']</value>
+      <value property="symbols">['wmoop.religion/Taijitu']</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Daoism'" note="Whether 'philosophical' Daoism (daojia) and 'religious' Daoism (daojiao) are one tradition is debated; this individual stands for the religion and its texts." />
+    </individual>
+    <individual id="wmoop.religion/Shinto" name="Shinto" instanceOf="wmoop.religion/ReligiousTradition">
+      <definition>The indigenous tradition of Japan, centred on the worship of kami at shrines.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ja">神道</label>
+          <label lang="ro">Shintoism</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q812767</value>
+      <value property="vitality">LIVING</value>
+      <value property="emergencePeriod">prehistoric roots; named and systematised from c. 6th century CE</value>
+      <value property="originRegion">Japanese archipelago</value>
+      <value property="symbols">['wmoop.religion/Torii']</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Shintō'" note="No founder; it was named and systematised in contrast with Buddhism from about the 6th century CE." />
+    </individual>
+    <individual id="wmoop.religion/AncientGreekReligion" name="Ancient Greek religion" instanceOf="wmoop.religion/ReligiousTradition">
+      <definition>The religion of the ancient Greek world, centred on the worship of the Olympian gods, heroes and local deities in public and household cult.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Religia Greciei antice</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q855270</value>
+      <value property="vitality">HISTORICAL</value>
+      <value property="emergencePeriod">Bronze Age roots; public cult ended in the late 4th century CE</value>
+      <value property="originRegion">Aegean Greek world</value>
+      <value property="principalDeities">['wmoop.religion/Zeus']</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Greek religion'" note="Modern Hellenic polytheism is a revival and, if added, a separate REVIVED tradition that emergedFrom this one." />
+    </individual>
+    <individual id="wmoop.religion/FirstCouncilOfNicaea" name="First Council of Nicaea" instanceOf="wmoop.religion/ReligiousEvent">
+      <definition>The first ecumenical council of the Christian church, which issued the original Nicene Creed against Arianism.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Sinodul I Ecumenic de la Niceea</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q133331</value>
+      <value property="period">325 CE</value>
+      <value property="startYear">325</value>
+      <value property="place">Nicaea, Bithynia, Roman Empire</value>
+      <value property="traditions">['wmoop.religion/Christianity']</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Council of Nicaea'" />
+    </individual>
+    <individual id="wmoop.religion/CouncilOfChalcedon" name="Council of Chalcedon" instanceOf="wmoop.religion/ReligiousEvent">
+      <definition>The ecumenical council that defined Christ as one person in two natures, a definition the Oriental Orthodox churches did not accept.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Sinodul al IV-lea Ecumenic de la Calcedon</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q170531</value>
+      <value property="period">451 CE</value>
+      <value property="startYear">451</value>
+      <value property="place">Chalcedon, Eastern Roman Empire</value>
+      <value property="traditions">['wmoop.religion/Christianity', 'wmoop.religion/OrientalOrthodoxy']</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Council of Chalcedon'" />
+    </individual>
+    <individual id="wmoop.religion/EastWestSchism" name="East-West Schism" instanceOf="wmoop.religion/ReligiousEvent">
+      <definition>The break of communion between the churches of Rome and Constantinople, conventionally dated to the mutual excommunications of 1054.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Marea Schismă</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q51648</value>
+      <value property="period">1054 CE (conventional date of a gradual separation)</value>
+      <value property="startYear">1054</value>
+      <value property="place">Constantinople</value>
+      <value property="traditions">['wmoop.religion/Catholicism', 'wmoop.religion/EasternOrthodoxy']</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Schism of 1054'" note="Historians see a gradual estrangement rather than one event; the excommunications were lifted in 1965." />
+    </individual>
+    <individual id="wmoop.religion/Hijrah" name="Hijrah" instanceOf="wmoop.religion/ReligiousEvent">
+      <definition>The migration of Muhammad and his followers from Mecca to Medina, from which the Islamic calendar counts its years.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ar">الهجرة</label>
+          <label lang="ro">Hegira</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q131482</value>
+      <value property="period">622 CE</value>
+      <value property="startYear">622</value>
+      <value property="place">From Mecca to Yathrib (Medina), Hejaz</value>
+      <value property="traditions">['wmoop.religion/Islam']</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Hijrah'" />
+    </individual>
+    <individual id="wmoop.religion/SuccessionAfterMuhammad" name="Succession dispute after Muhammad" instanceOf="wmoop.religion/ReligiousEvent">
+      <definition>The dispute over the leadership of the Muslim community after Muhammad's death, from which the Sunni and Shia branches developed.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Disputa succesiunii după moartea lui Mahomed</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q4115056</value>
+      <value property="period">from 632 CE</value>
+      <value property="startYear">632</value>
+      <value property="place">Medina, Hejaz</value>
+      <value property="traditions">['wmoop.religion/Islam', 'wmoop.religion/SunniIslam', 'wmoop.religion/ShiaIslam']</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Shiʿi'" note="Sunni and Shia accounts of the succession differ; the branches took their full shape over the following centuries." />
+    </individual>
+    <individual id="wmoop.religion/NinetyFiveTheses" name="Ninety-five Theses" instanceOf="wmoop.religion/ReligiousEvent">
+      <definition>Martin Luther's propositions against the sale of indulgences, conventionally taken as the start of the Protestant Reformation.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Cele 95 de teze</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q157506</value>
+      <value property="period">1517 CE</value>
+      <value property="startYear">1517</value>
+      <value property="place">Wittenberg, Electorate of Saxony, Holy Roman Empire</value>
+      <value property="traditions">['wmoop.religion/Protestantism', 'wmoop.religion/Lutheranism', 'wmoop.religion/Catholicism']</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Ninety-five Theses'" note="Traditionally dated 31 October 1517; whether Luther posted them on the church door at Wittenberg is debated." />
+    </individual>
+    <individual id="wmoop.religion/OrganizationOfTheChurchOfChrist" name="Organization of the Church of Christ" instanceOf="wmoop.religion/ReligiousEvent">
+      <definition>The formal organization of Joseph Smith's church, the beginning of the Latter Day Saint movement as an institution.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Organizarea Bisericii lui Hristos (1830)</label>
+        </group>
+      </labels>
+      <value property="period">6 April 1830</value>
+      <value property="startYear">1830</value>
+      <value property="place">Western New York, United States</value>
+      <value property="traditions">['wmoop.religion/LatterDaySaintMovement']</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Latter-day Saints'" />
+      <provenance source="The Church of Jesus Christ of Latter-day Saints, Church History in the Fulness of Times" kind="sourced" ref="chapter 6" note="The church's own account places the meeting in the home of Peter Whitmer Sr. at Fayette, New York; 'place' stays at the regional level." url="https://www.churchofjesuschrist.org/study/manual/church-history-in-the-fulness-of-times/chapter-six" />
+    </individual>
+    <individual id="wmoop.religion/DeclarationOfBahaullah" name="Declaration of Bahá'u'lláh" instanceOf="wmoop.religion/ReligiousEvent">
+      <definition>Bahá'u'lláh's announcement to his companions in the Garden of Ridvan that he was the messenger foretold by the Báb.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Declarația lui Bahá'u'lláh (Ridván)</label>
+        </group>
+      </labels>
+      <value property="period">April 1863</value>
+      <value property="startYear">1863</value>
+      <value property="place">Garden of Ridvan, Baghdad, Ottoman Empire</value>
+      <value property="traditions">['wmoop.religion/BahaiFaith']</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Bahāʾī Faith'" />
+    </individual>
+    <individual id="wmoop.religion/AzusaStreetRevival" name="Azusa Street Revival" instanceOf="wmoop.religion/ReligiousEvent">
+      <definition>The revival led by William J. Seymour in Los Angeles that spread Pentecostalism worldwide.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Trezirea de pe Azusa Street</label>
+        </group>
+      </labels>
+      <value property="wikidataId">Q794392</value>
+      <value property="period">1906 - c. 1915</value>
+      <value property="startYear">1906</value>
+      <value property="endYear">1915</value>
+      <value property="place">Los Angeles, California, United States</value>
+      <value property="traditions">['wmoop.religion/Pentecostalism']</value>
+      <provenance source="Encyclopaedia Britannica" kind="sourced" ref="entry 'Pentecostalism'" />
+    </individual>
+    <individual id="wmoop.religion/RomanianOrthodoxChurch" name="Romanian Orthodox Church" instanceOf="wmoop.religion/ReligiousOrganization">
+      <definition>The autocephalous Eastern Orthodox church of Romania, a patriarchate since 1925.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Biserica Ortodoxă Română</label>
+        </group>
+      </labels>
+      <value property="legalName">Biserica Ortodoxă Română</value>
+      <value property="tradition">wmoop.religion/EasternOrthodoxy</value>
+      <provenance source="Legea nr. 489/2006 privind libertatea religioasă și regimul general al cultelor" kind="sourced" ref="annex, no. 1" url="https://legislatie.just.ro/Public/DetaliiDocument/156588" />
+      <provenance source="Secretariatul de Stat pentru Culte" kind="sourced" ref="list of recognised religious denominations" url="https://culte.gov.ro/culte-religioase/" />
+      <provenance source="Basilica.ro, news agency of the Romanian Patriarchate" kind="sourced" ref="Synodal act on 140 years of autocephaly and the centenary of the Patriarchate" note="Autocephaly recognised on 25 April 1885; raised to a patriarchate on 4 February 1925. Neither is a founding date, so foundingDate stays empty." url="https://basilica.ro/en/synodal-act-of-the-romanian-orthodox-church-140-years-of-autocephaly-and-the-centennial-of-the-romanian-patriarchate-en-gr/" />
+    </individual>
+    <individual id="wmoop.religion/BaptistUnionOfRomania" name="Baptist Union of Romania" instanceOf="wmoop.religion/ReligiousOrganization">
+      <definition>The union of Baptist churches that holds the status of a recognised religious denomination in Romania.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Uniunea Bisericilor Creștine Baptiste din România</label>
+        </group>
+        <group kind="alt">
+          <label lang="ro">Cultul Creștin Baptist</label>
+        </group>
+      </labels>
+      <value property="legalName">Uniunea Bisericilor Creștine Baptiste din România</value>
+      <value property="tradition">wmoop.religion/BaptistTradition</value>
+      <provenance source="Legea nr. 489/2006 privind libertatea religioasă și regimul general al cultelor" kind="sourced" ref="annex, no. 11" url="https://legislatie.just.ro/Public/DetaliiDocument/156588" />
+      <provenance source="Secretariatul de Stat pentru Culte" kind="sourced" ref="list of recognised religious denominations" note="Listed there as 'Cultul Creștin Baptist – Uniunea Bisericilor Creștine Baptiste din România'." url="https://culte.gov.ro/culte-religioase/" />
+    </individual>
+    <individual id="wmoop.religion/PentecostalUnionOfRomania" name="Pentecostal Union of Romania" instanceOf="wmoop.religion/ReligiousOrganization">
+      <definition>The Pentecostal union, the Apostolic Church of God, that holds the status of a recognised religious denomination in Romania.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Uniunea Penticostală – Biserica lui Dumnezeu Apostolică din România</label>
+        </group>
+        <group kind="alt">
+          <label lang="ro">Cultul Creștin Penticostal</label>
+        </group>
+      </labels>
+      <value property="legalName">Uniunea Penticostală – Biserica lui Dumnezeu Apostolică din România</value>
+      <value property="tradition">wmoop.religion/Pentecostalism</value>
+      <provenance source="Legea nr. 489/2006 privind libertatea religioasă și regimul general al cultelor" kind="sourced" ref="annex, no. 14" url="https://legislatie.just.ro/Public/DetaliiDocument/156588" />
+      <provenance source="Secretariatul de Stat pentru Culte" kind="sourced" ref="list of recognised religious denominations" note="Listed there as 'Cultul Creștin Penticostal – Biserica lui Dumnezeu Apostolică din România'." url="https://culte.gov.ro/culte-religioase/" />
+    </individual>
+    <individual id="wmoop.religion/AdventistChurchOfRomania" name="Seventh-day Adventist Church in Romania" instanceOf="wmoop.religion/ReligiousOrganization">
+      <definition>The Seventh-day Adventist church that holds the status of a recognised religious denomination in Romania.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Biserica Creștină Adventistă de Ziua a Șaptea din România</label>
+        </group>
+        <group kind="alt">
+          <label lang="ro">Biserica Adventistă de Ziua a Șaptea din România</label>
+        </group>
+      </labels>
+      <value property="legalName">Biserica Creștină Adventistă de Ziua a Șaptea din România</value>
+      <value property="tradition">wmoop.religion/Adventism</value>
+      <provenance source="Legea nr. 489/2006 privind libertatea religioasă și regimul general al cultelor" kind="sourced" ref="annex, no. 15" url="https://legislatie.just.ro/Public/DetaliiDocument/156588" />
+      <provenance source="Secretariatul de Stat pentru Culte" kind="sourced" ref="list of recognised religious denominations" note="Listed there as 'Biserica Adventistă de Ziua a Șaptea din România'." url="https://culte.gov.ro/culte-religioase/" />
+    </individual>
+    <individual id="wmoop.religion/AssembliesOfGodRomania" name="Assemblies of God in Romania" instanceOf="wmoop.religion/ReligiousOrganization">
+      <definition>The Pentecostal Assemblies of God in Romania, recognised as a religious denomination in 2024, the nineteenth under Law no. 489/2006.</definition>
+      <labels>
+        <group kind="pref">
+          <label lang="ro">Adunările lui Dumnezeu din România</label>
+        </group>
+      </labels>
+      <value property="legalName">Adunările lui Dumnezeu din România</value>
+      <value property="tradition">wmoop.religion/Pentecostalism</value>
+      <provenance source="Secretariatul de Stat pentru Culte" kind="sourced" ref="list of recognised religious denominations" url="https://culte.gov.ro/culte-religioase/" />
+    </individual>
+  </individuals>
+</module>

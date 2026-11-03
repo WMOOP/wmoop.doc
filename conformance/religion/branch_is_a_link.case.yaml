@@ -1,0 +1,24 @@
+id: conf.religion.tradition.branch-is-a-link
+category: structural
+description: A branch of a tradition is another ReligiousTradition linked by parentTradition, never a subclass of it.
+given:
+  - construct: { type: wmoop.religion/ReligiousTradition, name: Christianity, with: { vitality: LIVING }, bind: christianity }
+  - construct:
+      type: wmoop.religion/ReligiousTradition
+      name: Protestantism
+      with: { vitality: LIVING, parentTradition: { ref: christianity } }
+      bind: protestantism
+  - construct:
+      type: wmoop.religion/ReligiousTradition
+      name: Baptists
+      with: { vitality: LIVING, parentTradition: { ref: protestantism } }
+      bind: baptists
+expect:
+  - type_chain: { subject: baptists }
+    equals: [wmoop.religion/ReligiousTradition, wmoop.religion/BeliefSystem]
+  - get: { subject: baptists, property: parentTradition }
+    equals: { ref: protestantism }
+  - get: { subject: protestantism, property: parentTradition }
+    equals: { ref: christianity }
+  - get: { subject: christianity, property: parentTradition }
+    equals: null

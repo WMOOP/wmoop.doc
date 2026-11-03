@@ -16,8 +16,8 @@
 #   candidate — proposed in the taxonomy doc; needs a steward + sourcing before
 #               it is added (Risk: scope explosion → opt-in, maintainer-gated)
 
-registry_version: 0.3.0
-updated: 2026-10-18
+registry_version: 0.4.0
+updated: 2026-11-03
 
 # ---------------------------------------------------------------------------
 # Clusters are ORGANISATIONAL groupings only (they are not modules and have no
@@ -56,7 +56,7 @@ clusters:
 # domain's dependencies must be listed too (so a drawn node never hides an edge).
 # Omit this key to draw every domain.
 # ---------------------------------------------------------------------------
-dependency_graph: [core, math, chemistry, nature, space, geography, transport, architecture, org, education, music, philosophy, law, food, medicine]
+dependency_graph: [core, math, chemistry, nature, space, geography, transport, architecture, org, education, music, philosophy, religion, law, food, medicine]
 
 # ---------------------------------------------------------------------------
 # Domains are the L1 modules (`wmoop.<id>`). `depends_on` must stay ACYCLIC
@@ -222,10 +222,11 @@ domains:
   - id: religion
     module: wmoop.religion
     cluster: culture
-    status: candidate
+    status: seeded
     steward: ~
-    depends_on: [core]
+    depends_on: [core, nature, org]
     subdomains: [religion.traditions, religion.mythology]
+    note: "The worked example of docs/08-contributing-a-domain.md. BeliefSystem -> ReligiousTradition with every tradition as an L2 individual; branches by parentTradition (part-whole), derivation by emergedFrom; theism type, religious family and Romanian groupings as schemes (ADR 0001). Deity (a conception), ReligiousFigure (historicity stated), Teaching -> {Doctrine, EthicalValue, Precept}, SacredText, ReligiousSymbol, ReligiousEvent; ReligiousOrganization IS-A org/Organization; Cleric a role on Person. No person is classified by religion (ETHICS 3.1). Design: docs/domains/religion/WHITEPAPER.md."
 
   # --- Technology & Artifacts ----------------------------------------------
   - id: transport

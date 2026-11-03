@@ -473,6 +473,151 @@
       ]
     },
     {
+      "file": "conformance/religion/organization_is_organization.case.yaml",
+      "id": "conf.religion.organization.type-chain",
+      "category": "structural",
+      "description": "A ReligiousOrganization is a wmoop.org Organization and belongs to a tradition, which is not an organization.",
+      "given": [
+        {
+          "construct": {
+            "type": "wmoop.religion/ReligiousTradition",
+            "name": "Eastern Orthodoxy",
+            "with": {
+              "vitality": "LIVING"
+            },
+            "bind": "orthodoxy"
+          }
+        },
+        {
+          "construct": {
+            "type": "wmoop.religion/ReligiousOrganization",
+            "name": "Romanian Orthodox Church",
+            "with": {
+              "legalName": "Biserica Ortodoxă Română",
+              "tradition": {
+                "ref": "orthodoxy"
+              }
+            },
+            "bind": "bor"
+          }
+        }
+      ],
+      "expect": [
+        {
+          "type_chain": {
+            "subject": "bor"
+          },
+          "equals": [
+            "wmoop.religion/ReligiousOrganization",
+            "wmoop.org/Organization"
+          ]
+        },
+        {
+          "is_a": {
+            "subject": "bor",
+            "type": "wmoop.org/Organization"
+          },
+          "equals": true
+        },
+        {
+          "is_a": {
+            "subject": "orthodoxy",
+            "type": "wmoop.org/Organization"
+          },
+          "equals": false
+        },
+        {
+          "get": {
+            "subject": "bor",
+            "property": "tradition"
+          },
+          "equals": {
+            "ref": "orthodoxy"
+          }
+        }
+      ]
+    },
+    {
+      "file": "conformance/religion/branch_is_a_link.case.yaml",
+      "id": "conf.religion.tradition.branch-is-a-link",
+      "category": "structural",
+      "description": "A branch of a tradition is another ReligiousTradition linked by parentTradition, never a subclass of it.",
+      "given": [
+        {
+          "construct": {
+            "type": "wmoop.religion/ReligiousTradition",
+            "name": "Christianity",
+            "with": {
+              "vitality": "LIVING"
+            },
+            "bind": "christianity"
+          }
+        },
+        {
+          "construct": {
+            "type": "wmoop.religion/ReligiousTradition",
+            "name": "Protestantism",
+            "with": {
+              "vitality": "LIVING",
+              "parentTradition": {
+                "ref": "christianity"
+              }
+            },
+            "bind": "protestantism"
+          }
+        },
+        {
+          "construct": {
+            "type": "wmoop.religion/ReligiousTradition",
+            "name": "Baptists",
+            "with": {
+              "vitality": "LIVING",
+              "parentTradition": {
+                "ref": "protestantism"
+              }
+            },
+            "bind": "baptists"
+          }
+        }
+      ],
+      "expect": [
+        {
+          "type_chain": {
+            "subject": "baptists"
+          },
+          "equals": [
+            "wmoop.religion/ReligiousTradition",
+            "wmoop.religion/BeliefSystem"
+          ]
+        },
+        {
+          "get": {
+            "subject": "baptists",
+            "property": "parentTradition"
+          },
+          "equals": {
+            "ref": "protestantism"
+          }
+        },
+        {
+          "get": {
+            "subject": "protestantism",
+            "property": "parentTradition"
+          },
+          "equals": {
+            "ref": "christianity"
+          }
+        },
+        {
+          "get": {
+            "subject": "christianity",
+            "property": "parentTradition"
+          },
+          "equals": null
+        }
+      ]
+    },
+    {
       "file": "conformance/transport/driver_requires_person.case.yaml",
       "id": "conf.transport.driver.attach-requires-person",
       "category": "role",
