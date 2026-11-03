@@ -1,0 +1,8 @@
+id: conf.core.quantity.requires-unit
+category: constraint
+description: A quantity without a unit is rejected; a measurable property is never a bare number.
+given:
+  - construct:
+      type: wmoop.transport/Moped
+      with: { wheelCount: 2, engineDisplacement: { value: 49, unit: "" } }
+expect: { outcome: error, error_code: WM-UNIT-MISSING }

@@ -1,0 +1,6 @@
+id: conf.core.id.rejects-blank
+category: constraint
+description: An entity whose identifier is blank is rejected.
+given:
+  - construct: { type: wmoop.nature/Person, id: "   ", with: { fullName: Ada } }
+expect: { outcome: error, error_code: WM-ID-INVALID }

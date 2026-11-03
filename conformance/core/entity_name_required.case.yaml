@@ -1,0 +1,6 @@
+id: conf.core.entity.name-required
+category: constraint
+description: An entity whose name is blank is rejected.
+given:
+  - construct: { type: wmoop.nature/Person, name: " ", with: { fullName: Ada } }
+expect: { outcome: error, error_code: WM-REQUIRED-MISSING }

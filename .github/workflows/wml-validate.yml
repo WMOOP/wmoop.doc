@@ -1,8 +1,8 @@
 name: WML validation
 
-# Machine-checkable Definition of Done (Invariant 6): every change to the model or
-# the schema must keep the WML grammar + semantic gates green, and the XML projections
-# in sync with the YAML source.
+# Machine-checkable Definition of Done (Invariant 6): every change to the model, the
+# schema or the conformance vectors must keep the WML grammar + semantic gates green, the
+# XML projections in sync with the YAML source, and the vectors consistent with the model.
 
 on:
   push:
@@ -10,6 +10,7 @@ on:
       - ".gitmodules"
       - "external/**"
       - "model/**"
+      - "conformance/**"
       - "schema/**"
       - ".github/workflows/wml-validate.yml"
   pull_request:
@@ -17,6 +18,7 @@ on:
       - ".gitmodules"
       - "external/**"
       - "model/**"
+      - "conformance/**"
       - "schema/**"
       - ".github/workflows/wml-validate.yml"
   workflow_dispatch:
@@ -45,6 +47,12 @@ jobs:
 
       - name: Check XML projections are up to date
         run: python schema/yaml_to_xml.py --check
+
+      - name: Self-test the conformance checker (one failing case per rule)
+        run: python schema/test_build_conformance.py
+
+      - name: Check the conformance vectors against the model; suite.json is current
+        run: python schema/build_conformance.py --check
 
       - name: The grammar pin is a commit on WMOOP/wmoop.json main
         run: |

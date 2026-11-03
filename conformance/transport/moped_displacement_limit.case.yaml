@@ -1,0 +1,13 @@
+id: conf.transport.moped.displacement-limit
+category: override
+description: A Moped narrows Motorcycle's engineDisplacement to at most 50 cm3, so 60 cm3 is rejected.
+status: pending
+reason: The generated code does not enforce property constraints (minimum, maximum, enum) yet.
+given:
+  - construct:
+      type: wmoop.transport/Moped
+      with: { wheelCount: 2, engineDisplacement: { value: 60, unit: cm3 } }
+expect:
+  outcome: error
+  error_code: WM-CONSTRAINT-MAX
+  violated: wmoop.transport/Motorcycle#engineDisplacement

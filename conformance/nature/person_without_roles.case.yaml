@@ -1,0 +1,12 @@
+id: conf.nature.person.no-roles
+category: role
+description: A new Person plays no roles, and asking for one finds none.
+given:
+  - construct: { type: wmoop.nature/Person, with: { fullName: Ada }, bind: ada }
+expect:
+  - roles: { subject: ada }
+    equals: []
+  - has_role: { subject: ada, role: wmoop.transport/Driver }
+    equals: false
+  - get_role: { subject: ada, role: wmoop.transport/Driver }
+    equals: null

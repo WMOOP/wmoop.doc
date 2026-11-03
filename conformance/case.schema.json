@@ -1,0 +1,256 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/WMOOP/wmoop.doc/blob/main/conformance/case.schema.json",
+  "title": "WMOOP conformance case, format 1",
+  "description": "One conformance vector: steps that build a small world, then the outcome every binding must reach. The format is specified in conformance/README.md.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "category", "description", "expect"],
+  "properties": {
+    "id": {
+      "description": "Stable, unique id: conf.<domain>.<subject>.<rule>, lower-case words joined by hyphens.",
+      "type": "string",
+      "pattern": "^conf(\\.[a-z0-9]+(-[a-z0-9]+)*){2,}$"
+    },
+    "category": {
+      "description": "The §3.2 category the case proves.",
+      "enum": ["structural", "constraint", "default", "override", "role", "relation", "enum", "equivalence", "behaviour"]
+    },
+    "description": { "type": "string", "minLength": 1 },
+    "status": {
+      "description": "active (the default): every binding must pass. pending: the model specifies it, no binding implements it yet.",
+      "enum": ["active", "pending"]
+    },
+    "reason": { "description": "Why a pending case is pending.", "type": "string", "minLength": 1 },
+    "given": { "type": "array", "items": { "$ref": "#/$defs/step" } },
+    "expect": {
+      "oneOf": [
+        { "$ref": "#/$defs/error" },
+        { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/assertion" } }
+      ]
+    }
+  },
+  "if": { "required": ["status"], "properties": { "status": { "const": "pending" } } },
+  "then": { "required": ["reason"] },
+  "else": { "not": { "required": ["reason"] } },
+  "$defs": {
+    "name": {
+      "description": "A name a step binds and later steps refer to.",
+      "type": "string",
+      "pattern": "^[a-z][A-Za-z0-9]*$"
+    },
+    "typeId": {
+      "type": "string",
+      "pattern": "^wmoop\\.[a-z][a-z0-9]*(\\.[a-z][a-z0-9]*)*/[A-Z][A-Za-z0-9]*$"
+    },
+    "member": {
+      "description": "A property, relation end or operation, by its model name.",
+      "type": "string",
+      "pattern": "^[a-z][A-Za-z0-9]*$"
+    },
+    "code": { "type": "string", "pattern": "^WM-[A-Z0-9]+(-[A-Z0-9]+)*$" },
+    "value": {
+      "oneOf": [
+        { "type": ["string", "number", "boolean", "null"] },
+        { "type": "array", "items": { "$ref": "#/$defs/value" } },
+        {
+          "description": "A date.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["date"],
+          "properties": { "date": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" } }
+        },
+        {
+          "description": "A quantity: a number with its unit.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["value", "unit"],
+          "properties": { "value": { "type": "number" }, "unit": { "type": "string" } }
+        },
+        {
+          "description": "An identifier (ConceptId).",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["id"],
+          "properties": { "id": { "type": "string" } }
+        },
+        {
+          "description": "An object an earlier step bound.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["ref"],
+          "properties": { "ref": { "$ref": "#/$defs/name" } }
+        }
+      ]
+    },
+    "with": {
+      "type": "object",
+      "propertyNames": { "$ref": "#/$defs/member" },
+      "additionalProperties": { "$ref": "#/$defs/value" }
+    },
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["subject"],
+      "properties": { "subject": { "$ref": "#/$defs/name" } }
+    },
+    "subjectAnd": {
+      "description": "A query's subject; each query that refers here adds its other arguments.",
+      "type": "object",
+      "required": ["subject"],
+      "properties": { "subject": { "$ref": "#/$defs/name" } }
+    },
+    "step": {
+      "type": "object",
+      "minProperties": 1,
+      "maxProperties": 1,
+      "additionalProperties": false,
+      "properties": {
+        "construct": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type"],
+          "properties": {
+            "type": { "$ref": "#/$defs/typeId" },
+            "id": { "type": "string" },
+            "name": { "type": "string" },
+            "with": { "$ref": "#/$defs/with" },
+            "bind": { "$ref": "#/$defs/name" }
+          }
+        },
+        "attach_role": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["to"],
+          "properties": {
+            "to": { "$ref": "#/$defs/name" },
+            "role": { "$ref": "#/$defs/typeId" },
+            "with": { "$ref": "#/$defs/with" },
+            "bind": { "$ref": "#/$defs/name" },
+            "ref": { "$ref": "#/$defs/name" }
+          },
+          "oneOf": [
+            { "required": ["role"], "not": { "required": ["ref"] } },
+            {
+              "required": ["ref"],
+              "not": { "anyOf": [{ "required": ["role"] }, { "required": ["with"] }, { "required": ["bind"] }] }
+            }
+          ]
+        },
+        "link": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["subject", "relation", "to"],
+          "properties": {
+            "subject": { "$ref": "#/$defs/name" },
+            "relation": { "$ref": "#/$defs/member" },
+            "to": { "$ref": "#/$defs/name" }
+          }
+        },
+        "unlink": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["subject", "relation", "from"],
+          "properties": {
+            "subject": { "$ref": "#/$defs/name" },
+            "relation": { "$ref": "#/$defs/member" },
+            "from": { "$ref": "#/$defs/name" }
+          }
+        },
+        "assert": { "$ref": "#/$defs/assertion" }
+      }
+    },
+    "assertion": {
+      "description": "Exactly one query and the value it must equal.",
+      "type": "object",
+      "required": ["equals"],
+      "minProperties": 2,
+      "maxProperties": 2,
+      "additionalProperties": false,
+      "properties": {
+        "equals": { "$ref": "#/$defs/value" },
+        "type_chain": { "$ref": "#/$defs/subject" },
+        "roles": { "$ref": "#/$defs/subject" },
+        "canonical_json": { "$ref": "#/$defs/subject" },
+        "is_a": {
+          "$ref": "#/$defs/subjectAnd",
+          "required": ["type"],
+          "properties": { "subject": true, "type": { "$ref": "#/$defs/typeId" } },
+          "additionalProperties": false
+        },
+        "get": {
+          "$ref": "#/$defs/subjectAnd",
+          "required": ["property"],
+          "properties": { "subject": true, "property": { "$ref": "#/$defs/member" } },
+          "additionalProperties": false
+        },
+        "has_role": {
+          "$ref": "#/$defs/subjectAnd",
+          "required": ["role"],
+          "properties": { "subject": true, "role": { "$ref": "#/$defs/typeId" } },
+          "additionalProperties": false
+        },
+        "get_role": {
+          "$ref": "#/$defs/subjectAnd",
+          "required": ["role"],
+          "properties": { "subject": true, "role": { "$ref": "#/$defs/typeId" } },
+          "additionalProperties": false
+        },
+        "has_capability": {
+          "$ref": "#/$defs/subjectAnd",
+          "required": ["capability"],
+          "properties": { "subject": true, "capability": { "$ref": "#/$defs/typeId" } },
+          "additionalProperties": false
+        },
+        "call": {
+          "$ref": "#/$defs/subjectAnd",
+          "required": ["operation"],
+          "properties": {
+            "subject": true,
+            "operation": { "$ref": "#/$defs/member" },
+            "args": { "type": "array", "items": { "$ref": "#/$defs/value" } }
+          },
+          "additionalProperties": false
+        },
+        "text": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/subjectAnd",
+              "properties": { "subject": true, "property": { "$ref": "#/$defs/member" } },
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["value"],
+              "properties": { "value": { "$ref": "#/$defs/value" } }
+            }
+          ]
+        },
+        "role_subject": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["role"],
+          "properties": { "role": { "$ref": "#/$defs/name" } }
+        },
+        "same_value": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": { "$ref": "#/$defs/value" }
+        }
+      }
+    },
+    "error": {
+      "description": "The last step fails with this code; every step before it succeeds.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["outcome", "error_code"],
+      "properties": {
+        "outcome": { "const": "error" },
+        "error_code": { "$ref": "#/$defs/code" },
+        "violated": { "description": "The member whose rule fails (informative).", "type": "string" }
+      }
+    }
+  }
+}

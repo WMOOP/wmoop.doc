@@ -1,0 +1,6 @@
+id: conf.transport.vehicle.abstract
+category: structural
+description: Vehicle is abstract, so it cannot be constructed; only its concrete kinds can.
+given:
+  - construct: { type: wmoop.transport/Vehicle, with: { wheelCount: 4 } }
+expect: { outcome: error, error_code: WM-ABSTRACT-INSTANTIATION }

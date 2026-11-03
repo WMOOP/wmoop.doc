@@ -1,0 +1,20 @@
+id: conf.transport.owner.owns-in-step
+category: relation
+description: Owner.owns and Vehicle.ownedBy are two ends of one relation, kept in step from either side.
+given:
+  - construct: { type: wmoop.nature/Person, with: { fullName: Ada }, bind: ada }
+  - attach_role: { role: wmoop.transport/Owner, to: ada, bind: owner }
+  - construct:
+      type: wmoop.transport/Moped
+      with: { wheelCount: 2, engineDisplacement: { value: 49, unit: cm3 } }
+      bind: moped
+  - link: { subject: owner, relation: owns, to: moped }
+  - assert:
+      get: { subject: moped, property: ownedBy }
+      equals: [{ ref: owner }]
+  - unlink: { subject: moped, relation: ownedBy, from: owner }
+expect:
+  - get: { subject: owner, property: owns }
+    equals: []
+  - get: { subject: moped, property: ownedBy }
+    equals: []

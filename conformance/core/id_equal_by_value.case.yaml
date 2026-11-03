@@ -1,0 +1,8 @@
+id: conf.core.id.equal-by-value
+category: equivalence
+description: Two identifiers are equal, and hash alike, exactly when their text is equal.
+expect:
+  - same_value: [{ id: wmoop.x/y }, { id: wmoop.x/y }]
+    equals: true
+  - same_value: [{ id: wmoop.x/y }, { id: wmoop.x/z }]
+    equals: false

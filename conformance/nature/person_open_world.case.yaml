@@ -1,0 +1,10 @@
+id: conf.nature.person.absent-stays-absent
+category: default
+description: An optional property left out reads as absent, never as a made-up value.
+given:
+  - construct: { type: wmoop.nature/Person, with: { fullName: Ada }, bind: ada }
+expect:
+  - get: { subject: ada, property: dateOfBirth }
+    equals: null
+  - get: { subject: ada, property: legCount }
+    equals: null

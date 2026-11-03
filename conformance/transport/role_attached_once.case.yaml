@@ -1,0 +1,10 @@
+id: conf.transport.driver.attached-once
+category: role
+description: A role object belongs to one subject; attaching it to a second one is rejected.
+given:
+  - construct: { type: wmoop.transport/Driver, with: { licenceNumber: RO-123, licenceCategories: [B] }, bind: licence }
+  - construct: { type: wmoop.nature/Person, with: { fullName: Ada }, bind: ada }
+  - construct: { type: wmoop.nature/Person, with: { fullName: Bob }, bind: bob }
+  - attach_role: { to: ada, ref: licence }
+  - attach_role: { to: bob, ref: licence }
+expect: { outcome: error, error_code: WM-ROLE-ALREADY-ATTACHED }

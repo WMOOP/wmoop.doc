@@ -1,0 +1,12 @@
+id: conf.nature.person.type-chain
+category: structural
+description: A Person is a Human and an Animal, and has the legs an Animal has.
+given:
+  - construct: { type: wmoop.nature/Person, with: { fullName: Ada Lovelace, legCount: 2 }, bind: ada }
+expect:
+  - type_chain: { subject: ada }
+    equals: [wmoop.nature/Person, wmoop.nature/Human, wmoop.nature/Animal]
+  - is_a: { subject: ada, type: wmoop.nature/Human }
+    equals: true
+  - get: { subject: ada, property: legCount }
+    equals: 2
