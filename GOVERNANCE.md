@@ -19,7 +19,7 @@ For *what makes a contribution factually and ethically acceptable*, see **[ETHIC
 
 ### 1. Scope and first principles
 
-WMOOP maintains a single, language-neutral **World Model (WM)** — the canonical, declarative ontology that lives in `wmoop.doc` — and a set of per-language repositories (`wmoop.net`, `wmoop.java`, `wmoop.py`, `wmoop.cpp`) that are **generated from and conformance-tested against** the WM, built by the tooling in `wmoop.tools`. The full repo list and every CI-enforced constant are fixed in the **Normative constants** table (§1.1).
+WMOOP maintains a single, language-neutral **World Model (WM)** — the canonical, declarative ontology that lives in `wmoop.doc` — and a set of per-language repositories (`wmoop.net`, `wmoop.java`, `wmoop.py`, `wmoop.cpp`, `wmoop.js`) that are **generated from and conformance-tested against** the WM, built by the tooling in `wmoop.tools`. The full repo list and every CI-enforced constant are fixed in the **Normative constants** table (§1.1).
 
 This governance is bound by eight **architectural invariants**. They are not up for casual change; altering any of them requires a **Meta-RFC** (§6) and a Technical Steering Committee (TSC) supermajority (§4.4).
 
@@ -60,8 +60,8 @@ This governance is bound by eight **architectural invariants**. They are not up 
 | **Meta-schema (grammar)** | Canonical in the **`wmoop.json`** repo (`wml.schema.json` + the hand-maintained `wml.xsd`); `wmoop.doc` pins it as the git submodule `external/wmoop.json` and keeps no copies (see `schema/README.md`) |
 | **Compiled model artefact** | `wm-<ver>.json` (RFC 8785 JCS), published as a GitHub Release of `wmoop.doc` — distinct from the `wmoop.json` meta-schema repo. |
 | **Compiler / tooling home** | `wmoop.tools` (ships `wmoopc`, the generators, projectors, conformance runner) |
-| **Conformance-gated bindings (v1)** | `wmoop.net` (C#), `wmoop.java`, `wmoop.py`, `wmoop.cpp` |
-| **Planned bindings (not yet conformance-gated)** | `wmoop.js`, `wmoop.db` |
+| **Conformance-gated bindings (v1)** | `wmoop.net` (C#), `wmoop.java`, `wmoop.py`, `wmoop.cpp`, `wmoop.js` (TypeScript) |
+| **Planned bindings (not yet conformance-gated)** | `wmoop.db` |
 | **License — code** | Apache-2.0 (chosen) |
 | **License — model & docs** | CC-BY-4.0 (chosen) |
 | **AI PR — routine size** | ≤ 5 node files per automated PR; larger imports require an RFC + a sponsoring steward |

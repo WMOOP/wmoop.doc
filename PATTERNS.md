@@ -4,13 +4,13 @@
 
 > **Status:** Normative for all contributions. If a contribution in any language departs from this guide, the departure must be justified in review.
 >
-> **Audience:** Contributors writing or reviewing WMOOP code in C#, Java, Python, or C++ — and anyone extending the canonical **WML** model in `wmoop.doc`.
+> **Audience:** Contributors writing or reviewing WMOOP code in C#, Java, Python, C++, or TypeScript — and anyone extending the canonical **WML** model in `wmoop.doc`.
 
 ---
 
 ## 0. Orientation — why this document exists
 
-WMOOP models *the world* as a schema-first, language-neutral object model. The canonical model is written **once** as **WML** (the DSL in `wmoop.doc`) — the single source of truth — and idiomatic C#, Java, Python, and C++ data classes are **generated** from it and conformance-tested.
+WMOOP models *the world* as a schema-first, language-neutral object model. The canonical model is written **once** as **WML** (the DSL in `wmoop.doc`) — the single source of truth — and idiomatic C#, Java, Python, C++, and TypeScript data classes are **generated** from it and conformance-tested.
 
 The model is layered:
 
@@ -47,7 +47,7 @@ This is binding for **all** repos (`wmoop.doc`, `wmoop.net`, and every generated
 - **Proven over clever.** Reach first for well-understood, named designs — [SOLID](#11-solid), [GRASP](#12-grasp), the GoF patterns catalogued below, and each language's own idioms — not ad-hoc constructions. Reinventing a standard pattern badly is a reviewable defect.
 - **Depend on abstractions.** Program to interfaces/traits, roles and specifications, not concrete generated types ([DIP](#11-solid), §1.3); remove cross-language duplication by **generation**, never copy-paste.
 - **…but abstract only to the altitude a real use case demands.** Abstraction is a tool, not a goal: **KISS and YAGNI win ties** ([§1.3](#13-supporting-principles)). No speculative layers, no indirection without a second concrete user — **[premature abstraction](#4-anti-patterns) is itself an anti-pattern** and is reviewed like any other. (The whitepaper tracks over-engineering as a project risk.)
-- **Idiomatic per language.** One model generates C#, Java, Python and C++; each binding must read as natural code *in that language*, not as a transliteration.
+- **Idiomatic per language.** One model generates C#, Java, Python, C++ and TypeScript; each binding must read as natural code *in that language*, not as a transliteration.
 - **Justify departures.** Consistent with this guide's normative status, a deviation from a recommended pattern or abstraction is allowed only when argued in review.
 
 ### Invariants every concept obeys

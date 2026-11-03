@@ -76,7 +76,7 @@ This is the central architectural move. "Which standard?" is the wrong question,
  YAML → compiled JSON     │
                           ├─────────────► Protobuf       (optional wire/gRPC DTOs)
                           │
-                          └─────────────► C# / Java / Python / C++  (idiomatic OOP)
+                          └─────────────► C# / Java / Python / C++ / TypeScript  (idiomatic OOP)
 ```
 
 Why YAML-authored + JSON-compiled, rather than "just JSON" or "just YAML":
@@ -341,7 +341,7 @@ flowchart LR
   end
   subgraph tools["wmoop.tools  (wmoopc + generators)"]
     C["wmoopc compile\n(validate → normalize)"] --> W["wm.json (JCS)\n+ sha256 + model SemVer"]
-    W --> G1["gen-csharp"] & G2["gen-java"] & G3["gen-python"] & G4["gen-cpp"]
+    W --> G1["gen-csharp"] & G2["gen-java"] & G3["gen-python"] & G4["gen-cpp"] & G5["gen-typescript"]
     W --> P1["project → OWL/Turtle"] & P2["project → JSON Schema (instances)"] & P3["project → Protobuf"]
   end
   A --> C
@@ -349,7 +349,8 @@ flowchart LR
   G2 --> R2["wmoop.java"]
   G3 --> R3["wmoop.py"]
   G4 --> R4["wmoop.cpp"]
-  R1 & R2 & R3 & R4 -->|run golden vectors| CONF["conformance ✅ / ❌"]
+  G5 --> R5["wmoop.js"]
+  R1 & R2 & R3 & R4 & R5 -->|run golden vectors| CONF["conformance ✅ / ❌"]
 ```
 
 One source, one compiled artifact, many deterministic emitters `[INV-1]`. "Write once, replicate everywhere" is this edge set — **mechanical code generation, not manual re-writing**.
@@ -414,7 +415,7 @@ Four mechanisms make `wmoopc gen` safe to run on every model release `[INV-6]`:
 
 ### 3.1 Purpose
 
-Codegen guarantees that bindings share *structure*. Conformance guarantees they share *meaning* `[INV-1, INV-6]`: a Moped rejects a 60 cm³ engine in C#, Java, Python, and C++ identically, with the same error code, and is **semantically equivalent** against a shared canonical data model (same values, structure, constraint outcomes and error codes). Idiomatic per-language differences (int/float, nullability, decimal, set ordering, record equality) are **first-class, not drift to eliminate**: the runtime types stay native, and a **shared canonicalizer bridges them only at the conformance boundary** — byte-identical wire output is the contract only for the interchange/DTO (Protobuf/JSON) projection. The vectors live in `wmoop.doc/conformance/` and are themselves part of the versioned model: a binding pins `wmoop.doc`, so the vectors it runs always belong to the model its code was generated from. Their format is [`conformance/README.md`](../conformance/README.md) with [`case.schema.json`](../conformance/case.schema.json), and [`schema/build_conformance.py`](../schema/build_conformance.py) checks every vector against the model in CI.
+Codegen guarantees that bindings share *structure*. Conformance guarantees they share *meaning* `[INV-1, INV-6]`: a Moped rejects a 60 cm³ engine in C#, Java, Python, C++, and TypeScript identically, with the same error code, and is **semantically equivalent** against a shared canonical data model (same values, structure, constraint outcomes and error codes). Idiomatic per-language differences (int/float, nullability, decimal, set ordering, record equality) are **first-class, not drift to eliminate**: the runtime types stay native, and a **shared canonicalizer bridges them only at the conformance boundary** — byte-identical wire output is the contract only for the interchange/DTO (Protobuf/JSON) projection. The vectors live in `wmoop.doc/conformance/` and are themselves part of the versioned model: a binding pins `wmoop.doc`, so the vectors it runs always belong to the model its code was generated from. Their format is [`conformance/README.md`](../conformance/README.md) with [`case.schema.json`](../conformance/case.schema.json), and [`schema/build_conformance.py`](../schema/build_conformance.py) checks every vector against the model in CI.
 
 ### 3.2 Vector format and categories
 
@@ -606,7 +607,7 @@ Two consumer-facing guarantees fall out of the modular model `[INV-5]`. Both are
 1. Contributor edits `model/transport/*.wml.yaml` in `wmoop.doc` (a student adds `Moped`; a professor reviews).
 2. PR CI runs `wmoopc compile` — the automated DoD. Merge on green.
 3. Model release `transport 0.3.0` cuts `wm.json`.
-4. The bot regenerates `wmoop.net`, `wmoop.java`, `wmoop.py`, `wmoop.cpp`. **This is the replication** — all four languages update from one source; nobody re-writes `Moped` four times.
+4. The bot regenerates `wmoop.net`, `wmoop.java`, `wmoop.py`, `wmoop.cpp`, `wmoop.js`. **This is the replication** — all five languages update from one source; nobody re-writes `Moped` five times.
 
 **Workflow B — a C#-developer's on-ramp (optional, honours the founder's "write it in C#" wish without a second source of truth):**
 

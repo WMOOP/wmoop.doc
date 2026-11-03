@@ -2,8 +2,8 @@
 
 This directory is the **single source of truth** (Invariant 1). Everything here is written in
 **WML**, the language-neutral DSL specified in [`../docs/03-architecture.md`](../docs/03-architecture.md).
-Per-language repositories (`wmoop.net`, and later `wmoop.java`, `wmoop.py`, `wmoop.cpp`) are
-**generated from and conformance-tested against** these files — never hand-maintained in parallel.
+Per-language repositories (`wmoop.net`, `wmoop.py`, `wmoop.js`, and later `wmoop.java`, `wmoop.cpp`)
+are **generated from and conformance-tested against** these files — never hand-maintained in parallel.
 
 ## Layout
 
