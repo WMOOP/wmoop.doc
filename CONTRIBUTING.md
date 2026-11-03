@@ -3,17 +3,17 @@
 > **WMOOP — World Map Object-Oriented Programming**
 > *Describe World into OOP. Map all World Objects into Programming Languages.*
 
-Welcome. WMOOP is a collaborative, open-source effort to model the real world — biology, mathematics, music, astronomy, geography, transport, language, and beyond — as a **single, language-neutral, object-oriented knowledge model** from which idiomatic code is generated into bindings — C#, Java, Python and C++ are conformance-gated, TypeScript (`wmoop.js`) is generated and runs the same conformance vectors, and a database schema (`wmoop.db`) is planned. This guide tells you how to contribute so that your work is correct, reusable, and automatically verifiable.
+Welcome. WMOOP is a collaborative, open-source effort to model the real world — biology, mathematics, music, astronomy, geography, transport, language, and beyond — as a **single, language-neutral, object-oriented knowledge model** from which idiomatic code is generated into bindings — C#, Java, Python, C++ and TypeScript are conformance-gated; a database schema (`wmoop.db`) is planned. This guide tells you how to contribute so that your work is correct, reusable, and automatically verifiable.
 
 If you only remember one sentence, remember this:
 
-> **You contribute by editing the canonical declarative model. You never hand-write C#, Java, Python, or C++ classes. Bindings are *generated* from the model; writing them by hand is the one thing this project does not accept.**
+> **You contribute by editing the canonical declarative model. You never hand-write C#, Java, Python, C++, or TypeScript classes. Bindings are *generated* from the model; writing them by hand is the one thing this project does not accept.**
 
 ---
 
 ## 1. The one rule, and why it exists
 
-The model is written **once**, declaratively, in a language-neutral form. Every per-language binding (`wmoop.net`, `wmoop.java`, `wmoop.py`, `wmoop.cpp` are conformance-gated today; `wmoop.js`, in TypeScript, is generated too and runs the same conformance vectors; the database `wmoop.db` is planned) is **produced by a code generator** and verified against the canonical model by a **conformance test suite**. "Write once, replicate everywhere" is therefore *mechanical*, not manual.
+The model is written **once**, declaratively, in a language-neutral form. Every per-language binding (`wmoop.net`, `wmoop.java`, `wmoop.py`, `wmoop.cpp` and `wmoop.js` are conformance-gated today; the database `wmoop.db` is planned) is **produced by a code generator** and verified against the canonical model by a **conformance test suite**. "Write once, replicate everywhere" is therefore *mechanical*, not manual.
 
 This is what lets:
 
@@ -56,8 +56,7 @@ WMOOP is split across the `WMOOP` GitHub organization. Know which repo your chan
 | **`wmoop.doc`** | Canonical model source (`/model/**`, authored in YAML), the meta-schema **pinned as a git submodule** (`external/wmoop.json`: `wml.schema.json` + `wml.xsd`, canonical in the `wmoop.json` repo), **and** all governance/spec docs (this file, the meta-model spec, ethics, ADRs). Publishes the compiled model `wm-<ver>.json` as a Release. | **Yes — this is where you contribute the model.** (Meta-schema: edit it in `wmoop.json`, then move the submodule pin here. Compiled `wm-<ver>.json`: **never** — it is generated.) |
 | **`wmoop.json`** | **Canonical** home of the JSON-Schema **meta-schema** (the WML grammar); `wmoop.doc` pins it as the git submodule `external/wmoop.json` and never copies it. | Meta-schema: by proposal/ADR only. |
 | **`wmoop.tools`** | The `wmoopc` compiler, per-language generators, projectors, and the conformance runner. | Tooling PRs only; not model content. |
-| **`wmoop.net`** (C#), **`wmoop.java`**, **`wmoop.py`**, **`wmoop.cpp`** | **Generated**, conformance-gated idiomatic bindings + per-language conformance tests + the generator templates. | Model classes: **never**. Generator *templates* and runtime glue: yes, via their own PRs. |
-| **`wmoop.js`** (TypeScript) | **Generated** idiomatic binding + the runner of the shared conformance vectors. Behaviour is added to the generated classes with `extend()` and module augmentation. | Model classes: **never**. Behaviour in `src/ext/` and runtime glue: yes, via their own PRs. |
+| **`wmoop.net`** (C#), **`wmoop.java`**, **`wmoop.py`**, **`wmoop.cpp`**, **`wmoop.js`** (TypeScript) | **Generated**, conformance-gated idiomatic bindings + per-language conformance tests + the generator templates. | Model classes: **never**. Generator *templates* and runtime glue: yes, via their own PRs. |
 | **`wmoop.db`** (database schema/migrations) | **Planned** — generated like the others, not yet conformance-gated. | Schema/classes: **never**. |
 
 > The canonical **source** lives in `wmoop.doc/model/**`. The **machine contract** (the JSON-Schema meta-schema) is **canonical in the `wmoop.json` repo**, which `wmoop.doc` pins as the git submodule `external/wmoop.json` (clone with `--recurse-submodules`); the **compiled model** is published as `wm-<ver>.json` (a Release of `wmoop.doc`). See the [Normative constants](GOVERNANCE.md) table for the authoritative repo/artefact list.

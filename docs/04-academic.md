@@ -573,7 +573,7 @@ WMOOP *wants* AI to contribute, so the policy is about **judgement and disclosur
 
 WMOOP's model is **language-neutral** (Invariant 1), and localization respects that:
 
-- **Keep canonical.** Stable **IDs** and **canonical names** stay in English and never change by locale — IDs are the interlingua that lets `wmoop.net`, `wmoop.java`, `wmoop.py`, `wmoop.cpp` agree.
+- **Keep canonical.** Stable **IDs** and **canonical names** stay in English and never change by locale — IDs are the interlingua that lets `wmoop.net`, `wmoop.java`, `wmoop.py`, `wmoop.cpp`, `wmoop.js` agree.
 - **Translate human-facing fields.** Use per-locale variants on `name`/`definition` (e.g. `name: { en: Mountain, ro: Munte }`), so a Romanian student sees *Munte* while the model and generated symbols stay stable.
 - **Translate the course pack, not the model.** Briefs, rubrics, and the quick-reference card live under `wmoop.doc/academic/courses/<lang>/` (e.g. `.../courses/ro/`). A university in Romania can teach entirely in Romanian while contributing to the one global model.
 - **Worked example (Romanian).** Students may add `ro` labels as a first, low-risk contribution (great onboarding): `Vehicle→Vehicul`, `Driver→Șofer`, `City→Oraș`, `County→Județ`, `Country→Țară`, `Animal→Animal`, `Mammal→Mamifer`. This teaches that *identity ≠ label* — a core ontology insight (LO-10).

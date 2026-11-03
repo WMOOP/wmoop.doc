@@ -8,7 +8,7 @@
 
 ## 0. How to read this document
 
-L0 answers one question: *what are the raw building blocks out of which any corner of the world — a moped, a tomato, a musical note, a mathematical group, a driving licence — can be described once, language-neutrally, so that idiomatic C#/Java/Python/C++ can be generated mechanically and never diverge?*
+L0 answers one question: *what are the raw building blocks out of which any corner of the world — a moped, a tomato, a musical note, a mathematical group, a driving licence — can be described once, language-neutrally, so that idiomatic C#/Java/Python/C++/TypeScript can be generated mechanically and never diverge?*
 
 We separate three things that are routinely (and fatally) conflated in naive OOP modeling:
 
@@ -615,7 +615,7 @@ So that **humans and AI can contribute safely against an automated bar** (Invari
 
 **Round-trip / generation checks (Invariant 1)**
 11. Code generation succeeds for every target language from this model.
-12. **Conformance tests** generated from the WM pass in each per-language repo (`wmoop.net`, `wmoop.java`, `wmoop.py`, `wmoop.cpp`): the generated code's structure matches the model (names, hierarchy depth, role composition, units), proving no manual drift.
+12. **Conformance tests** generated from the WM pass in each per-language repo (`wmoop.net`, `wmoop.java`, `wmoop.py`, `wmoop.cpp`, `wmoop.js`): the generated code's structure matches the model (names, hierarchy depth, role composition, units), proving no manual drift.
 13. **Open/closed-world bridge** (§6.5): no generated accessor reads absence as `false` over an `open` slot; `open` property/relation/role accessors are tri-state (Present/Absent/Unknown).
 
 An AI contributor is therefore handed an unambiguous, automatable target: *produce a declarative diff that passes checks 1–13.* No subjective taste is required to pass review for the mechanical parts; human review focuses only on definitional correctness and classification judgment.

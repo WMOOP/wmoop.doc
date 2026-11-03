@@ -91,7 +91,7 @@ A runnable implementation of exactly this is in [`wmoop.net`](https://github.com
 2. [The meta-model (L0)](docs/02-meta-model.md) — the foundational categories and the decision
    rules for inheritance vs. composition vs. role.
 3. [Schema format & cross-language generation](docs/03-architecture.md) — the **WML** DSL and the
-   pipeline that produces idiomatic C#/Java/Python/C++ with parity.
+   pipeline that produces idiomatic C#/Java/Python/C++/TypeScript with parity.
 4. [Academic program](docs/04-academic.md) — how instructors use WMOOP in OOP courses.
 5. [Adversarial design review](docs/05-adversarial-review.md) — the project's honest *limitations
    and threats to validity*, from an independent critique.

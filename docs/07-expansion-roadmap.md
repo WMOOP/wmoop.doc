@@ -114,8 +114,9 @@ the languages, and the ideas with which humans abstract that world.
    concepts (the `Student`/`Teacher` roles on `nature/Person` are the template).
 2. **Seed shallow, deepen on demand.** Ship the concepts with a real source and a use today; leave
    sub-domains as named-but-empty until someone needs them.
-3. **One source of truth, generated views.** Every added concept becomes idiomatic C#/Java/Python/C++
-   by generation, and its diagram cell by registry regeneration — never by hand (Invariant 1).
+3. **One source of truth, generated views.** Every added concept becomes idiomatic
+   C#/Java/Python/C++/TypeScript by generation, and its diagram cell by registry regeneration —
+   never by hand (Invariant 1).
 4. **Out-of-tree is first-class.** A domain WMOOP does not model canonically can be published by a
    third party against the public IDs (`03-architecture.md` §4.5), so the "world" can grow faster than
    the core governance can ratify.

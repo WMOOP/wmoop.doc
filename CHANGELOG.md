@@ -135,6 +135,9 @@ the MAJOR version.
   - All three run the shared conformance vectors.
   - The architecture spec has TypeScript in its generation-gap (§2.2), repository (§4.1) and
     naming (§4.2) tables.
+- **`wmoop.js` is conformance-gated** (GOVERNANCE.md §1.1): it moves from the planned bindings to
+  the conformance-gated bindings (v1), and `wmoop.db` is the only planned one left. The texts that
+  restated the old list now name TypeScript or `wmoop.js` with the other four.
 - **`CODE_OF_CONDUCT.md` and `SECURITY.md` moved to [`WMOOP/.github`](https://github.com/WMOOP/.github)**,
   the organisation's default community health files, so every WMOOP repository shows the same two
   policies without a copy or a pointer file. Links in this repo now point there.

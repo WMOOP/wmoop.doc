@@ -16,7 +16,7 @@ WMOOP is one of the rare software projects where an AI agent has a **clear, dens
 3. **The output space is constrained to slots, not prose.** You fill a schema (id, name, definition, parent, properties, units, citations), not free-form code in five languages. A constrained, typed output space is dramatically easier to generate correctly and to verify — it shrinks the hallucination surface and makes every field independently checkable.
 4. **Grounding is enforced by the schema itself.** The provenance gate means a fabricated fact *cannot pass* without a citation, and referential integrity means a made-up parent class *cannot pass* without resolving. The structure turns "please be truthful" into a mechanical constraint.
 5. **Atomic units give a short feedback loop.** One concept per file, small PRs → fast validate/fix cycles, trivial diffs, trivial rollback. Ideal for iterative agent loops.
-6. **Leverage per verified contribution is enormous.** One correct model edit becomes idiomatic code in the four conformance-gated bindings — C#, Java, Python, and C++ — generated and conformance-tested; JS and the DB projection are planned, not yet conformance-gated. A single verified fact pays off across every binding.
+6. **Leverage per verified contribution is enormous.** One correct model edit becomes idiomatic code in the five conformance-gated bindings — C#, Java, Python, C++, and TypeScript — generated and conformance-tested; the DB projection is planned, not yet conformance-gated. A single verified fact pays off across every binding.
 7. **"Propose a fact" and "structure a fact" are separable.** You may be highly reliable at *structuring* (schema conformance, Liskov shape) even when *uncertain* about a fact. The uncertainty flags let you contribute structure honestly and defer the factual claim to a human — turning uncertainty into a first-class, reviewable signal instead of a hidden risk.
 
 In short: structured + validated + clear automated DoD + local reward signal = a project where an AI can contribute *and verify its own work* before asking a human to spend attention.
@@ -230,9 +230,9 @@ This lets maintainers triage, deduplicate agent work, and route review efficient
 2. **Model:** agent adds `model/transport/Moped.yaml` (one file), `extends: wmoop.transport/AutoVehicle`, overrides `numberOfWheels` default to 2, cites the source, sets `confidence: high`, fills `contributedBy.agent`.
 3. **Validate:** agent runs `wmoop validate && wmoop lint && wmoop conformance` — all green. Pastes results + the `ai_contribution` block into the PR; applies label `ai-generated`; commit carries `Assisted-by:`.
 4. **Review:** steward confirms the definition and source; approves.
-5. **Generate:** CI regenerates the four conformance-gated bindings — C#/Java/Python/C++ — and conformance passes; JS and the DB projection are planned, not yet conformance-gated.
+5. **Generate:** CI regenerates the five conformance-gated bindings — C#/Java/Python/C++/TypeScript — and conformance passes; the DB projection is planned, not yet conformance-gated.
 6. **Merge:** maintainer squash-merges; `transport` bumps MINOR; the compiled model `wm-<ver>.json` (a Release of `wmoop.doc`) is republished.
 
-One small, sourced, disclosed, self-verified edit — now correct across the four conformance-gated bindings. That is exactly the contribution WMOOP is built to receive from an AI.
+One small, sourced, disclosed, self-verified edit — now correct across the five conformance-gated bindings. That is exactly the contribution WMOOP is built to receive from an AI.
 
 *Model responsibly. Cite everything. Stay small. Disclose always.*
