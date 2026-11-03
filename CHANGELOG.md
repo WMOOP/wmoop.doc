@@ -13,12 +13,12 @@ the MAJOR version.
 - **Conformance vectors** (`conformance/`, docs/03-architecture.md §3).
   - The suite every binding runs, written once as data: `conformance/<domain>/*.case.yaml`, in the format of
     `conformance/README.md` and `case.schema.json`.
-  - 23 active cases: 15 hold the 16 checks that `wmoop.py` and `wmoop.net` used to hand-write twice, and 8 are new.
-    They cover identifiers, quantities, the inheritance chains, abstractness, required and `1..*` properties,
-    defaults, enumerations, roles, relations with their inverse, and the hand-written behaviour the bindings keep
-    in step.
-  - Five pending cases, the §3.3 examples among them, for rules the model specifies but no binding enforces yet:
-    constraints, units, `cardinality_per_player`, capabilities and canonical serialization.
+  - 25 active cases: 15 hold the 16 checks that `wmoop.py` and `wmoop.net` used to hand-write twice, and 10 are new.
+    They cover identifiers, quantities and their units, the inheritance chains, abstractness, required and `1..*`
+    properties, defaults, enumerations, roles and `cardinality_per_player`, relations with their inverse, and the
+    hand-written behaviour the bindings keep in step.
+  - Three pending cases, the §3.3 examples among them, for rules the model specifies but no binding enforces yet:
+    constraints, capabilities and canonical serialization.
   - `schema/build_conformance.py` checks every case against the model and writes `conformance/suite.json`, the
     bundle the runners read, so they need no YAML parser. CI runs its self-test and `--check`.
 - **Error-code registry as data**: `conformance/error-codes.yaml`, with three new codes: `WM-ID-INVALID`,
