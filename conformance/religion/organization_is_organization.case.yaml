@@ -1,0 +1,19 @@
+id: conf.religion.organization.type-chain
+category: structural
+description: A ReligiousOrganization is a wmoop.org Organization and belongs to a tradition, which is not an organization.
+given:
+  - construct: { type: wmoop.religion/ReligiousTradition, name: Eastern Orthodoxy, with: { vitality: LIVING }, bind: orthodoxy }
+  - construct:
+      type: wmoop.religion/ReligiousOrganization
+      name: Romanian Orthodox Church
+      with: { legalName: "Biserica Ortodoxă Română", tradition: { ref: orthodoxy } }
+      bind: bor
+expect:
+  - type_chain: { subject: bor }
+    equals: [wmoop.religion/ReligiousOrganization, wmoop.org/Organization]
+  - is_a: { subject: bor, type: wmoop.org/Organization }
+    equals: true
+  - is_a: { subject: orthodoxy, type: wmoop.org/Organization }
+    equals: false
+  - get: { subject: bor, property: tradition }
+    equals: { ref: orthodoxy }

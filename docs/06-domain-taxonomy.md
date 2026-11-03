@@ -77,7 +77,7 @@ README/whitepaper seed taxonomy or v1 roadmap) · ⚪ **candidate** (proposed he
 | II | **Physical & Natural World** | `physics` ⚪ · `chemistry` 🟢 · `nature` 🟢 · `earth` ⚪ · `space` 🟢 | DDC 500, OECD Natural, LCC Q, schema.org Taxon |
 | III | **Geography & Place** | `geography` 🟢 | LCC G, DDC 910, schema.org Place |
 | IV | **Society & Institutions** | `org` 🟢 · `education` 🟢 · `economy` ⚪ · `law` ⚪ · `politics` ⚪ | DDC 300/370, OECD Social, LCC H/J/K/L, schema.org Organization/EducationalOrganization |
-| V | **Culture & The Arts** | `music` 🟢 · `visualarts` ⚪ · `literature` ⚪ · `philosophy` 🟢 · `religion` ⚪ | DDC 100/200/400/700/800, OECD Humanities, LCC B/M/N/P |
+| V | **Culture & The Arts** | `music` 🟢 · `visualarts` ⚪ · `literature` ⚪ · `philosophy` 🟢 · `religion` 🟢 | DDC 100/200/400/700/800, OECD Humanities, LCC B/M/N/P |
 | VI | **Technology & Artifacts** | `transport` 🟢 · `architecture` 🟢 · `food` ⚪ · `tools` ⚪ · `software` ⚪ | DDC 600, OECD Engineering, LCC T, schema.org Product |
 | VII | **Health & Medicine** | `medicine` ⚪ | OECD Medical & Health, LCC R, schema.org MedicalEntity |
 
@@ -151,7 +151,12 @@ Each sub-domain lists an example concept and, where useful, its dominant L0 cate
   `philosophy.logic` (`Argument → {Deductive → Syllogism, Inductive}`) · `philosophy.branches`
   (Aristotle's 10 `AristotelianCategory` + the 5 `Branch`es as **L2**). *Models the abstractions with
   which we abstract the world.*
-- **`visualarts`** ⚪ · **`literature`** ⚪ (`Poem`) · **`religion`** ⚪ (`Tradition`, `Myth`).
+- **`religion`** 🟢 — **`religion.traditions`** 🟢 (`BeliefSystem → ReligiousTradition`, every tradition an
+  **L2** individual linked by a part-whole `parentTradition`; theism type, family and regional groupings as
+  **schemes**; `Deity`, `Teaching`, `SacredText`, `ReligiousEvent`; `Cleric` a **Role**) · `religion.mythology`
+  (`Myth`). *The worked example of [contributing a domain](08-contributing-a-domain.md): belief modelled as
+  attributed belief.*
+- **`visualarts`** ⚪ · **`literature`** ⚪ (`Poem`).
 
 ### VI · Technology & Artifacts
 - **`transport`** 🟢 — **`transport.vehicles`** 🟢 (`Vehicle → RoadVehicle → Motorcycle → Moped`,
@@ -207,7 +212,7 @@ flowchart TB
     visualarts["visualarts ⚪"]:::cand
     literature["literature ⚪"]:::cand
     philosophy["philosophy 🟢"]:::seed
-    religion["religion ⚪"]:::cand
+    religion["religion 🟢"]:::seed
   end
   subgraph VI["VI · Technology & Artifacts"]
     direction LR
@@ -250,6 +255,7 @@ flowchart LR
   education["education 🟢"]:::seed
   music["music 🟢"]:::seed
   philosophy["philosophy 🟢"]:::seed
+  religion["religion 🟢"]:::seed
   law["law ⚪"]:::cand
   food["food ⚪"]:::cand
   medicine["medicine ⚪"]:::cand
@@ -273,6 +279,9 @@ flowchart LR
   music --> core
   music --> nature
   philosophy --> core
+  religion --> core
+  religion --> nature
+  religion --> org
 
   %% planned / candidate edges
   law -.-> core

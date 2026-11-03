@@ -164,6 +164,8 @@ flowchart LR
 
 Before you model, **open an issue** using the matching template (*New concept*, *New domain*, *New cross-domain link*, *New reference data*, *Correction*). This gives stewards a chance to point you at an existing concept, reserve an ID prefix, and prevent duplicate work. Small corrections to an existing node may skip straight to a PR.
 
+Proposing a **whole domain**? [`docs/08-contributing-a-domain.md`](docs/08-contributing-a-domain.md) lists the documents a domain proposal needs (abstract, whitepaper, source register, optional article), their structure and the writing standard, with a complete worked example in [`docs/domains/religion/`](docs/domains/religion/).
+
 > "Complete my domain" or "import this dataset" is a *proposal*, not a mandate. State sources and scope in the issue; the side-effectful parts (new IDs, new dependencies, bulk instances) get discussed first.
 
 ### Step 2 — Model (edit the canonical model)

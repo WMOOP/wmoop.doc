@@ -153,7 +153,8 @@ clusters — including `math`, `chemistry`, `nature`, `space`, `geography`, `org
   dotnet run --project Wmoop.Net/src/Wmoop.Patterns.Demo
   ```
 - **Want to contribute a concept or a domain?** Read [CONTRIBUTING.md](CONTRIBUTING.md) and open an
-  issue with the matching template.
+  issue with the matching template. For a whole domain, [Contributing a Domain](docs/08-contributing-a-domain.md)
+  lists the documents to write and walks through a complete example, the religion domain.
 - **Teaching with it?** See the [academic program](docs/04-academic.md).
 
 ---

@@ -10,6 +10,20 @@ the MAJOR version.
 ## [Unreleased]
 
 ### Added
+- **Contributing a Domain** (`docs/08-contributing-a-domain.md`): the documents a domain proposal needs and how
+  each is structured (issue, abstract, whitepaper, source register, WML, conformance cases, article, PR), the
+  writing standard, the prose-to-objects modelling method, a sensitive-subject checklist and a review rubric.
+  Copyable templates in `docs/domain-kit/`.
+- **New domain issue form** (`.github/ISSUE_TEMPLATE/new-domain.yml`), replacing the Markdown template: required
+  abstract, scope, seed concepts with their stereotype, contested points, tiered sources, an ETHICS §3 checklist,
+  a PR plan and stewardship.
+- **`wmoop.religion` 0.1.0** (`model/religion/religion.wml.yaml`), the guide's worked example, with its dossier in
+  `docs/domains/religion/`. `BeliefSystem → ReligiousTradition`, with 33 traditions as L2 individuals linked by a
+  part-whole `parentTradition` and by `emergedFrom`; theism type, religious family, Romanian legal status and
+  Romanian confessional groups as schemes (ADR 0001); `Deity`, `ReligiousFigure` (historicity stated), `Teaching`
+  → {`Doctrine`, `EthicalValue`, `Precept`}, `PreceptSet`, `SacredText`, `ReligiousSymbol`, `ReligiousEvent`;
+  `ReligiousOrganization` extends `wmoop.org/Organization`; `Cleric` is a role on `wmoop.nature/Person`. No
+  person is classified by religion (ETHICS §3.1). Registry: `religion` is now seeded.
 - **Conformance vectors** (`conformance/`, docs/03-architecture.md §3).
   - The suite every binding runs, written once as data: `conformance/<domain>/*.case.yaml`, in the format of
     `conformance/README.md` and `case.schema.json`.
