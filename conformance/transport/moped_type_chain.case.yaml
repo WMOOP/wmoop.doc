@@ -1,0 +1,15 @@
+id: conf.transport.moped.type-chain
+category: structural
+description: A Moped is a Motorcycle, a RoadVehicle and a Vehicle, through a shallow extends chain.
+given:
+  - construct:
+      type: wmoop.transport/Moped
+      with: { wheelCount: 2, maxSpeed: { value: 45, unit: km/h }, engineDisplacement: { value: 49, unit: cm3 } }
+      bind: moped
+expect:
+  - type_chain: { subject: moped }
+    equals: [wmoop.transport/Moped, wmoop.transport/Motorcycle, wmoop.transport/RoadVehicle, wmoop.transport/Vehicle]
+  - is_a: { subject: moped, type: wmoop.transport/Vehicle }
+    equals: true
+  - is_a: { subject: moped, type: wmoop.nature/Person }
+    equals: false

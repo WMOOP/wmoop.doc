@@ -364,10 +364,11 @@ The hard requirement: **structure and pure derivations are generated and owned b
 | Enums, interfaces/traits, role classes, relation accessors + inverse wiring | ✅ | |
 | Validation of invariants, constraints, cardinality, units, abstractness | ✅ | |
 | Equality/hashing, canonical (de)serialization, type-chain metadata | ✅ | |
-| Conformance fixtures/adapters | ✅ | |
+| Conformance fixtures (`conformance/suite.json`) and the type metadata runners resolve through (`WM_ID` / `WmId`) | ✅ | |
 | **Pure derivations** (derived properties, `invariant` exprs, unit conversions, `area`/`canDrive`) — authored once in **WMX** (planned, ADR 0002) | ✅ | |
 | **Imperative behaviour** (`IDrive.driveTo` I/O, side-effecting, heuristics) | | ✅ |
 | Language-specific helpers, extension methods, DI wiring | | ✅ |
+| The conformance runner: one small harness per binding (§3.4) | | ✅ |
 
 Per-language realization of the gap:
 
@@ -412,11 +413,11 @@ Four mechanisms make `wmoopc gen` safe to run on every model release `[INV-6]`:
 
 ### 3.1 Purpose
 
-Codegen guarantees that bindings share *structure*. Conformance guarantees they share *meaning* `[INV-1, INV-6]`: a Moped rejects a 60 cm³ engine in C#, Java, Python, and C++ identically, with the same error code, and is **semantically equivalent** against a shared canonical data model (same values, structure, constraint outcomes and error codes). Idiomatic per-language differences (int/float, nullability, decimal, set ordering, record equality) are **first-class, not drift to eliminate**: the runtime types stay native, and a **shared canonicalizer bridges them only at the conformance boundary** — byte-identical wire output is the contract only for the interchange/DTO (Protobuf/JSON) projection. The vectors live in `wmoop.doc/conformance/` and are themselves part of the versioned model.
+Codegen guarantees that bindings share *structure*. Conformance guarantees they share *meaning* `[INV-1, INV-6]`: a Moped rejects a 60 cm³ engine in C#, Java, Python, and C++ identically, with the same error code, and is **semantically equivalent** against a shared canonical data model (same values, structure, constraint outcomes and error codes). Idiomatic per-language differences (int/float, nullability, decimal, set ordering, record equality) are **first-class, not drift to eliminate**: the runtime types stay native, and a **shared canonicalizer bridges them only at the conformance boundary** — byte-identical wire output is the contract only for the interchange/DTO (Protobuf/JSON) projection. The vectors live in `wmoop.doc/conformance/` and are themselves part of the versioned model: a binding pins `wmoop.doc`, so the vectors it runs always belong to the model its code was generated from. Their format is [`conformance/README.md`](../conformance/README.md) with [`case.schema.json`](../conformance/case.schema.json), and [`schema/build_conformance.py`](../schema/build_conformance.py) checks every vector against the model in CI.
 
 ### 3.2 Vector format and categories
 
-A vector is a declarative `given → expect`. Categories:
+A vector is a declarative `given → expect`: `given` is an ordered list of steps (`construct`, `attach_role`, `link`, `unlink`, `assert`), and `expect` is either an error code the last step must fail with, or a list of assertions that must hold. Categories:
 
 | Category | Proves |
 |---|---|
@@ -432,94 +433,103 @@ A vector is a declarative `given → expect`. Categories:
 
 ### 3.3 Worked vectors
 
+These are four of the real cases. `status: pending` marks a rule the model specifies but no binding implements yet: runners report it without failing, until it becomes active.
+
+```yaml
+# conformance/transport/driver_requires_person.case.yaml
+id: conf.transport.driver.attach-requires-person
+category: role
+description: The Driver role can only be played by a Person, so a Moped cannot take it.
+given:
+  - construct:
+      type: wmoop.transport/Moped
+      with: { wheelCount: 2, engineDisplacement: { value: 49, unit: cm3 } }
+      bind: moped
+  - attach_role: { role: wmoop.transport/Driver, to: moped, with: { licenceNumber: RO-123, licenceCategories: [B] } }
+expect: { outcome: error, error_code: WM-ROLE-PLAYER-MISMATCH }
+```
+
 ```yaml
 # conformance/transport/moped_displacement_limit.case.yaml
 id: conf.transport.moped.displacement-limit
-model_version: "0.3.0"
-description: Moped rejects engine displacement above 50 cm³.
+category: override
+description: A Moped narrows Motorcycle's engineDisplacement to at most 50 cm3, so 60 cm3 is rejected.
+status: pending
+reason: The generated code does not enforce property constraints (minimum, maximum, enum) yet.
 given:
-  construct:
-    type: wmoop.transport/Moped
-    with: { wheelCount: 2, engineDisplacement: { value: 60, unit: cm3 } }
+  - construct:
+      type: wmoop.transport/Moped
+      with: { wheelCount: 2, engineDisplacement: { value: 60, unit: cm3 } }
 expect:
-  outcome: validation-error
+  outcome: error
   error_code: WM-CONSTRAINT-MAX
   violated: wmoop.transport/Motorcycle#engineDisplacement
 ```
 
 ```yaml
-# conformance/transport/driver_requires_person.case.yaml
-id: conf.transport.driver.attach-requires-person
-model_version: "0.3.0"
-description: The Driver role can only be played by a Person.
-given:
-  construct: { type: wmoop.transport/Moped, bind: subject }   # a vehicle, not a Person
-  attach_role: { role: wmoop.transport/Driver, to: subject }
-expect: { outcome: error, error_code: WM-ROLE-PLAYER-MISMATCH }
-```
-
-```yaml
 # conformance/transport/driver_capability.case.yaml
 id: conf.transport.driver.capability-gated
-model_version: "0.3.0"
-description: IDrive capability is available only while the Driver role is held.
+category: role
+description: The IDrive capability is available only while the Driver role is held.
+status: pending
+reason: The generated code does not expose role capabilities yet.
 given:
-  construct: { type: wmoop.nature/Person, with: { fullName: "Ana Pop" }, bind: p }
-  assert_before: { has_capability: { subject: p, capability: wmoop.transport/IDrive }, equals: false }
-  attach_role:
-    role: wmoop.transport/Driver
-    to: p
-    with: { licenceNumber: "RO-123", licenceCategories: [AM, A1] }
+  - construct: { type: wmoop.nature/Person, with: { fullName: Ana Pop }, bind: ana }
+  - assert:
+      has_capability: { subject: ana, capability: wmoop.transport/IDrive }
+      equals: false
+  - attach_role:
+      role: wmoop.transport/Driver
+      to: ana
+      with: { licenceNumber: RO-123, licenceCategories: [AM, A1] }
 expect:
-  has_capability: { subject: p, capability: wmoop.transport/IDrive }
-  equals: true
+  - has_capability: { subject: ana, capability: wmoop.transport/IDrive }
+    equals: true
 ```
 
 ```yaml
 # conformance/transport/moped_canonical_serialization.case.yaml
 id: conf.transport.moped.canonical-serialization
-model_version: "0.3.0"
-description: Equivalent Mopeds map to the same canonical data model; the shared boundary canonicalizer yields the same canonical JSON (idiomatic runtime types stay native).
+category: equivalence
+description: >-
+  Equivalent Mopeds map to the same canonical data model: the boundary canonicalizer yields the same
+  canonical JSON, while the idiomatic runtime types stay native.
+status: pending
+reason: No binding has the boundary canonicalizer (JCS) yet.
 given:
-  construct:
-    type: wmoop.transport/Moped
-    with: { wheelCount: 2, engineDisplacement: { value: 49, unit: cm3 }, maxSpeed: { value: 45, unit: km/h } }
+  - construct:
+      type: wmoop.transport/Moped
+      with: { wheelCount: 2, engineDisplacement: { value: 49, unit: cm3 }, maxSpeed: { value: 45, unit: km/h } }
+      bind: moped
 expect:
-  canonical_json: >-
-    {"@type":"wmoop.transport/Moped","engineDisplacement":{"unit":"cm3","value":49},"maxSpeed":{"unit":"km/h","value":45},"roadLegal":true,"wheelCount":2}
+  - canonical_json: { subject: moped }
+    equals: >-
+      {"@type":"wmoop.transport/Moped","engineDisplacement":{"unit":"cm3","value":49},"maxSpeed":{"unit":"km/h","value":45},"roadLegal":true,"wheelCount":2}
 ```
 
 ### 3.4 The per-language runner contract
 
-Each binding ships a thin, **generated** adapter implementing one small interface, plus a hand-written harness that loads every `*.case.yaml` and runs it. A binding is declared *conformant at model vX.Y.Z* only when 100% pass in CI.
-
-```
-construct(typeId, props) -> handle | error(code)
-attachRole(roleId, subject, props) -> ok | error(code)
-detachRole(roleId, subject)
-hasCapability(subject, capId) -> bool
-getTypeChain(handle) -> [typeId, ...]
-isAbstract(typeId) -> bool
-getProperty(handle, propId) -> value
-serializeCanonical(handle) -> string   // boundary canonicalizer (JCS) — NOT the idiomatic runtime serializer
-```
+Each binding ships a small, hand-written **runner** that reads `conformance/suite.json` and runs every case. `build_conformance.py` generates that file from the `*.case.yaml` files, so a runner needs no YAML parser. The runner drives the generated code through what the generator already emits. A model type resolves through the generated metadata (`WM_ID` in Python, `WmId` in C#), and a model name matches the binding member equal to it, ignoring case and underscores (`wheelCount` ↔ `WheelCount` / `wheel_count`). So no adapter has to be generated, and no naming rule is copied into the runners. A step fails with the code its error carries (§3.5). Where the language rejects something before any code runs (a C# `required` member, a C# abstract class, a Python keyword-only argument), the runner reports the model's code for that rule from the binding's own declarations. A binding is declared *conformant at model vX.Y.Z* only when every active case passes in CI. [`conformance/README.md`](../conformance/README.md) specifies the steps, queries and values a runner implements.
 
 ### 3.5 Canonical error-code registry
 
-Error codes are part of the model (not per-language) so vectors are language-neutral:
+Error codes are part of the model (not per-language) so vectors are language-neutral. The normative list is [`conformance/error-codes.yaml`](../conformance/error-codes.yaml); every error a binding's kernel or generated code raises carries one of these codes (`WmoopError.code` in Python, `IWmoopError.Code` in C#):
 
 | Code | Meaning |
 |---|---|
+| `WM-ID-INVALID` | Identifier empty or malformed |
 | `WM-ABSTRACT-INSTANTIATION` | Attempted to construct an abstract concept |
 | `WM-REQUIRED-MISSING` | Required property absent |
 | `WM-CARDINALITY` | Cardinality bound violated |
 | `WM-TYPE-MISMATCH` | Value type ≠ declared type |
 | `WM-CONSTRAINT-MIN` / `-MAX` / `-ENUM` | Numeric/enum constraint violated |
+| `WM-UNIT-MISSING` | Quantity without a unit |
 | `WM-UNIT-DIMENSION-MISMATCH` | Unit incompatible with the property's dimension |
 | `WM-QUANTITYKIND-MISMATCH` | Two quantities of different `QuantityKind`s compared/combined (equal dimension is necessary, not sufficient) |
 | `WM-INVARIANT-FAILED` | A concept `invariant` `expr` returned false |
 | `WM-RELATION-TARGET-TYPE` | Relation target of wrong type |
 | `WM-ROLE-PLAYER-MISMATCH` | Role attached to a concept that is not its `played_by` |
+| `WM-ROLE-ALREADY-ATTACHED` | Role object that already has a subject attached to another one |
 | `WM-ROLE-DUPLICATE` | `cardinality_per_player` exceeded |
 
 ---

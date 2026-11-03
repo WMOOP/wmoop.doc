@@ -1,0 +1,8 @@
+id: conf.core.quantity.equal-by-value
+category: equivalence
+description: Two quantities are equal exactly when their value and unit are.
+expect:
+  - same_value: [{ value: 49, unit: cm3 }, { value: 49, unit: cm3 }]
+    equals: true
+  - same_value: [{ value: 49, unit: cm3 }, { value: 49, unit: km/h }]
+    equals: false

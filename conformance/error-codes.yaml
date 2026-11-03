@@ -1,0 +1,40 @@
+# The canonical error-code registry (docs/03-architecture.md §3.5).
+#
+# Error codes are part of the model, not of a language: every binding raises these codes, and the
+# conformance vectors in this directory compare them. A code is added here before a binding raises
+# it or a vector expects it; schema/build_conformance.py rejects a vector that names an unknown code.
+codes:
+  - code: WM-ID-INVALID
+    meaning: An identifier is empty or malformed.
+  - code: WM-ABSTRACT-INSTANTIATION
+    meaning: An abstract concept was constructed.
+  - code: WM-REQUIRED-MISSING
+    meaning: A required property, or an entity's name, is absent.
+  - code: WM-CARDINALITY
+    meaning: A cardinality bound is violated, e.g. an empty `1..*` property.
+  - code: WM-TYPE-MISMATCH
+    meaning: A value's type differs from the declared type.
+  - code: WM-CONSTRAINT-MIN
+    meaning: A value is below its `minimum`.
+  - code: WM-CONSTRAINT-MAX
+    meaning: A value is above its `maximum`.
+  - code: WM-CONSTRAINT-ENUM
+    meaning: A value is not one of the allowed values.
+  - code: WM-UNIT-MISSING
+    meaning: A quantity has no unit.
+  - code: WM-UNIT-DIMENSION-MISMATCH
+    meaning: A unit is incompatible with the property's dimension.
+  - code: WM-QUANTITYKIND-MISMATCH
+    meaning: >-
+      Two quantities of different QuantityKinds are compared or combined (equal dimension is
+      necessary, not sufficient).
+  - code: WM-INVARIANT-FAILED
+    meaning: A concept `invariant` expression returned false.
+  - code: WM-RELATION-TARGET-TYPE
+    meaning: A relation end is given a target of the wrong type.
+  - code: WM-ROLE-PLAYER-MISMATCH
+    meaning: A role is attached to a concept that is not its `played_by`.
+  - code: WM-ROLE-ALREADY-ATTACHED
+    meaning: A role object that already has a subject is attached to another one.
+  - code: WM-ROLE-DUPLICATE
+    meaning: A subject would play a role more often than its `cardinality_per_player` allows.

@@ -1,0 +1,15 @@
+id: conf.transport.road-vehicle.road-legal-default
+category: default
+description: roadLegal defaults to true, while a maxSpeed left out stays absent rather than 0.
+given:
+  - construct:
+      type: wmoop.transport/Motorcycle
+      with: { wheelCount: 2, engineDisplacement: { value: 600, unit: cm3 } }
+      bind: bike
+expect:
+  - get: { subject: bike, property: roadLegal }
+    equals: true
+  - get: { subject: bike, property: maxSpeed }
+    equals: null
+  - get: { subject: bike, property: engineDisplacement }
+    equals: { value: 600, unit: cm3 }

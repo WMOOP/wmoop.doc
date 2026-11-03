@@ -1,0 +1,10 @@
+id: conf.transport.vehicle.max-speed-unit
+category: constraint
+description: maxSpeed is a speed, so a value in kilograms is rejected.
+status: pending
+reason: The generated code does not check a quantity's unit against the property's QuantityKind yet.
+given:
+  - construct:
+      type: wmoop.transport/Moped
+      with: { wheelCount: 2, maxSpeed: { value: 45, unit: kg }, engineDisplacement: { value: 49, unit: cm3 } }
+expect: { outcome: error, error_code: WM-UNIT-DIMENSION-MISMATCH }

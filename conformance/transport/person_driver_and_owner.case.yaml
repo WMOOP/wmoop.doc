@@ -1,0 +1,22 @@
+id: conf.transport.person.driver-and-owner
+category: role
+description: A Person can be a Driver and an Owner at once; each role knows the person it is attached to.
+given:
+  - construct: { type: wmoop.nature/Person, with: { fullName: Ada }, bind: ada }
+  - attach_role:
+      role: wmoop.transport/Driver
+      to: ada
+      with: { licenceNumber: RO-123, licenceCategories: [AM], licenceExpiry: { date: "2030-01-01" } }
+      bind: licence
+  - attach_role: { role: wmoop.transport/Owner, to: ada, with: { ownedSince: { date: "2021-01-01" } }, bind: owner }
+expect:
+  - roles: { subject: ada }
+    equals: [wmoop.transport/Driver, wmoop.transport/Owner]
+  - has_role: { subject: ada, role: wmoop.transport/Owner }
+    equals: true
+  - get_role: { subject: ada, role: wmoop.transport/Driver }
+    equals: { ref: licence }
+  - role_subject: { role: licence }
+    equals: { ref: ada }
+  - role_subject: { role: owner }
+    equals: { ref: ada }

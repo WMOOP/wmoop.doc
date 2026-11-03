@@ -1,0 +1,16 @@
+id: conf.transport.moped.canonical-serialization
+category: equivalence
+description: >-
+  Equivalent Mopeds map to the same canonical data model: the boundary canonicalizer yields the same
+  canonical JSON, while the idiomatic runtime types stay native.
+status: pending
+reason: No binding has the boundary canonicalizer (JCS) yet.
+given:
+  - construct:
+      type: wmoop.transport/Moped
+      with: { wheelCount: 2, engineDisplacement: { value: 49, unit: cm3 }, maxSpeed: { value: 45, unit: km/h } }
+      bind: moped
+expect:
+  - canonical_json: { subject: moped }
+    equals: >-
+      {"@type":"wmoop.transport/Moped","engineDisplacement":{"unit":"cm3","value":49},"maxSpeed":{"unit":"km/h","value":45},"roadLegal":true,"wheelCount":2}

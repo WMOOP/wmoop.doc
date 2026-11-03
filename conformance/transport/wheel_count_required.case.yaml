@@ -1,0 +1,6 @@
+id: conf.transport.vehicle.wheel-count-required
+category: constraint
+description: A vehicle cannot be built without its required wheelCount.
+given:
+  - construct: { type: wmoop.transport/Moped, with: { engineDisplacement: { value: 49, unit: cm3 } } }
+expect: { outcome: error, error_code: WM-REQUIRED-MISSING }

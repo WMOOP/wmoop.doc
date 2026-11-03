@@ -40,6 +40,8 @@ Normative keywords (MUST/SHOULD/MAY) follow RFC 2119.
 | [`test_validate_wml.py`](test_validate_wml.py) | The oracle's **self-test**: a small valid model plus one failing fixture per rule, so a rule listed in §4 is proven to fire. Runs in CI. |
 | [`yaml_to_xml.py`](yaml_to_xml.py) | Deterministic projector: merges each module's `*.wml.yaml` files into one `<module>` XML document under [`examples/`](examples/). The XML is **generated** — never hand-edited. |
 | [`examples/*.wml.xml`](examples/) | The six seeded modules projected to WML-in-XML (exercise the XSD and double as a single-file view of each module). |
+| [`build_conformance.py`](build_conformance.py) | Checks the conformance vectors in [`../conformance/`](../conformance/) against the model (types, members, enumeration values, bound names, error codes, `type_chain`s) and writes the generated bundle `conformance/suite.json` that the bindings' runners read. `--check` is the CI gate. |
+| [`test_build_conformance.py`](test_build_conformance.py) | Its self-test: the real cases pass, and one broken case per check fails with the expected message. Runs in CI. |
 | [`requirements.txt`](requirements.txt) | The validator's Python dependencies. |
 
 ---
@@ -64,6 +66,9 @@ python schema/yaml_to_xml.py --check
 
 # 5. after changing the validator: its self-test (one failing fixture per rule)
 python schema/test_validate_wml.py
+
+# 6. after editing conformance/**/*.case.yaml: check the vectors and rewrite conformance/suite.json
+python schema/build_conformance.py            # CI runs it with --check
 ```
 
 `validate_wml.py` exits `0` when every gate is green and `1` on any error (warnings alone do not

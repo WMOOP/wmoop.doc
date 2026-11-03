@@ -1,0 +1,13 @@
+id: conf.transport.driver.licence-categories
+category: enum
+description: Licence categories keep their model values and their order.
+given:
+  - construct:
+      type: wmoop.transport/Driver
+      with: { licenceNumber: RO-123, licenceCategories: [AM, B], licenceExpiry: { date: "2030-01-01" } }
+      bind: licence
+expect:
+  - get: { subject: licence, property: licenceCategories }
+    equals: [AM, B]
+  - get: { subject: licence, property: licenceExpiry }
+    equals: { date: "2030-01-01" }

@@ -99,6 +99,9 @@ A runnable implementation of exactly this is in [`wmoop.net`](https://github.com
    (L1) and their hierarchy, with a living cluster map and dependency diagram generated from
    [`model/taxonomy.yaml`](model/taxonomy.yaml).
 
+**Conformance**
+- [conformance/](conformance/README.md) — the language-neutral conformance vectors every binding runs: the format, the error-code registry, and how a binding's runner works.
+
 **OOP craft**
 - [PATTERNS.md](PATTERNS.md) — the OOP best practices and design patterns WMOOP uses and
   recommends (SOLID, GRASP, Role Object, Composite, Visitor, Strategy, Specification, Builder,

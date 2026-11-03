@@ -1,0 +1,19 @@
+id: conf.transport.driver.can-drive
+category: behaviour
+description: >-
+  A licence allows a category it holds until its expiry date, and nothing else. A pure function that
+  is hand-written today and a WMX candidate (ADR 0002).
+given:
+  - construct:
+      type: wmoop.transport/Driver
+      with: { licenceNumber: RO-123, licenceCategories: [AM, B], licenceExpiry: { date: "2030-01-01" } }
+      bind: licence
+expect:
+  - call: { subject: licence, operation: canDrive, args: [AM, { date: "2026-01-01" }] }
+    equals: true
+  - call: { subject: licence, operation: canDrive, args: [A, { date: "2026-01-01" }] }
+    equals: false
+  - call: { subject: licence, operation: canDrive, args: [B, { date: "2030-01-01" }] }
+    equals: true
+  - call: { subject: licence, operation: canDrive, args: [B, { date: "2031-01-01" }] }
+    equals: false

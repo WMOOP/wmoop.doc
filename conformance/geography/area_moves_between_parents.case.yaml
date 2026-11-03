@@ -1,0 +1,24 @@
+id: conf.geography.area.moves-between-parents
+category: relation
+description: >-
+  Containment is a part_of relation with its inverse: moving a city from its country into a county
+  updates both parents.
+given:
+  - construct: { type: wmoop.geography/Country, name: Romania, bind: country }
+  - construct: { type: wmoop.geography/County, name: Cluj, bind: county }
+  - link: { subject: county, relation: partOf, to: country }
+  - construct: { type: wmoop.geography/City, name: Turda, with: { residentPopulation: 10 }, bind: city }
+  - link: { subject: city, relation: partOf, to: country }
+  - assert:
+      get: { subject: country, property: contains }
+      equals: [{ ref: county }, { ref: city }]
+  - link: { subject: city, relation: partOf, to: county }
+expect:
+  - get: { subject: country, property: contains }
+    equals: [{ ref: county }]
+  - get: { subject: county, property: contains }
+    equals: [{ ref: city }]
+  - get: { subject: city, property: partOf }
+    equals: { ref: county }
+  - get: { subject: country, property: partOf }
+    equals: null

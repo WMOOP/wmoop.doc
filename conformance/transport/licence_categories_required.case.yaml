@@ -1,0 +1,6 @@
+id: conf.transport.driver.licence-categories-not-empty
+category: constraint
+description: A Driver holds at least one licence category (cardinality 1..*).
+given:
+  - construct: { type: wmoop.transport/Driver, with: { licenceNumber: RO-123, licenceCategories: [] } }
+expect: { outcome: error, error_code: WM-CARDINALITY }

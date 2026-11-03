@@ -1,0 +1,10 @@
+id: conf.transport.driver.attach-requires-person
+category: role
+description: The Driver role can only be played by a Person, so a Moped cannot take it.
+given:
+  - construct:
+      type: wmoop.transport/Moped
+      with: { wheelCount: 2, engineDisplacement: { value: 49, unit: cm3 } }
+      bind: moped
+  - attach_role: { role: wmoop.transport/Driver, to: moped, with: { licenceNumber: RO-123, licenceCategories: [B] } }
+expect: { outcome: error, error_code: WM-ROLE-PLAYER-MISMATCH }

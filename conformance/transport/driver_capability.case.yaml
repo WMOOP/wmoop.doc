@@ -1,0 +1,17 @@
+id: conf.transport.driver.capability-gated
+category: role
+description: The IDrive capability is available only while the Driver role is held.
+status: pending
+reason: The generated code does not expose role capabilities yet.
+given:
+  - construct: { type: wmoop.nature/Person, with: { fullName: Ana Pop }, bind: ana }
+  - assert:
+      has_capability: { subject: ana, capability: wmoop.transport/IDrive }
+      equals: false
+  - attach_role:
+      role: wmoop.transport/Driver
+      to: ana
+      with: { licenceNumber: RO-123, licenceCategories: [AM, A1] }
+expect:
+  - has_capability: { subject: ana, capability: wmoop.transport/IDrive }
+    equals: true

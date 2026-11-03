@@ -1,0 +1,8 @@
+id: conf.core.quantity.text
+category: equivalence
+description: A quantity reads as its value, a space and its unit, with no trailing ".0".
+expect:
+  - text: { value: { value: 49, unit: cm3 } }
+    equals: "49 cm3"
+  - text: { value: { value: 45.5, unit: km/h } }
+    equals: "45.5 km/h"

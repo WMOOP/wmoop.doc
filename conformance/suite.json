@@ -1,0 +1,1260 @@
+{
+  "format": 1,
+  "generated_by": "schema/build_conformance.py, from conformance/<domain>/*.case.yaml. Do not edit.",
+  "cases": [
+    {
+      "file": "conformance/core/entity_name_required.case.yaml",
+      "id": "conf.core.entity.name-required",
+      "category": "constraint",
+      "description": "An entity whose name is blank is rejected.",
+      "given": [
+        {
+          "construct": {
+            "type": "wmoop.nature/Person",
+            "name": " ",
+            "with": {
+              "fullName": "Ada"
+            }
+          }
+        }
+      ],
+      "expect": {
+        "outcome": "error",
+        "error_code": "WM-REQUIRED-MISSING"
+      }
+    },
+    {
+      "file": "conformance/core/id_equal_by_value.case.yaml",
+      "id": "conf.core.id.equal-by-value",
+      "category": "equivalence",
+      "description": "Two identifiers are equal, and hash alike, exactly when their text is equal.",
+      "expect": [
+        {
+          "same_value": [
+            {
+              "id": "wmoop.x/y"
+            },
+            {
+              "id": "wmoop.x/y"
+            }
+          ],
+          "equals": true
+        },
+        {
+          "same_value": [
+            {
+              "id": "wmoop.x/y"
+            },
+            {
+              "id": "wmoop.x/z"
+            }
+          ],
+          "equals": false
+        }
+      ]
+    },
+    {
+      "file": "conformance/core/id_rejects_blank.case.yaml",
+      "id": "conf.core.id.rejects-blank",
+      "category": "constraint",
+      "description": "An entity whose identifier is blank is rejected.",
+      "given": [
+        {
+          "construct": {
+            "type": "wmoop.nature/Person",
+            "id": "   ",
+            "with": {
+              "fullName": "Ada"
+            }
+          }
+        }
+      ],
+      "expect": {
+        "outcome": "error",
+        "error_code": "WM-ID-INVALID"
+      }
+    },
+    {
+      "file": "conformance/core/quantity_equal_by_value.case.yaml",
+      "id": "conf.core.quantity.equal-by-value",
+      "category": "equivalence",
+      "description": "Two quantities are equal exactly when their value and unit are.",
+      "expect": [
+        {
+          "same_value": [
+            {
+              "value": 49,
+              "unit": "cm3"
+            },
+            {
+              "value": 49,
+              "unit": "cm3"
+            }
+          ],
+          "equals": true
+        },
+        {
+          "same_value": [
+            {
+              "value": 49,
+              "unit": "cm3"
+            },
+            {
+              "value": 49,
+              "unit": "km/h"
+            }
+          ],
+          "equals": false
+        }
+      ]
+    },
+    {
+      "file": "conformance/core/quantity_requires_unit.case.yaml",
+      "id": "conf.core.quantity.requires-unit",
+      "category": "constraint",
+      "description": "A quantity without a unit is rejected; a measurable property is never a bare number.",
+      "given": [
+        {
+          "construct": {
+            "type": "wmoop.transport/Moped",
+            "with": {
+              "wheelCount": 2,
+              "engineDisplacement": {
+                "value": 49,
+                "unit": ""
+              }
+            }
+          }
+        }
+      ],
+      "expect": {
+        "outcome": "error",
+        "error_code": "WM-UNIT-MISSING"
+      }
+    },
+    {
+      "file": "conformance/core/quantity_text.case.yaml",
+      "id": "conf.core.quantity.text",
+      "category": "equivalence",
+      "description": "A quantity reads as its value, a space and its unit, with no trailing \".0\".",
+      "expect": [
+        {
+          "text": {
+            "value": {
+              "value": 49,
+              "unit": "cm3"
+            }
+          },
+          "equals": "49 cm3"
+        },
+        {
+          "text": {
+            "value": {
+              "value": 45.5,
+              "unit": "km/h"
+            }
+          },
+          "equals": "45.5 km/h"
+        }
+      ]
+    },
+    {
+      "file": "conformance/geography/area_moves_between_parents.case.yaml",
+      "id": "conf.geography.area.moves-between-parents",
+      "category": "relation",
+      "description": "Containment is a part_of relation with its inverse: moving a city from its country into a county updates both parents.",
+      "given": [
+        {
+          "construct": {
+            "type": "wmoop.geography/Country",
+            "name": "Romania",
+            "bind": "country"
+          }
+        },
+        {
+          "construct": {
+            "type": "wmoop.geography/County",
+            "name": "Cluj",
+            "bind": "county"
+          }
+        },
+        {
+          "link": {
+            "subject": "county",
+            "relation": "partOf",
+            "to": "country"
+          }
+        },
+        {
+          "construct": {
+            "type": "wmoop.geography/City",
+            "name": "Turda",
+            "with": {
+              "residentPopulation": 10
+            },
+            "bind": "city"
+          }
+        },
+        {
+          "link": {
+            "subject": "city",
+            "relation": "partOf",
+            "to": "country"
+          }
+        },
+        {
+          "assert": {
+            "get": {
+              "subject": "country",
+              "property": "contains"
+            },
+            "equals": [
+              {
+                "ref": "county"
+              },
+              {
+                "ref": "city"
+              }
+            ]
+          }
+        },
+        {
+          "link": {
+            "subject": "city",
+            "relation": "partOf",
+            "to": "county"
+          }
+        }
+      ],
+      "expect": [
+        {
+          "get": {
+            "subject": "country",
+            "property": "contains"
+          },
+          "equals": [
+            {
+              "ref": "county"
+            }
+          ]
+        },
+        {
+          "get": {
+            "subject": "county",
+            "property": "contains"
+          },
+          "equals": [
+            {
+              "ref": "city"
+            }
+          ]
+        },
+        {
+          "get": {
+            "subject": "city",
+            "property": "partOf"
+          },
+          "equals": {
+            "ref": "county"
+          }
+        },
+        {
+          "get": {
+            "subject": "country",
+            "property": "partOf"
+          },
+          "equals": null
+        }
+      ]
+    },
+    {
+      "file": "conformance/geography/area_total_population.case.yaml",
+      "id": "conf.geography.area.total-population",
+      "category": "behaviour",
+      "description": "An area's total population is its own residents plus every sub-area's total. Hand-written behaviour that the bindings keep in step (ADR 0002).",
+      "given": [
+        {
+          "construct": {
+            "type": "wmoop.geography/Country",
+            "name": "Romania",
+            "bind": "country"
+          }
+        },
+        {
+          "construct": {
+            "type": "wmoop.geography/County",
+            "name": "Cluj",
+            "with": {
+              "residentPopulation": 5
+            },
+            "bind": "county"
+          }
+        },
+        {
+          "link": {
+            "subject": "county",
+            "relation": "partOf",
+            "to": "country"
+          }
+        },
+        {
+          "construct": {
+            "type": "wmoop.geography/City",
+            "name": "Turda",
+            "with": {
+              "residentPopulation": 10
+            },
+            "bind": "turda"
+          }
+        },
+        {
+          "construct": {
+            "type": "wmoop.geography/City",
+            "name": "Dej",
+            "with": {
+              "residentPopulation": 7
+            },
+            "bind": "dej"
+          }
+        },
+        {
+          "link": {
+            "subject": "county",
+            "relation": "contains",
+            "to": "turda"
+          }
+        },
+        {
+          "link": {
+            "subject": "county",
+            "relation": "contains",
+            "to": "dej"
+          }
+        }
+      ],
+      "expect": [
+        {
+          "get": {
+            "subject": "country",
+            "property": "totalPopulation"
+          },
+          "equals": 22
+        },
+        {
+          "get": {
+            "subject": "county",
+            "property": "totalPopulation"
+          },
+          "equals": 22
+        },
+        {
+          "get": {
+            "subject": "turda",
+            "property": "totalPopulation"
+          },
+          "equals": 10
+        }
+      ]
+    },
+    {
+      "file": "conformance/nature/person_open_world.case.yaml",
+      "id": "conf.nature.person.absent-stays-absent",
+      "category": "default",
+      "description": "An optional property left out reads as absent, never as a made-up value.",
+      "given": [
+        {
+          "construct": {
+            "type": "wmoop.nature/Person",
+            "with": {
+              "fullName": "Ada"
+            },
+            "bind": "ada"
+          }
+        }
+      ],
+      "expect": [
+        {
+          "get": {
+            "subject": "ada",
+            "property": "dateOfBirth"
+          },
+          "equals": null
+        },
+        {
+          "get": {
+            "subject": "ada",
+            "property": "legCount"
+          },
+          "equals": null
+        }
+      ]
+    },
+    {
+      "file": "conformance/nature/person_without_roles.case.yaml",
+      "id": "conf.nature.person.no-roles",
+      "category": "role",
+      "description": "A new Person plays no roles, and asking for one finds none.",
+      "given": [
+        {
+          "construct": {
+            "type": "wmoop.nature/Person",
+            "with": {
+              "fullName": "Ada"
+            },
+            "bind": "ada"
+          }
+        }
+      ],
+      "expect": [
+        {
+          "roles": {
+            "subject": "ada"
+          },
+          "equals": []
+        },
+        {
+          "has_role": {
+            "subject": "ada",
+            "role": "wmoop.transport/Driver"
+          },
+          "equals": false
+        },
+        {
+          "get_role": {
+            "subject": "ada",
+            "role": "wmoop.transport/Driver"
+          },
+          "equals": null
+        }
+      ]
+    },
+    {
+      "file": "conformance/nature/person_type_chain.case.yaml",
+      "id": "conf.nature.person.type-chain",
+      "category": "structural",
+      "description": "A Person is a Human and an Animal, and has the legs an Animal has.",
+      "given": [
+        {
+          "construct": {
+            "type": "wmoop.nature/Person",
+            "with": {
+              "fullName": "Ada Lovelace",
+              "legCount": 2
+            },
+            "bind": "ada"
+          }
+        }
+      ],
+      "expect": [
+        {
+          "type_chain": {
+            "subject": "ada"
+          },
+          "equals": [
+            "wmoop.nature/Person",
+            "wmoop.nature/Human",
+            "wmoop.nature/Animal"
+          ]
+        },
+        {
+          "is_a": {
+            "subject": "ada",
+            "type": "wmoop.nature/Human"
+          },
+          "equals": true
+        },
+        {
+          "get": {
+            "subject": "ada",
+            "property": "legCount"
+          },
+          "equals": 2
+        }
+      ]
+    },
+    {
+      "file": "conformance/transport/driver_requires_person.case.yaml",
+      "id": "conf.transport.driver.attach-requires-person",
+      "category": "role",
+      "description": "The Driver role can only be played by a Person, so a Moped cannot take it.",
+      "given": [
+        {
+          "construct": {
+            "type": "wmoop.transport/Moped",
+            "with": {
+              "wheelCount": 2,
+              "engineDisplacement": {
+                "value": 49,
+                "unit": "cm3"
+              }
+            },
+            "bind": "moped"
+          }
+        },
+        {
+          "attach_role": {
+            "role": "wmoop.transport/Driver",
+            "to": "moped",
+            "with": {
+              "licenceNumber": "RO-123",
+              "licenceCategories": [
+                "B"
+              ]
+            }
+          }
+        }
+      ],
+      "expect": {
+        "outcome": "error",
+        "error_code": "WM-ROLE-PLAYER-MISMATCH"
+      }
+    },
+    {
+      "file": "conformance/transport/role_attached_once.case.yaml",
+      "id": "conf.transport.driver.attached-once",
+      "category": "role",
+      "description": "A role object belongs to one subject; attaching it to a second one is rejected.",
+      "given": [
+        {
+          "construct": {
+            "type": "wmoop.transport/Driver",
+            "with": {
+              "licenceNumber": "RO-123",
+              "licenceCategories": [
+                "B"
+              ]
+            },
+            "bind": "licence"
+          }
+        },
+        {
+          "construct": {
+            "type": "wmoop.nature/Person",
+            "with": {
+              "fullName": "Ada"
+            },
+            "bind": "ada"
+          }
+        },
+        {
+          "construct": {
+            "type": "wmoop.nature/Person",
+            "with": {
+              "fullName": "Bob"
+            },
+            "bind": "bob"
+          }
+        },
+        {
+          "attach_role": {
+            "to": "ada",
+            "ref": "licence"
+          }
+        },
+        {
+          "attach_role": {
+            "to": "bob",
+            "ref": "licence"
+          }
+        }
+      ],
+      "expect": {
+        "outcome": "error",
+        "error_code": "WM-ROLE-ALREADY-ATTACHED"
+      }
+    },
+    {
+      "file": "conformance/transport/driver_can_drive.case.yaml",
+      "id": "conf.transport.driver.can-drive",
+      "category": "behaviour",
+      "description": "A licence allows a category it holds until its expiry date, and nothing else. A pure function that is hand-written today and a WMX candidate (ADR 0002).",
+      "given": [
+        {
+          "construct": {
+            "type": "wmoop.transport/Driver",
+            "with": {
+              "licenceNumber": "RO-123",
+              "licenceCategories": [
+                "AM",
+                "B"
+              ],
+              "licenceExpiry": {
+                "date": "2030-01-01"
+              }
+            },
+            "bind": "licence"
+          }
+        }
+      ],
+      "expect": [
+        {
+          "call": {
+            "subject": "licence",
+            "operation": "canDrive",
+            "args": [
+              "AM",
+              {
+                "date": "2026-01-01"
+              }
+            ]
+          },
+          "equals": true
+        },
+        {
+          "call": {
+            "subject": "licence",
+            "operation": "canDrive",
+            "args": [
+              "A",
+              {
+                "date": "2026-01-01"
+              }
+            ]
+          },
+          "equals": false
+        },
+        {
+          "call": {
+            "subject": "licence",
+            "operation": "canDrive",
+            "args": [
+              "B",
+              {
+                "date": "2030-01-01"
+              }
+            ]
+          },
+          "equals": true
+        },
+        {
+          "call": {
+            "subject": "licence",
+            "operation": "canDrive",
+            "args": [
+              "B",
+              {
+                "date": "2031-01-01"
+              }
+            ]
+          },
+          "equals": false
+        }
+      ]
+    },
+    {
+      "file": "conformance/transport/driver_capability.case.yaml",
+      "id": "conf.transport.driver.capability-gated",
+      "category": "role",
+      "description": "The IDrive capability is available only while the Driver role is held.",
+      "status": "pending",
+      "reason": "The generated code does not expose role capabilities yet.",
+      "given": [
+        {
+          "construct": {
+            "type": "wmoop.nature/Person",
+            "with": {
+              "fullName": "Ana Pop"
+            },
+            "bind": "ana"
+          }
+        },
+        {
+          "assert": {
+            "has_capability": {
+              "subject": "ana",
+              "capability": "wmoop.transport/IDrive"
+            },
+            "equals": false
+          }
+        },
+        {
+          "attach_role": {
+            "role": "wmoop.transport/Driver",
+            "to": "ana",
+            "with": {
+              "licenceNumber": "RO-123",
+              "licenceCategories": [
+                "AM",
+                "A1"
+              ]
+            }
+          }
+        }
+      ],
+      "expect": [
+        {
+          "has_capability": {
+            "subject": "ana",
+            "capability": "wmoop.transport/IDrive"
+          },
+          "equals": true
+        }
+      ]
+    },
+    {
+      "file": "conformance/transport/licence_categories.case.yaml",
+      "id": "conf.transport.driver.licence-categories",
+      "category": "enum",
+      "description": "Licence categories keep their model values and their order.",
+      "given": [
+        {
+          "construct": {
+            "type": "wmoop.transport/Driver",
+            "with": {
+              "licenceNumber": "RO-123",
+              "licenceCategories": [
+                "AM",
+                "B"
+              ],
+              "licenceExpiry": {
+                "date": "2030-01-01"
+              }
+            },
+            "bind": "licence"
+          }
+        }
+      ],
+      "expect": [
+        {
+          "get": {
+            "subject": "licence",
+            "property": "licenceCategories"
+          },
+          "equals": [
+            "AM",
+            "B"
+          ]
+        },
+        {
+          "get": {
+            "subject": "licence",
+            "property": "licenceExpiry"
+          },
+          "equals": {
+            "date": "2030-01-01"
+          }
+        }
+      ]
+    },
+    {
+      "file": "conformance/transport/licence_categories_required.case.yaml",
+      "id": "conf.transport.driver.licence-categories-not-empty",
+      "category": "constraint",
+      "description": "A Driver holds at least one licence category (cardinality 1..*).",
+      "given": [
+        {
+          "construct": {
+            "type": "wmoop.transport/Driver",
+            "with": {
+              "licenceNumber": "RO-123",
+              "licenceCategories": []
+            }
+          }
+        }
+      ],
+      "expect": {
+        "outcome": "error",
+        "error_code": "WM-CARDINALITY"
+      }
+    },
+    {
+      "file": "conformance/transport/one_driver_per_person.case.yaml",
+      "id": "conf.transport.driver.one-per-person",
+      "category": "role",
+      "description": "Driver has cardinality_per_player 0..1, so a Person cannot take a second Driver role.",
+      "status": "pending",
+      "reason": "The generated code does not enforce cardinality_per_player yet.",
+      "given": [
+        {
+          "construct": {
+            "type": "wmoop.nature/Person",
+            "with": {
+              "fullName": "Ada"
+            },
+            "bind": "ada"
+          }
+        },
+        {
+          "attach_role": {
+            "role": "wmoop.transport/Driver",
+            "to": "ada",
+            "with": {
+              "licenceNumber": "RO-1",
+              "licenceCategories": [
+                "AM"
+              ]
+            }
+          }
+        },
+        {
+          "attach_role": {
+            "role": "wmoop.transport/Driver",
+            "to": "ada",
+            "with": {
+              "licenceNumber": "RO-2",
+              "licenceCategories": [
+                "B"
+              ]
+            }
+          }
+        }
+      ],
+      "expect": {
+        "outcome": "error",
+        "error_code": "WM-ROLE-DUPLICATE"
+      }
+    },
+    {
+      "file": "conformance/transport/moped_canonical_serialization.case.yaml",
+      "id": "conf.transport.moped.canonical-serialization",
+      "category": "equivalence",
+      "description": "Equivalent Mopeds map to the same canonical data model: the boundary canonicalizer yields the same canonical JSON, while the idiomatic runtime types stay native.",
+      "status": "pending",
+      "reason": "No binding has the boundary canonicalizer (JCS) yet.",
+      "given": [
+        {
+          "construct": {
+            "type": "wmoop.transport/Moped",
+            "with": {
+              "wheelCount": 2,
+              "engineDisplacement": {
+                "value": 49,
+                "unit": "cm3"
+              },
+              "maxSpeed": {
+                "value": 45,
+                "unit": "km/h"
+              }
+            },
+            "bind": "moped"
+          }
+        }
+      ],
+      "expect": [
+        {
+          "canonical_json": {
+            "subject": "moped"
+          },
+          "equals": "{\"@type\":\"wmoop.transport/Moped\",\"engineDisplacement\":{\"unit\":\"cm3\",\"value\":49},\"maxSpeed\":{\"unit\":\"km/h\",\"value\":45},\"roadLegal\":true,\"wheelCount\":2}"
+        }
+      ]
+    },
+    {
+      "file": "conformance/transport/moped_displacement_limit.case.yaml",
+      "id": "conf.transport.moped.displacement-limit",
+      "category": "override",
+      "description": "A Moped narrows Motorcycle's engineDisplacement to at most 50 cm3, so 60 cm3 is rejected.",
+      "status": "pending",
+      "reason": "The generated code does not enforce property constraints (minimum, maximum, enum) yet.",
+      "given": [
+        {
+          "construct": {
+            "type": "wmoop.transport/Moped",
+            "with": {
+              "wheelCount": 2,
+              "engineDisplacement": {
+                "value": 60,
+                "unit": "cm3"
+              }
+            }
+          }
+        }
+      ],
+      "expect": {
+        "outcome": "error",
+        "error_code": "WM-CONSTRAINT-MAX",
+        "violated": "wmoop.transport/Motorcycle#engineDisplacement"
+      }
+    },
+    {
+      "file": "conformance/transport/moped_type_chain.case.yaml",
+      "id": "conf.transport.moped.type-chain",
+      "category": "structural",
+      "description": "A Moped is a Motorcycle, a RoadVehicle and a Vehicle, through a shallow extends chain.",
+      "given": [
+        {
+          "construct": {
+            "type": "wmoop.transport/Moped",
+            "with": {
+              "wheelCount": 2,
+              "maxSpeed": {
+                "value": 45,
+                "unit": "km/h"
+              },
+              "engineDisplacement": {
+                "value": 49,
+                "unit": "cm3"
+              }
+            },
+            "bind": "moped"
+          }
+        }
+      ],
+      "expect": [
+        {
+          "type_chain": {
+            "subject": "moped"
+          },
+          "equals": [
+            "wmoop.transport/Moped",
+            "wmoop.transport/Motorcycle",
+            "wmoop.transport/RoadVehicle",
+            "wmoop.transport/Vehicle"
+          ]
+        },
+        {
+          "is_a": {
+            "subject": "moped",
+            "type": "wmoop.transport/Vehicle"
+          },
+          "equals": true
+        },
+        {
+          "is_a": {
+            "subject": "moped",
+            "type": "wmoop.nature/Person"
+          },
+          "equals": false
+        }
+      ]
+    },
+    {
+      "file": "conformance/transport/owns_owned_by.case.yaml",
+      "id": "conf.transport.owner.owns-in-step",
+      "category": "relation",
+      "description": "Owner.owns and Vehicle.ownedBy are two ends of one relation, kept in step from either side.",
+      "given": [
+        {
+          "construct": {
+            "type": "wmoop.nature/Person",
+            "with": {
+              "fullName": "Ada"
+            },
+            "bind": "ada"
+          }
+        },
+        {
+          "attach_role": {
+            "role": "wmoop.transport/Owner",
+            "to": "ada",
+            "bind": "owner"
+          }
+        },
+        {
+          "construct": {
+            "type": "wmoop.transport/Moped",
+            "with": {
+              "wheelCount": 2,
+              "engineDisplacement": {
+                "value": 49,
+                "unit": "cm3"
+              }
+            },
+            "bind": "moped"
+          }
+        },
+        {
+          "link": {
+            "subject": "owner",
+            "relation": "owns",
+            "to": "moped"
+          }
+        },
+        {
+          "assert": {
+            "get": {
+              "subject": "moped",
+              "property": "ownedBy"
+            },
+            "equals": [
+              {
+                "ref": "owner"
+              }
+            ]
+          }
+        },
+        {
+          "unlink": {
+            "subject": "moped",
+            "relation": "ownedBy",
+            "from": "owner"
+          }
+        }
+      ],
+      "expect": [
+        {
+          "get": {
+            "subject": "owner",
+            "property": "owns"
+          },
+          "equals": []
+        },
+        {
+          "get": {
+            "subject": "moped",
+            "property": "ownedBy"
+          },
+          "equals": []
+        }
+      ]
+    },
+    {
+      "file": "conformance/transport/person_driver_and_owner.case.yaml",
+      "id": "conf.transport.person.driver-and-owner",
+      "category": "role",
+      "description": "A Person can be a Driver and an Owner at once; each role knows the person it is attached to.",
+      "given": [
+        {
+          "construct": {
+            "type": "wmoop.nature/Person",
+            "with": {
+              "fullName": "Ada"
+            },
+            "bind": "ada"
+          }
+        },
+        {
+          "attach_role": {
+            "role": "wmoop.transport/Driver",
+            "to": "ada",
+            "with": {
+              "licenceNumber": "RO-123",
+              "licenceCategories": [
+                "AM"
+              ],
+              "licenceExpiry": {
+                "date": "2030-01-01"
+              }
+            },
+            "bind": "licence"
+          }
+        },
+        {
+          "attach_role": {
+            "role": "wmoop.transport/Owner",
+            "to": "ada",
+            "with": {
+              "ownedSince": {
+                "date": "2021-01-01"
+              }
+            },
+            "bind": "owner"
+          }
+        }
+      ],
+      "expect": [
+        {
+          "roles": {
+            "subject": "ada"
+          },
+          "equals": [
+            "wmoop.transport/Driver",
+            "wmoop.transport/Owner"
+          ]
+        },
+        {
+          "has_role": {
+            "subject": "ada",
+            "role": "wmoop.transport/Owner"
+          },
+          "equals": true
+        },
+        {
+          "get_role": {
+            "subject": "ada",
+            "role": "wmoop.transport/Driver"
+          },
+          "equals": {
+            "ref": "licence"
+          }
+        },
+        {
+          "role_subject": {
+            "role": "licence"
+          },
+          "equals": {
+            "ref": "ada"
+          }
+        },
+        {
+          "role_subject": {
+            "role": "owner"
+          },
+          "equals": {
+            "ref": "ada"
+          }
+        }
+      ]
+    },
+    {
+      "file": "conformance/transport/road_legal_default.case.yaml",
+      "id": "conf.transport.road-vehicle.road-legal-default",
+      "category": "default",
+      "description": "roadLegal defaults to true, while a maxSpeed left out stays absent rather than 0.",
+      "given": [
+        {
+          "construct": {
+            "type": "wmoop.transport/Motorcycle",
+            "with": {
+              "wheelCount": 2,
+              "engineDisplacement": {
+                "value": 600,
+                "unit": "cm3"
+              }
+            },
+            "bind": "bike"
+          }
+        }
+      ],
+      "expect": [
+        {
+          "get": {
+            "subject": "bike",
+            "property": "roadLegal"
+          },
+          "equals": true
+        },
+        {
+          "get": {
+            "subject": "bike",
+            "property": "maxSpeed"
+          },
+          "equals": null
+        },
+        {
+          "get": {
+            "subject": "bike",
+            "property": "engineDisplacement"
+          },
+          "equals": {
+            "value": 600,
+            "unit": "cm3"
+          }
+        }
+      ]
+    },
+    {
+      "file": "conformance/transport/vehicle_is_abstract.case.yaml",
+      "id": "conf.transport.vehicle.abstract",
+      "category": "structural",
+      "description": "Vehicle is abstract, so it cannot be constructed; only its concrete kinds can.",
+      "given": [
+        {
+          "construct": {
+            "type": "wmoop.transport/Vehicle",
+            "with": {
+              "wheelCount": 4
+            }
+          }
+        }
+      ],
+      "expect": {
+        "outcome": "error",
+        "error_code": "WM-ABSTRACT-INSTANTIATION"
+      }
+    },
+    {
+      "file": "conformance/transport/vehicle_classification.case.yaml",
+      "id": "conf.transport.vehicle.classification",
+      "category": "behaviour",
+      "description": "Each kind of vehicle refines its classification down the extends chain. Hand-written behaviour that the bindings keep in step (ADR 0002).",
+      "given": [
+        {
+          "construct": {
+            "type": "wmoop.transport/Moped",
+            "with": {
+              "wheelCount": 2,
+              "engineDisplacement": {
+                "value": 49,
+                "unit": "cm3"
+              }
+            },
+            "bind": "moped"
+          }
+        },
+        {
+          "construct": {
+            "type": "wmoop.transport/Motorcycle",
+            "with": {
+              "wheelCount": 2,
+              "engineDisplacement": {
+                "value": 600,
+                "unit": "cm3"
+              }
+            },
+            "bind": "bike"
+          }
+        }
+      ],
+      "expect": [
+        {
+          "get": {
+            "subject": "moped",
+            "property": "classification"
+          },
+          "equals": "moped"
+        },
+        {
+          "get": {
+            "subject": "bike",
+            "property": "classification"
+          },
+          "equals": "motorcycle"
+        }
+      ]
+    },
+    {
+      "file": "conformance/transport/max_speed_unit.case.yaml",
+      "id": "conf.transport.vehicle.max-speed-unit",
+      "category": "constraint",
+      "description": "maxSpeed is a speed, so a value in kilograms is rejected.",
+      "status": "pending",
+      "reason": "The generated code does not check a quantity's unit against the property's QuantityKind yet.",
+      "given": [
+        {
+          "construct": {
+            "type": "wmoop.transport/Moped",
+            "with": {
+              "wheelCount": 2,
+              "maxSpeed": {
+                "value": 45,
+                "unit": "kg"
+              },
+              "engineDisplacement": {
+                "value": 49,
+                "unit": "cm3"
+              }
+            }
+          }
+        }
+      ],
+      "expect": {
+        "outcome": "error",
+        "error_code": "WM-UNIT-DIMENSION-MISMATCH"
+      }
+    },
+    {
+      "file": "conformance/transport/wheel_count_required.case.yaml",
+      "id": "conf.transport.vehicle.wheel-count-required",
+      "category": "constraint",
+      "description": "A vehicle cannot be built without its required wheelCount.",
+      "given": [
+        {
+          "construct": {
+            "type": "wmoop.transport/Moped",
+            "with": {
+              "engineDisplacement": {
+                "value": 49,
+                "unit": "cm3"
+              }
+            }
+          }
+        }
+      ],
+      "expect": {
+        "outcome": "error",
+        "error_code": "WM-REQUIRED-MISSING"
+      }
+    }
+  ]
+}

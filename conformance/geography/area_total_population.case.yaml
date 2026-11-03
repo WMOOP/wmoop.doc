@@ -1,0 +1,20 @@
+id: conf.geography.area.total-population
+category: behaviour
+description: >-
+  An area's total population is its own residents plus every sub-area's total. Hand-written behaviour
+  that the bindings keep in step (ADR 0002).
+given:
+  - construct: { type: wmoop.geography/Country, name: Romania, bind: country }
+  - construct: { type: wmoop.geography/County, name: Cluj, with: { residentPopulation: 5 }, bind: county }
+  - link: { subject: county, relation: partOf, to: country }
+  - construct: { type: wmoop.geography/City, name: Turda, with: { residentPopulation: 10 }, bind: turda }
+  - construct: { type: wmoop.geography/City, name: Dej, with: { residentPopulation: 7 }, bind: dej }
+  - link: { subject: county, relation: contains, to: turda }
+  - link: { subject: county, relation: contains, to: dej }
+expect:
+  - get: { subject: country, property: totalPopulation }
+    equals: 22
+  - get: { subject: county, property: totalPopulation }
+    equals: 22
+  - get: { subject: turda, property: totalPopulation }
+    equals: 10
