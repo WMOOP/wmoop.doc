@@ -10,6 +10,11 @@ the MAJOR version.
 ## [Unreleased]
 
 ### Added
+- **[ADR 0004](governance/adr/0004-model-folders-and-sub-modules.md)**, Proposed: how a large domain is split.
+  Subfolders inside a module group its files without changing any ID, and C# mirrors them inside the project.
+  A subfolder with its own `module:` header is a sub-module (`wmoop.<domain>.<sub>`, one level) with its own
+  package, for a part with its own consumers. It answers the open sub-question of `docs/03-architecture.md` §7.4
+  and awaits ratification.
 - **Contributing a Domain** (`docs/08-contributing-a-domain.md`): the documents a domain proposal needs and how
   each is structured (issue, abstract, whitepaper, source register, WML, conformance cases, article, PR), the
   writing standard, the prose-to-objects modelling method, a sensitive-subject checklist and a review rubric.
